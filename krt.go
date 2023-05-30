@@ -1,18 +1,18 @@
 package main
 
 type Krt struct {
-	Name        string
-	Description string
-	Version     string
-	Config      map[string]string
-	Workflows   []Workflow
+	Name        string            `yaml:"name" validate:"required"`
+	Description string            `yaml:"description" validate:"required"`
+	Version     string            `yaml:"version" validate:"required,resource-name,lt=20"`
+	Config      map[string]string `yaml:"config" validate:"omitempty"`
+	Workflows   []Workflow        `yaml:"workflows" validate:"required,dive,min=1"`
 }
 
 type Workflow struct {
-	Name      string
-	Type      WorkflowType
-	Config    map[string]string
-	Processes []Process
+	Name      string            `yaml:"name" validate:"required,resource-name,lt=20"`
+	Type      WorkflowType      `yaml:"type" validate:"required"`
+	Config    map[string]string `yaml:"config" validate:"omitempty"`
+	Processes []Process         `yaml:"workflows" validate:"required,dive,min=2"`
 }
 
 type WorkflowType string
@@ -25,16 +25,16 @@ const (
 )
 
 type Process struct {
-	Name          string
-	Type          ProcessType
-	Build         ProcessBuild
-	Replicas      int
-	GPU           bool
-	Config        map[string]string
-	ObjectStore   ProcessObjectStore
-	Secrets       []string
-	Subscriptions []string
-	Networking    ProcessNetworking
+	Name          string             `yaml:"name" validate:"required"`
+	Type          ProcessType        `yaml:"type" validate:"required"`
+	Build         ProcessBuild       `yaml:"build" validate:"required"`
+	Replicas      int                `yaml:"replicas" validate:"omitempty"`
+	GPU           bool               `yaml:"gpu" validate:"omitempty"`
+	Config        map[string]string  `yaml:"config" validate:"omitempty"`
+	ObjectStore   ProcessObjectStore `yaml:"objectStore" validate:"omitempty"`
+	Secrets       []string           `yaml:"secrets" validate:"omitempty"`
+	Subscriptions []string           `yaml:"subscriptions" validate:"required,dive,min=1"`
+	Networking    ProcessNetworking  `yaml:"networking" validate:"omitempty"`
 }
 
 type ProcessType string
