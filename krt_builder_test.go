@@ -14,7 +14,7 @@ func NewKrtBuilder() *KrtBuilder {
 			Version:     "version-name",
 			Workflows: []Workflow{
 				{
-					Name: "valid-workflow",
+					Name: "test-workflow",
 					Type: WorkflowTypeTraining,
 					Processes: []Process{
 						{

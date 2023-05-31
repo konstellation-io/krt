@@ -5,14 +5,14 @@ type Krt struct {
 	Description string            `yaml:"description" validate:"required"`
 	Version     string            `yaml:"version" validate:"required,resource-name,lt=20"`
 	Config      map[string]string `yaml:"config" validate:"omitempty"`
-	Workflows   []Workflow        `yaml:"workflows" validate:"required,dive,min=1"`
+	Workflows   []Workflow        `yaml:"workflows" validate:"required,dive"`
 }
 
 type Workflow struct {
 	Name      string            `yaml:"name" validate:"required,resource-name,lt=20"`
 	Type      WorkflowType      `yaml:"type" validate:"required"`
 	Config    map[string]string `yaml:"config" validate:"omitempty"`
-	Processes []Process         `yaml:"workflows" validate:"required,dive,min=2"`
+	Processes []Process         `yaml:"processes" validate:"required,dive"`
 }
 
 type WorkflowType string
@@ -25,7 +25,7 @@ const (
 )
 
 type Process struct {
-	Name          string             `yaml:"name" validate:"required"`
+	Name          string             `yaml:"name" validate:"required,resource-name,lt=20"`
 	Type          ProcessType        `yaml:"type" validate:"required"`
 	Build         ProcessBuild       `yaml:"build" validate:"required"`
 	Replicas      int                `yaml:"replicas" validate:"omitempty"`
@@ -33,7 +33,7 @@ type Process struct {
 	Config        map[string]string  `yaml:"config" validate:"omitempty"`
 	ObjectStore   ProcessObjectStore `yaml:"objectStore" validate:"omitempty"`
 	Secrets       []string           `yaml:"secrets" validate:"omitempty"`
-	Subscriptions []string           `yaml:"subscriptions" validate:"required,dive,min=1"`
+	Subscriptions []string           `yaml:"subscriptions" validate:"required"`
 	Networking    ProcessNetworking  `yaml:"networking" validate:"omitempty"`
 }
 
@@ -46,13 +46,13 @@ const (
 )
 
 type ProcessBuild struct {
-	Image      string
-	Dockerfile string
+	Image      string `yaml:"image"`
+	Dockerfile string `yaml:"dockerfile"`
 }
 
 type ProcessObjectStore struct {
-	Name  string
-	Scope ObjectStoreScope
+	Name  string           `yaml:"name"`
+	Scope ObjectStoreScope `yaml:"scope"`
 }
 
 type ObjectStoreScope string
@@ -63,10 +63,10 @@ const (
 )
 
 type ProcessNetworking struct {
-	TargetPort          int
-	TargetProtocol      NetworkingProtocol
-	DestinationPort     int
-	DestinationProtocol NetworkingProtocol
+	TargetPort          int                `yaml:"targetPort"`
+	TargetProtocol      NetworkingProtocol `yaml:"targetProtocol"`
+	DestinationPort     int                `yaml:"destinationPort"`
+	DestinationProtocol NetworkingProtocol `yaml:"destinationProtocol"`
 }
 
 type NetworkingProtocol string

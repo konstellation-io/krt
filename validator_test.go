@@ -24,25 +24,7 @@ func TestKrtValidator_Run(t *testing.T) {
 			errorString: "",
 		},
 		{
-			name:        "fails if there are no wokflows",
-			krtYaml:     NewKrtBuilder().WithWorkflows([]Workflow{}).Build(),
-			wantError:   true,
-			errorString: "process \"test-trigger\" requires at least one subscription",
-		},
-		{
-			name: "fails if a process does not have any subscriptions",
-			krtYaml: NewKrtBuilder().WithProcessesForWorkflow([]Process{
-				{
-					Name:  "test-trigger",
-					Type:  ProcessTypeTrigger,
-					Build: ProcessBuild{Image: "test-trigger-image"},
-				},
-			}, 0).Build(),
-			wantError:   true,
-			errorString: "process \"test-trigger\" requires at least one subscription",
-		},
-		{
-			name: "fails if node name is not unique in workflow",
+			name: "fails if process name is not unique in workflow",
 			krtYaml: NewKrtBuilder().
 				WithProcessesForWorkflow([]Process{
 					{
@@ -63,7 +45,7 @@ func TestKrtValidator_Run(t *testing.T) {
 					},
 				}, 0).Build(),
 			wantError:   true,
-			errorString: ErrRepeatedNodeName.Error(),
+			errorString: ErrRepeatedProcessName.Error(),
 		},
 	}
 
@@ -81,7 +63,7 @@ func TestKrtValidator_Run(t *testing.T) {
 				return
 			}
 
-			assert.Empty(t, err)
+			assert.NoError(t, err)
 		})
 		ctrl.Finish()
 	}

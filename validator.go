@@ -47,18 +47,18 @@ func (v *KrtValidator) getWorkflowsValidationErrors(workflows []Workflow) []erro
 
 	for _, workflow := range workflows {
 		existingProcesses := make(map[string]bool, len(workflow.Processes))
-		for _, node := range workflow.Processes {
-			nodeNameAlreadyInUse := existingProcesses[node.Name]
+		for _, process := range workflow.Processes {
+			processNameAlreadyInUse := existingProcesses[process.Name]
 
-			if nodeNameAlreadyInUse {
-				validationErrors = append(validationErrors, ErrRepeatedNodeName)
+			if processNameAlreadyInUse {
+				validationErrors = append(validationErrors, ErrRepeatedProcessName)
 			}
 
-			existingProcesses[node.Name] = true
+			existingProcesses[process.Name] = true
 
-			if len(node.Subscriptions) < 1 {
+			if len(process.Subscriptions) < 1 {
 				//nolint:goerr113 // errors need to be dynamically generated
-				validationErrors = append(validationErrors, fmt.Errorf("node %q requires at least one subscription", node.Name))
+				validationErrors = append(validationErrors, fmt.Errorf("process %q requires at least one subscription", process.Name))
 			}
 		}
 	}

@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-var ErrRepeatedNodeName = errors.New("node names should be unique per workflows")
+var ErrRepeatedProcessName = errors.New("process names should be unique per workflows")
 
 type ValidationError struct {
 	Messages []string
