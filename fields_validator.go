@@ -35,12 +35,6 @@ func initialize(fieldsValidator *validator.Validate) {
 	_ = fieldsValidator.RegisterValidation("resource-name", func(fl validator.FieldLevel) bool {
 		return reResourceName.MatchString(fl.Field().String())
 	})
-
-	// register validator for env var names. Ex: NAME_VALID123
-	reEnvVar := regexp.MustCompile("^[A-Z0-9]([_A-Z0-9]*[A-Z0-9])?$")
-	_ = fieldsValidator.RegisterValidation("env", func(fl validator.FieldLevel) bool {
-		return reEnvVar.MatchString(fl.Field().String())
-	})
 }
 
 func (k *YamlFieldsValidator) Run(yaml interface{}) []error {
