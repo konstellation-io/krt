@@ -9,7 +9,7 @@ type KrtBuilder struct {
 func NewKrtBuilder() *KrtBuilder {
 	return &KrtBuilder{
 		krtYaml: &Krt{
-			Name:        "Test KRT",
+			Name:        "test-krt",
 			Description: "Test description",
 			Version:     "version-name",
 			Workflows: []Workflow{
@@ -65,8 +65,33 @@ func (k *KrtBuilder) WithWorkflows(workflows []Workflow) *KrtBuilder {
 	return k
 }
 
+func (k *KrtBuilder) WithWorkflowName(name string) *KrtBuilder {
+	k.krtYaml.Workflows[0].Name = name
+	return k
+}
+
+func (k *KrtBuilder) WithWorkflowType(workflowType WorkflowType) *KrtBuilder {
+	k.krtYaml.Workflows[0].Type = workflowType
+	return k
+}
+
 func (k *KrtBuilder) WithProcesses(processes []Process) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes = processes
+	return k
+}
+
+func (k *KrtBuilder) WithProcessName(name string, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Name = name
+	return k
+}
+
+func (k *KrtBuilder) WithProcessType(processType ProcessType, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Type = processType
+	return k
+}
+
+func (k *KrtBuilder) WithProcessSubscriptions(subscriptions []string, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Subscriptions = subscriptions
 	return k
 }
 

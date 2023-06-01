@@ -49,8 +49,10 @@ func TestYamlFieldsValidator_Run(t *testing.T) {
 			errorString: "invalid resource name \"Invalid string!\" at \"Version\"",
 		},
 		{
-			name:        "fails if version name has an invalid length",
-			krtYaml:     NewKrtBuilder().WithVersion("this-version-name-length-is-higher-than-the-maximum").Build(),
+			name: "fails if version name has an invalid length",
+			krtYaml: NewKrtBuilder().WithVersion(
+				"this-version-name-length-is-higher-than-the-maximum",
+			).Build(),
 			wantError:   true,
 			errorString: "invalid length \"this-version-name-length-is-higher-than-the-maximum\" at \"Version\" must be lower than 20",
 		},
@@ -62,49 +64,28 @@ func TestYamlFieldsValidator_Run(t *testing.T) {
 		},
 		// Workflow related
 		{
-			name: "fails if krt hasn't required workflow name",
-			krtYaml: NewKrtBuilder().WithWorkflows([]Workflow{
-				{
-					Name:      "",
-					Type:      WorkflowTypeTraining,
-					Processes: []Process{},
-				},
-			}).Build(),
+			name:        "fails if krt hasn't required workflow name",
+			krtYaml:     NewKrtBuilder().WithWorkflowName("").Build(),
 			wantError:   true,
 			errorString: "the field \"Workflows[0].Name\" is required",
 		},
 		{
-			name: "fails if krt workflow name has an invalid format",
-			krtYaml: NewKrtBuilder().WithWorkflows([]Workflow{
-				{
-					Name:      "Invalid string!",
-					Type:      WorkflowTypeTraining,
-					Processes: []Process{},
-				},
-			}).Build(),
+			name:        "fails if krt workflow name has an invalid format",
+			krtYaml:     NewKrtBuilder().WithWorkflowName("Invalid string!").Build(),
 			wantError:   true,
 			errorString: "invalid resource name \"Invalid string!\" at \"Workflows[0].Name\"",
 		},
 		{
 			name: "fails if krt workflow name has an invalid length",
-			krtYaml: NewKrtBuilder().WithWorkflows([]Workflow{
-				{
-					Name:      "this-workflow-name-length-is-higher-than-the-maximum",
-					Type:      WorkflowTypeTraining,
-					Processes: []Process{},
-				},
-			}).Build(),
+			krtYaml: NewKrtBuilder().WithWorkflowName(
+				"this-workflow-name-length-is-higher-than-the-maximum",
+			).Build(),
 			wantError:   true,
 			errorString: "invalid length \"this-workflow-name-length-is-higher-than-the-maximum\" at \"Workflows[0].Name\" must be lower than 20",
 		},
 		{
-			name: "fails if krt hasn't required workflow type",
-			krtYaml: NewKrtBuilder().WithWorkflows([]Workflow{
-				{
-					Name:      "test-workflow",
-					Processes: []Process{},
-				},
-			}).Build(),
+			name:        "fails if krt hasn't required workflow type",
+			krtYaml:     NewKrtBuilder().WithWorkflowType("").Build(),
 			wantError:   true,
 			errorString: "the field \"Workflows[0].Type\" is required",
 		},
@@ -116,63 +97,35 @@ func TestYamlFieldsValidator_Run(t *testing.T) {
 		},
 		// Process related
 		{
-			name: "fails if krt hasn't required process name",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
-				{
-					Name:          "",
-					Type:          ProcessTypeTrigger,
-					Build:         ProcessBuild{Image: "test-trigger-image"},
-					Subscriptions: []string{},
-				},
-			}).Build(),
+			name:        "fails if krt hasn't required process name",
+			krtYaml:     NewKrtBuilder().WithProcessName("", 0).Build(),
 			wantError:   true,
 			errorString: "the field \"Workflows[0].Processes[0].Name\" is required",
 		},
 		{
-			name: "fails if krt process name has an invalid format",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
-				{
-					Name:  "Invalid string!",
-					Type:  ProcessTypeTrigger,
-					Build: ProcessBuild{Image: "test-trigger-image"},
-				},
-			}).Build(),
+			name:        "fails if krt process name has an invalid format",
+			krtYaml:     NewKrtBuilder().WithProcessName("Invalid string!", 0).Build(),
 			wantError:   true,
 			errorString: "invalid resource name \"Invalid string!\" at \"Workflows[0].Processes[0].Name\"",
 		},
 		{
 			name: "fails if krt process name has an invalid length",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
-				{
-					Name:          "this-process-name-length-is-higher-than-the-maximum",
-					Type:          ProcessTypeTrigger,
-					Subscriptions: []string{},
-				},
-			}).Build(),
+			krtYaml: NewKrtBuilder().WithProcessName(
+				"this-process-name-length-is-higher-than-the-maximum",
+				0,
+			).Build(),
 			wantError:   true,
 			errorString: "invalid length \"this-process-name-length-is-higher-than-the-maximum\" at \"Workflows[0].Processes[0].Name\" must be lower than 20",
 		},
 		{
-			name: "fails if krt hasn't required process type",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
-				{
-					Name:          "test-process",
-					Build:         ProcessBuild{Image: "test-trigger-image"},
-					Subscriptions: []string{},
-				},
-			}).Build(),
+			name:        "fails if krt hasn't required process type",
+			krtYaml:     NewKrtBuilder().WithProcessType("", 0).Build(),
 			wantError:   true,
 			errorString: "the field \"Workflows[0].Processes[0].Type\" is required",
 		},
 		{
-			name: "fails if krt hasn't required process subscriptions",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
-				{
-					Name:  "test-process",
-					Type:  ProcessTypeTrigger,
-					Build: ProcessBuild{Image: "test-trigger-image"},
-				},
-			}).Build(),
+			name:        "fails if krt hasn't required process subscriptions",
+			krtYaml:     NewKrtBuilder().WithProcessSubscriptions(nil, 0).Build(),
 			wantError:   true,
 			errorString: "the field \"Workflows[0].Processes[0].Subscriptions\" is required",
 		},

@@ -24,6 +24,13 @@ const (
 	WorkflowTypeServing  WorkflowType = "serving"
 )
 
+var WorkflowTypeMap = map[string]WorkflowType{
+	"data":     WorkflowTypeData,
+	"training": WorkflowTypeTraining,
+	"feedback": WorkflowTypeFeedback,
+	"serving":  WorkflowTypeServing,
+}
+
 type Process struct {
 	Name          string             `yaml:"name" validate:"required,resource-name,lt=20"`
 	Type          ProcessType        `yaml:"type" validate:"required"`
@@ -45,6 +52,12 @@ const (
 	ProcessTypeExit    ProcessType = "exit"
 )
 
+var ProcessTypeMap = map[string]ProcessType{
+	"trigger": ProcessTypeTrigger,
+	"task":    ProcessTypeTask,
+	"exit":    ProcessTypeExit,
+}
+
 type ProcessBuild struct {
 	Image      string `yaml:"image"`
 	Dockerfile string `yaml:"dockerfile"`
@@ -62,6 +75,11 @@ const (
 	ObjectStoreScopeWorkflow ObjectStoreScope = "workflow"
 )
 
+var ObjectStoreScopeMap = map[string]ObjectStoreScope{
+	"product":  ObjectStoreScopeProduct,
+	"workflow": ObjectStoreScopeWorkflow,
+}
+
 type ProcessNetworking struct {
 	TargetPort          int                `yaml:"targetPort"`
 	TargetProtocol      NetworkingProtocol `yaml:"targetProtocol"`
@@ -75,3 +93,8 @@ const (
 	NetworkingProtocolTCP NetworkingProtocol = "TCP"
 	NetworkingProtocolUDP NetworkingProtocol = "UDP"
 )
+
+var NetworkingProtocolMap = map[string]NetworkingProtocol{
+	"TCP": NetworkingProtocolTCP,
+	"UDP": NetworkingProtocolUDP,
+}
