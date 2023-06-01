@@ -1,18 +1,18 @@
 package main
 
 type Krt struct {
-	Name        string            `yaml:"name" validate:"required"`
-	Description string            `yaml:"description" validate:"required"`
-	Version     string            `yaml:"version" validate:"required,resource-name,lt=20"`
-	Config      map[string]string `yaml:"config" validate:"omitempty"`
-	Workflows   []Workflow        `yaml:"workflows" validate:"required,dive"`
+	Name        string            `yaml:"name"`
+	Description string            `yaml:"description"`
+	Version     string            `yaml:"version"`
+	Config      map[string]string `yaml:"config"`
+	Workflows   []Workflow        `yaml:"workflows"`
 }
 
 type Workflow struct {
-	Name      string            `yaml:"name" validate:"required,resource-name,lt=20"`
-	Type      WorkflowType      `yaml:"type" validate:"required"`
-	Config    map[string]string `yaml:"config" validate:"omitempty"`
-	Processes []Process         `yaml:"processes" validate:"required,dive"`
+	Name      string            `yaml:"name"`
+	Type      WorkflowType      `yaml:"type"`
+	Config    map[string]string `yaml:"config"`
+	Processes []Process         `yaml:"processes"`
 }
 
 type WorkflowType string
@@ -32,16 +32,16 @@ var WorkflowTypeMap = map[string]WorkflowType{
 }
 
 type Process struct {
-	Name          string             `yaml:"name" validate:"required,resource-name,lt=20"`
-	Type          ProcessType        `yaml:"type" validate:"required"`
-	Build         ProcessBuild       `yaml:"build" validate:"required"`
-	Replicas      int                `yaml:"replicas" validate:"omitempty"`
-	GPU           bool               `yaml:"gpu" validate:"omitempty"`
-	Config        map[string]string  `yaml:"config" validate:"omitempty"`
-	ObjectStore   ProcessObjectStore `yaml:"objectStore" validate:"omitempty"`
-	Secrets       []string           `yaml:"secrets" validate:"omitempty"`
-	Subscriptions []string           `yaml:"subscriptions" validate:"required"`
-	Networking    ProcessNetworking  `yaml:"networking" validate:"omitempty"`
+	Name          string             `yaml:"name"`
+	Type          ProcessType        `yaml:"type"`
+	Build         ProcessBuild       `yaml:"build"`
+	Replicas      int                `yaml:"replicas"`
+	GPU           bool               `yaml:"gpu"`
+	Config        map[string]string  `yaml:"config"`
+	ObjectStore   ProcessObjectStore `yaml:"objectStore"`
+	Secrets       []string           `yaml:"secrets"`
+	Subscriptions []string           `yaml:"subscriptions"`
+	Networking    ProcessNetworking  `yaml:"networking"`
 }
 
 type ProcessType string
