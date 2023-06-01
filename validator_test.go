@@ -26,7 +26,7 @@ func TestKrtValidator_Run(t *testing.T) {
 		{
 			name: "fails if process name is not unique in workflow",
 			krtYaml: NewKrtBuilder().
-				WithProcessesForWorkflow([]Process{
+				WithProcesses([]Process{
 					{
 						Name:  "test-trigger",
 						Type:  ProcessTypeTrigger,
@@ -43,7 +43,7 @@ func TestKrtValidator_Run(t *testing.T) {
 							"test-exit",
 						},
 					},
-				}, 0).Build(),
+				}).Build(),
 			wantError:   true,
 			errorString: ErrRepeatedProcessName.Error(),
 		},

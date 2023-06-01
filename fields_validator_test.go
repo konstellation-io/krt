@@ -110,69 +110,69 @@ func TestYamlFieldsValidator_Run(t *testing.T) {
 		},
 		{
 			name:        "fails if krt hasn't required processes declared in a workflow",
-			krtYaml:     NewKrtBuilder().WithProcessesForWorkflow(nil, 0).Build(),
+			krtYaml:     NewKrtBuilder().WithProcesses(nil).Build(),
 			wantError:   true,
 			errorString: "the field \"Workflows[0].Processes\" is required",
 		},
 		// Process related
 		{
 			name: "fails if krt hasn't required process name",
-			krtYaml: NewKrtBuilder().WithProcessesForWorkflow([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
 				{
 					Name:          "",
 					Type:          ProcessTypeTrigger,
 					Build:         ProcessBuild{Image: "test-trigger-image"},
 					Subscriptions: []string{},
 				},
-			}, 0).Build(),
+			}).Build(),
 			wantError:   true,
 			errorString: "the field \"Workflows[0].Processes[0].Name\" is required",
 		},
 		{
 			name: "fails if krt process name has an invalid format",
-			krtYaml: NewKrtBuilder().WithProcessesForWorkflow([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
 				{
 					Name:  "Invalid string!",
 					Type:  ProcessTypeTrigger,
 					Build: ProcessBuild{Image: "test-trigger-image"},
 				},
-			}, 0).Build(),
+			}).Build(),
 			wantError:   true,
 			errorString: "invalid resource name \"Invalid string!\" at \"Workflows[0].Processes[0].Name\"",
 		},
 		{
 			name: "fails if krt process name has an invalid length",
-			krtYaml: NewKrtBuilder().WithProcessesForWorkflow([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
 				{
 					Name:          "this-process-name-length-is-higher-than-the-maximum",
 					Type:          ProcessTypeTrigger,
 					Subscriptions: []string{},
 				},
-			}, 0).Build(),
+			}).Build(),
 			wantError:   true,
 			errorString: "invalid length \"this-process-name-length-is-higher-than-the-maximum\" at \"Workflows[0].Processes[0].Name\" must be lower than 20",
 		},
 		{
 			name: "fails if krt hasn't required process type",
-			krtYaml: NewKrtBuilder().WithProcessesForWorkflow([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
 				{
 					Name:          "test-process",
 					Build:         ProcessBuild{Image: "test-trigger-image"},
 					Subscriptions: []string{},
 				},
-			}, 0).Build(),
+			}).Build(),
 			wantError:   true,
 			errorString: "the field \"Workflows[0].Processes[0].Type\" is required",
 		},
 		{
 			name: "fails if krt hasn't required process subscriptions",
-			krtYaml: NewKrtBuilder().WithProcessesForWorkflow([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
 				{
 					Name:  "test-process",
 					Type:  ProcessTypeTrigger,
 					Build: ProcessBuild{Image: "test-trigger-image"},
 				},
-			}, 0).Build(),
+			}).Build(),
 			wantError:   true,
 			errorString: "the field \"Workflows[0].Processes[0].Subscriptions\" is required",
 		},

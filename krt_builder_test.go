@@ -65,8 +65,8 @@ func (k *KrtBuilder) WithWorkflows(workflows []Workflow) *KrtBuilder {
 	return k
 }
 
-func (k *KrtBuilder) WithProcessesForWorkflow(processes []Process, workflowIdx int) *KrtBuilder {
-	k.krtYaml.Workflows[workflowIdx].Processes = processes
+func (k *KrtBuilder) WithProcesses(processes []Process) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes = processes
 	return k
 }
 
