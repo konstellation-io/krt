@@ -25,10 +25,10 @@ const (
 )
 
 var WorkflowTypeMap = map[string]WorkflowType{
-	"data":     WorkflowTypeData,
-	"training": WorkflowTypeTraining,
-	"feedback": WorkflowTypeFeedback,
-	"serving":  WorkflowTypeServing,
+	string(WorkflowTypeData):     WorkflowTypeData,
+	string(WorkflowTypeTraining): WorkflowTypeTraining,
+	string(WorkflowTypeFeedback): WorkflowTypeFeedback,
+	string(WorkflowTypeServing):  WorkflowTypeServing,
 }
 
 type Process struct {
@@ -95,6 +95,6 @@ const (
 )
 
 var NetworkingProtocolMap = map[string]NetworkingProtocol{
-	"TCP": NetworkingProtocolTCP,
-	"UDP": NetworkingProtocolUDP,
+	string(NetworkingProtocolTCP): NetworkingProtocolTCP,
+	string(NetworkingProtocolUDP): NetworkingProtocolUDP,
 }
