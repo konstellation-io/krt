@@ -108,6 +108,34 @@ func TestKrtValidator(t *testing.T) {
 			errorType:   errors.ErrMissingRequiredField,
 			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].subscriptions").Error(),
 		},
+		{
+			name: "fails if krt hasn't required networking target port if declared",
+			krtYaml: NewKrtBuilder().WithProcessNetworking(
+				ProcessNetworking{
+					TargetProtocol:      "UDP",
+					DestinationPort:     9000,
+					DestinationProtocol: "UDP",
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].networking.targetPort").Error(),
+		},
+		{
+			name: "fails if krt hasn't required networking destination port if declared",
+			krtYaml: NewKrtBuilder().WithProcessNetworking(
+				ProcessNetworking{
+					TargetPort:          9000,
+					TargetProtocol:      "UDP",
+					DestinationProtocol: "UDP",
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].networking.destinationPort").Error(),
+		},
 	}
 
 	invalidNameTests := []test{
@@ -208,6 +236,36 @@ func TestKrtValidator(t *testing.T) {
 			wantError:   true,
 			errorType:   errors.ErrInvalidProcessObjectStoreScope,
 			errorString: errors.InvalidProcessObjectStoreScopeError("krt.workflows[0].processes[0].objectStore.scope").Error(),
+		},
+		{
+			name: "fails if krt hasn't a valid process networking target protocol",
+			krtYaml: NewKrtBuilder().WithProcessNetworking(
+				ProcessNetworking{
+					TargetPort:          9000,
+					TargetProtocol:      invalidName,
+					DestinationPort:     9000,
+					DestinationProtocol: "UDP",
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidNetworkingProtocol,
+			errorString: errors.InvalidNetworkingProtocolError("krt.workflows[0].processes[0].networking.targetProtocol").Error(),
+		},
+		{
+			name: "fails if krt hasn't a valid process networking destination protocol",
+			krtYaml: NewKrtBuilder().WithProcessNetworking(
+				ProcessNetworking{
+					TargetPort:          9000,
+					TargetProtocol:      "UDP",
+					DestinationPort:     9000,
+					DestinationProtocol: invalidName,
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidNetworkingProtocol,
+			errorString: errors.InvalidNetworkingProtocolError("krt.workflows[0].processes[0].networking.destinationProtocol").Error(),
 		},
 	}
 

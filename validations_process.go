@@ -76,9 +76,29 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 		return nil
 	}
 
+	var totalError error
 	if process.Networking.TargetPort == 0 {
-		return errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetPort", workflowIdx, processIdx))
+		totalError = errors.MergeErrors(totalError, errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetPort", workflowIdx, processIdx)))
 	}
 
-	return nil
+	if _, ok := NetworkingProtocolMap[string(process.Networking.TargetProtocol)]; !ok {
+		totalError = errors.MergeErrors(totalError, errors.InvalidNetworkingProtocolError(fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetProtocol", workflowIdx, processIdx)))
+	}
+
+	if process.Networking.DestinationPort == 0 {
+		totalError = errors.MergeErrors(totalError, errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes[%d].networking.destinationPort", workflowIdx, processIdx)))
+	}
+
+	if _, ok := NetworkingProtocolMap[string(process.Networking.DestinationProtocol)]; !ok {
+		totalError = errors.MergeErrors(totalError, errors.InvalidNetworkingProtocolError(fmt.Sprintf("krt.workflows[%d].processes[%d].networking.destinationProtocol", workflowIdx, processIdx)))
+	}
+
+	return totalError
 }
+
+// TODO:
+// Subscriptions validation logic
+// Github actions
+// Sonarcloud config
+// Parse methods
+// Tests with yaml files

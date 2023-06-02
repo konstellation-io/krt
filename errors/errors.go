@@ -26,6 +26,7 @@ var ErrInvalidWorkflowType = errors.New("invalid workflow type, must be either '
 var ErrInvalidProcessType = errors.New("invalid process type, must be either 'trigger', 'task' or 'exit'")
 var ErrInvalidProcessBuild = errors.New("invalid process build, must have either 'image' or 'dockerfile'")
 var ErrInvalidProcessObjectStoreScope = errors.New("invalid process object store scope, must be either 'product' or 'workflow'")
+var ErrInvalidNetworkingProtocol = errors.New("invalid networking protocol, must be either 'UDP' or 'TCP'")
 
 func MissingRequiredFieldError(field string) error {
 	return fmt.Errorf("%w: %s", ErrMissingRequiredField, field)
@@ -53,4 +54,8 @@ func InvalidProcessBuildError(field string) error {
 
 func InvalidProcessObjectStoreScopeError(field string) error {
 	return fmt.Errorf("%w: %s", ErrInvalidProcessObjectStoreScope, field)
+}
+
+func InvalidNetworkingProtocolError(field string) error {
+	return fmt.Errorf("%w: %s", ErrInvalidNetworkingProtocol, field)
 }
