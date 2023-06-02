@@ -5,6 +5,20 @@ import (
 	"fmt"
 )
 
+func MergeErrors(err1, err2 error) error {
+	if err1 == nil && err2 == nil {
+		return nil
+	}
+	if err1 == nil && err2 != nil {
+		return err2
+	}
+	if err1 != nil && err2 == nil {
+		return err1
+	}
+
+	return fmt.Errorf("%w\n%w", err1, err2)
+}
+
 var ErrMissingRequiredField = errors.New("missing required field")
 var ErrInvalidFieldName = errors.New("invalid field name; only numbers, hyphens and lowercase letters are allowed")
 var ErrInvalidLengthField = errors.New("field length is higher than the maximum")

@@ -9,43 +9,31 @@ import (
 
 const maxFieldNameLength = 20
 
-func (krt *Krt) Validate() []error {
-	var validationErrors []error
+func (krt *Krt) Validate() error {
+	var totalError error
 
 	err := krt.validateName()
-	if err != nil {
-		validationErrors = append(validationErrors, err)
-	}
+	totalError = errors.MergeErrors(totalError, err)
 
 	err = krt.validateDescription()
-	if err != nil {
-		validationErrors = append(validationErrors, err)
-	}
+	totalError = errors.MergeErrors(totalError, err)
 
 	err = krt.validateVersion()
-	if err != nil {
-		validationErrors = append(validationErrors, err)
-	}
+	totalError = errors.MergeErrors(totalError, err)
 
 	if len(krt.Workflows) == 0 {
-		validationErrors = append(
-			validationErrors,
+		totalError = errors.MergeErrors(
+			totalError,
 			errors.MissingRequiredFieldError("krt.workflows"),
 		)
 	} else {
 		for idx, workflow := range krt.Workflows {
-			errs := workflow.Validate(idx)
-			if errs != nil {
-				validationErrors = append(validationErrors, errs...)
-			}
+			err := workflow.Validate(idx)
+			totalError = errors.MergeErrors(totalError, err)
 		}
 	}
 
-	if len(validationErrors) > 0 {
-		return validationErrors
-	}
-
-	return nil
+	return totalError
 }
 
 func (krt *Krt) validateName() error {
@@ -63,38 +51,28 @@ func (krt *Krt) validateVersion() error {
 	return validateName(krt.Version, "krt.version")
 }
 
-func (workflow *Workflow) Validate(workflowIdx int) []error {
-	var validationErrors []error
+func (workflow *Workflow) Validate(workflowIdx int) error {
+	var totalError error
 
 	err := workflow.validateName(workflowIdx)
-	if err != nil {
-		validationErrors = append(validationErrors, err)
-	}
+	totalError = errors.MergeErrors(totalError, err)
 
 	err = workflow.validateType(workflowIdx)
-	if err != nil {
-		validationErrors = append(validationErrors, err)
-	}
+	totalError = errors.MergeErrors(totalError, err)
 
 	if len(workflow.Processes) == 0 {
-		validationErrors = append(
-			validationErrors,
+		totalError = errors.MergeErrors(
+			totalError,
 			errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes", workflowIdx)),
 		)
 	} else {
 		for idx, process := range workflow.Processes {
-			errs := process.Validate(workflowIdx, idx)
-			if errs != nil {
-				validationErrors = append(validationErrors, errs...)
-			}
+			err := process.Validate(workflowIdx, idx)
+			totalError = errors.MergeErrors(totalError, err)
 		}
 	}
 
-	if len(validationErrors) > 0 {
-		return validationErrors
-	}
-
-	return nil
+	return totalError
 }
 
 func (workflow *Workflow) validateName(workflowIdx int) error {
@@ -108,63 +86,41 @@ func (workflow *Workflow) validateType(workflowIdx int) error {
 	return nil
 }
 
-func (process *Process) Validate(workflowIdx, processIdx int) []error {
-	var validationErrors []error
+func (process *Process) Validate(workflowIdx, processIdx int) error {
+	var totalError error
 
 	err := process.validateName(workflowIdx, processIdx)
-	if err != nil {
-		validationErrors = append(validationErrors, err)
-	}
+	totalError = errors.MergeErrors(totalError, err)
 
 	err = process.validateType(workflowIdx, processIdx)
-	if err != nil {
-		validationErrors = append(validationErrors, err)
-	}
+	totalError = errors.MergeErrors(totalError, err)
 
 	// err = process.validateBuild()
-	// if err != nil {
-	// 	validationErrors = append(validationErrors, err)
-	// }
+	// 	totalError = errors.MergeErrors(totalError, err)/ }
 
 	// err = process.validateReplicas()
-	// if err != nil {
-	// 	validationErrors = append(validationErrors, err)
-	// }
+	// 	totalError = errors.MergeErrors(totalError, err)/ }
 
 	// err = process.validateGPU()
-	// if err != nil {
-	// 	validationErrors = append(validationErrors, err)
-	// }
+	// 	totalError = errors.MergeErrors(totalError, err)/ }
 
 	// err = process.validateObjectStore()
-	// if err != nil {
-	// 	validationErrors = append(validationErrors, err)
-	// }
+	// 	totalError = errors.MergeErrors(totalError, err)/ }
 
 	// err = process.validateSecrets()
-	// if err != nil {
-	// 	validationErrors = append(validationErrors, err)
-	// }
+	// 	totalError = errors.MergeErrors(totalError, err)/ }
 
 	if process.Subscriptions == nil || len(process.Subscriptions) == 0 {
-		validationErrors = append(validationErrors, errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions", workflowIdx, processIdx)))
+		totalError = errors.MergeErrors(totalError, errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions", workflowIdx, processIdx)))
 	}
 
 	// err = process.validateSubscriptions()
-	// if err != nil {
-	// 	validationErrors = append(validationErrors, err)
-	// }
+	// 	totalError = errors.MergeErrors(totalError, err)/ }
 
 	// err = process.validateNetworking()
-	// if err != nil {
-	// 	validationErrors = append(validationErrors, err)
-	// }
+	// 	totalError = errors.MergeErrors(totalError, err)/ }
 
-	if len(validationErrors) > 0 {
-		return validationErrors
-	}
-
-	return nil
+	return totalError
 }
 
 func (process *Process) validateName(workflowIdx, processIdx int) error {

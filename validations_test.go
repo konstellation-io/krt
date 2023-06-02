@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/konstellation-io/krt/errors"
 )
@@ -146,13 +145,11 @@ func TestKrtValidator(t *testing.T) {
 
 	for _, tc := range allTests {
 		t.Run(tc.name, func(t *testing.T) {
-			errs := tc.krtYaml.Validate()
+			err := tc.krtYaml.Validate()
 			if tc.wantError {
-				require.Len(t, errs, 1)
-				assert.Error(t, errs[0])
-				assert.True(t, errorUtils.Is(errs[0], tc.errorType))
+				assert.True(t, errorUtils.Is(err, tc.errorType))
 			} else {
-				assert.Empty(t, errs)
+				assert.Empty(t, err)
 			}
 		})
 	}
