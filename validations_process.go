@@ -18,14 +18,8 @@ func (process *Process) Validate(workflowIdx, processIdx int) error {
 	err = process.validateBuild(workflowIdx, processIdx)
 	totalError = errors.MergeErrors(totalError, err)
 
-	// err = process.validateReplicas()
-	// 	totalError = errors.MergeErrors(totalError, err)/ }
-
-	// err = process.validateGPU()
-	// 	totalError = errors.MergeErrors(totalError, err)/ }
-
-	// err = process.validateObjectStore()
-	// 	totalError = errors.MergeErrors(totalError, err)/ }
+	err = process.validateObjectStore(workflowIdx, processIdx)
+	totalError = errors.MergeErrors(totalError, err)
 
 	// err = process.validateSecrets()
 	// 	totalError = errors.MergeErrors(totalError, err)/ }
@@ -59,4 +53,17 @@ func (process *Process) validateBuild(workflowIdx, processIdx int) error {
 		return errors.InvalidProcessBuildError(fmt.Sprintf("krt.workflows[%d].processes[%d].build", workflowIdx, processIdx))
 	}
 	return nil
+}
+
+func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
+	EmptyObjectStore := ProcessObjectStore{}
+	if process.ObjectStore == EmptyObjectStore {
+		return nil
+	}
+
+	if process.ObjectStore.Name == "" {
+		return errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes[%d].objectStore.name", workflowIdx, processIdx))
+	}
+
+	return validateName(process.ObjectStore.Name, fmt.Sprintf("krt.workflows[%d].processes[%d].objectStore.name", workflowIdx, processIdx))
 }

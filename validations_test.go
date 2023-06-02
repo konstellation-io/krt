@@ -11,6 +11,9 @@ import (
 	"github.com/konstellation-io/krt/errors"
 )
 
+const largeName = "this-name-is-higher-than-the-maximum-allowed"
+const invalidName = "Invalid string!"
+
 type test struct {
 	name        string
 	krtYaml     *Krt
@@ -86,6 +89,19 @@ func TestKrtValidator(t *testing.T) {
 			errorString: errors.InvalidProcessBuildError("krt.workflows[0].processes[0].build").Error(),
 		},
 		{
+			name: "fails if krt hasn't required object store name if declared",
+			krtYaml: NewKrtBuilder().WithProcessObjectStore(
+				ProcessObjectStore{
+					Name:  "",
+					Scope: ObjectStoreScopeProduct,
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].objectStore.name").Error(),
+		},
+		{
 			name:        "fails if krt hasn't required process subscriptions",
 			krtYaml:     NewKrtBuilder().WithProcessSubscriptions(nil, 0).Build(),
 			wantError:   true,
@@ -97,50 +113,71 @@ func TestKrtValidator(t *testing.T) {
 	invalidNameTests := []test{
 		{
 			name:        "fails if version name has an invalid format",
-			krtYaml:     NewKrtBuilder().WithVersion("Invalid string!").Build(),
+			krtYaml:     NewKrtBuilder().WithVersion(invalidName).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidFieldName,
 			errorString: errors.InvalidFieldNameError("krt.version").Error(),
 		},
 		{
 			name:        "fails if version name has an invalid length",
-			krtYaml:     NewKrtBuilder().WithVersion("this-version-name-length-is-higher-than-the-maximum").Build(),
+			krtYaml:     NewKrtBuilder().WithVersion(largeName).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidLengthField,
 			errorString: errors.InvalidLengthFieldError("krt.version", maxFieldNameLength).Error(),
 		},
 		{
 			name:        "fails if krt workflow name has an invalid format",
-			krtYaml:     NewKrtBuilder().WithWorkflowName("Invalid string!").Build(),
+			krtYaml:     NewKrtBuilder().WithWorkflowName(invalidName).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidFieldName,
 			errorString: errors.InvalidFieldNameError("krt.workflows[0].name").Error(),
 		},
 		{
-			name: "fails if krt workflow name has an invalid length",
-			krtYaml: NewKrtBuilder().WithWorkflowName(
-				"this-workflow-name-length-is-higher-than-the-maximum",
-			).Build(),
+			name:        "fails if krt workflow name has an invalid length",
+			krtYaml:     NewKrtBuilder().WithWorkflowName(largeName).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidLengthField,
 			errorString: errors.InvalidLengthFieldError("krt.workflows[0].name", maxFieldNameLength).Error(),
 		},
 		{
 			name:        "fails if krt process name has an invalid format",
-			krtYaml:     NewKrtBuilder().WithProcessName("Invalid string!", 0).Build(),
+			krtYaml:     NewKrtBuilder().WithProcessName(invalidName, 0).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidFieldName,
 			errorString: errors.InvalidFieldNameError("krt.workflows[0].processes[0].name").Error(),
 		},
 		{
-			name: "fails if krt process name has an invalid length",
-			krtYaml: NewKrtBuilder().WithProcessName(
-				"this-process-name-length-is-higher-than-the-maximum",
+			name:        "fails if krt process name has an invalid length",
+			krtYaml:     NewKrtBuilder().WithProcessName(largeName, 0).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidLengthField,
+			errorString: errors.InvalidLengthFieldError("krt.workflows[0].processes[0].name", maxFieldNameLength).Error(),
+		},
+		{
+			name: "fails if krt process object store name has an invalid format",
+			krtYaml: NewKrtBuilder().WithProcessObjectStore(
+				ProcessObjectStore{
+					Name:  invalidName,
+					Scope: ObjectStoreScopeProduct,
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidFieldName,
+			errorString: errors.InvalidFieldNameError("krt.workflows[0].processes[0].objectStore.name").Error(),
+		},
+		{
+			name: "fails if krt process object store name has an invalid length",
+			krtYaml: NewKrtBuilder().WithProcessObjectStore(
+				ProcessObjectStore{
+					Name:  largeName,
+					Scope: ObjectStoreScopeProduct,
+				},
 				0,
 			).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidLengthField,
-			errorString: errors.InvalidLengthFieldError("krt.workflows[0].processes[0].name", maxFieldNameLength).Error(),
+			errorString: errors.InvalidLengthFieldError("krt.workflows[0].processes[0].objectStore.name", maxFieldNameLength).Error(),
 		},
 	}
 

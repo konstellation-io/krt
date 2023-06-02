@@ -95,8 +95,38 @@ func (k *KrtBuilder) WithProcessBuild(build ProcessBuild, processIdx int) *KrtBu
 	return k
 }
 
+func (k *KrtBuilder) WithProcessReplicas(replicas int, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Replicas = replicas
+	return k
+}
+
+func (k *KrtBuilder) WithProcessGPU(gpu bool, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].GPU = gpu
+	return k
+}
+
+func (k *KrtBuilder) WithProcessConfig(config map[string]string, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Config = config
+	return k
+}
+
+func (k *KrtBuilder) WithProcessObjectStore(objectStore ProcessObjectStore, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].ObjectStore = objectStore
+	return k
+}
+
+func (k *KrtBuilder) WithProcessSecrets(secrets []string, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Secrets = secrets
+	return k
+}
+
 func (k *KrtBuilder) WithProcessSubscriptions(subscriptions []string, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Subscriptions = subscriptions
+	return k
+}
+
+func (k *KrtBuilder) WithProcessNetworking(networking ProcessNetworking, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Networking = networking
 	return k
 }
 
