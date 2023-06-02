@@ -15,8 +15,8 @@ func (process *Process) Validate(workflowIdx, processIdx int) error {
 	err = process.validateType(workflowIdx, processIdx)
 	totalError = errors.MergeErrors(totalError, err)
 
-	// err = process.validateBuild()
-	// 	totalError = errors.MergeErrors(totalError, err)/ }
+	err = process.validateBuild(workflowIdx, processIdx)
+	totalError = errors.MergeErrors(totalError, err)
 
 	// err = process.validateReplicas()
 	// 	totalError = errors.MergeErrors(totalError, err)/ }
@@ -50,6 +50,13 @@ func (process *Process) validateName(workflowIdx, processIdx int) error {
 func (process *Process) validateType(workflowIdx, processIdx int) error {
 	if _, ok := ProcessTypeMap[string(process.Type)]; !ok {
 		return errors.InvalidProcessTypeError(fmt.Sprintf("krt.workflows[%d].processes[%d].type", workflowIdx, processIdx))
+	}
+	return nil
+}
+
+func (process *Process) validateBuild(workflowIdx, processIdx int) error {
+	if process.Build.Dockerfile == "" && process.Build.Image == "" {
+		return errors.InvalidProcessBuildError(fmt.Sprintf("krt.workflows[%d].processes[%d].build", workflowIdx, processIdx))
 	}
 	return nil
 }

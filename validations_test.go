@@ -79,6 +79,13 @@ func TestKrtValidator(t *testing.T) {
 			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].name").Error(),
 		},
 		{
+			name:        "fails if krt hasn't required process build",
+			krtYaml:     NewKrtBuilder().WithProcessBuild(ProcessBuild{}, 0).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidProcessBuild,
+			errorString: errors.InvalidProcessBuildError("krt.workflows[0].processes[0].build").Error(),
+		},
+		{
 			name:        "fails if krt hasn't required process subscriptions",
 			krtYaml:     NewKrtBuilder().WithProcessSubscriptions(nil, 0).Build(),
 			wantError:   true,

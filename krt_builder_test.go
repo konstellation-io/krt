@@ -90,6 +90,11 @@ func (k *KrtBuilder) WithProcessType(processType ProcessType, processIdx int) *K
 	return k
 }
 
+func (k *KrtBuilder) WithProcessBuild(build ProcessBuild, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Build = build
+	return k
+}
+
 func (k *KrtBuilder) WithProcessSubscriptions(subscriptions []string, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Subscriptions = subscriptions
 	return k

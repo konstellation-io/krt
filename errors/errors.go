@@ -24,6 +24,7 @@ var ErrInvalidFieldName = errors.New("invalid field name; only numbers, hyphens 
 var ErrInvalidLengthField = errors.New("field length is higher than the maximum")
 var ErrInvalidWorkflowType = errors.New("invalid workflow type, must be either 'data', 'training' 'feedback' or 'serving'")
 var ErrInvalidProcessType = errors.New("invalid process type, must be either 'trigger', 'task' or 'exit'")
+var ErrInvalidProcessBuild = errors.New("invalid process build, must have either 'image' or 'dockerfile'")
 
 func MissingRequiredFieldError(field string) error {
 	return fmt.Errorf("%w: %s", ErrMissingRequiredField, field)
@@ -43,4 +44,8 @@ func InvalidWorkflowTypeError(field string) error {
 
 func InvalidProcessTypeError(field string) error {
 	return fmt.Errorf("%w: %s", ErrInvalidProcessType, field)
+}
+
+func InvalidProcessBuildError(field string) error {
+	return fmt.Errorf("%w: %s", ErrInvalidProcessBuild, field)
 }

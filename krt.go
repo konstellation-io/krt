@@ -53,9 +53,9 @@ const (
 )
 
 var ProcessTypeMap = map[string]ProcessType{
-	"trigger": ProcessTypeTrigger,
-	"task":    ProcessTypeTask,
-	"exit":    ProcessTypeExit,
+	string(ProcessTypeTrigger): ProcessTypeTrigger,
+	string(ProcessTypeTask):    ProcessTypeTask,
+	string(ProcessTypeExit):    ProcessTypeExit,
 }
 
 type ProcessBuild struct {
@@ -76,8 +76,8 @@ const (
 )
 
 var ObjectStoreScopeMap = map[string]ObjectStoreScope{
-	"product":  ObjectStoreScopeProduct,
-	"workflow": ObjectStoreScopeWorkflow,
+	string(ObjectStoreScopeProduct):  ObjectStoreScopeProduct,
+	string(ObjectStoreScopeWorkflow): ObjectStoreScopeWorkflow,
 }
 
 type ProcessNetworking struct {
