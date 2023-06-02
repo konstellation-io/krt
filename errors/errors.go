@@ -25,6 +25,7 @@ var ErrInvalidLengthField = errors.New("field length is higher than the maximum"
 var ErrInvalidWorkflowType = errors.New("invalid workflow type, must be either 'data', 'training' 'feedback' or 'serving'")
 var ErrInvalidProcessType = errors.New("invalid process type, must be either 'trigger', 'task' or 'exit'")
 var ErrInvalidProcessBuild = errors.New("invalid process build, must have either 'image' or 'dockerfile'")
+var ErrInvalidProcessObjectStoreScope = errors.New("invalid process object store scope, must be either 'product' or 'workflow'")
 
 func MissingRequiredFieldError(field string) error {
 	return fmt.Errorf("%w: %s", ErrMissingRequiredField, field)
@@ -48,4 +49,8 @@ func InvalidProcessTypeError(field string) error {
 
 func InvalidProcessBuildError(field string) error {
 	return fmt.Errorf("%w: %s", ErrInvalidProcessBuild, field)
+}
+
+func InvalidProcessObjectStoreScopeError(field string) error {
+	return fmt.Errorf("%w: %s", ErrInvalidProcessObjectStoreScope, field)
 }

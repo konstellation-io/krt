@@ -184,17 +184,30 @@ func TestKrtValidator(t *testing.T) {
 	invalidTypeTests := []test{
 		{
 			name:        "fails if krt hasn't a valid workflow type",
-			krtYaml:     NewKrtBuilder().WithWorkflowType("").Build(),
+			krtYaml:     NewKrtBuilder().WithWorkflowType("invalid").Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidWorkflowType,
 			errorString: errors.InvalidWorkflowTypeError("krt.workflows[0].type").Error(),
 		},
 		{
 			name:        "fails if krt hasn't a valid process type",
-			krtYaml:     NewKrtBuilder().WithProcessType("", 0).Build(),
+			krtYaml:     NewKrtBuilder().WithProcessType("invalid", 0).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidProcessType,
 			errorString: errors.InvalidProcessTypeError("krt.workflows[0].processes[0].type").Error(),
+		},
+		{
+			name: "fails if krt hasn't a valid process object store scope",
+			krtYaml: NewKrtBuilder().WithProcessObjectStore(
+				ProcessObjectStore{
+					Name:  "test",
+					Scope: "invalid",
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidProcessObjectStoreScope,
+			errorString: errors.InvalidProcessObjectStoreScopeError("krt.workflows[0].processes[0].objectStore.scope").Error(),
 		},
 	}
 
