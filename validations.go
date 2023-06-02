@@ -27,8 +27,6 @@ func (krt *Krt) Validate() []error {
 		validationErrors = append(validationErrors, err)
 	}
 
-	// validate config?
-
 	if len(krt.Workflows) == 0 {
 		validationErrors = append(
 			validationErrors,
@@ -77,8 +75,6 @@ func (workflow *Workflow) Validate(workflowIdx int) []error {
 	if err != nil {
 		validationErrors = append(validationErrors, err)
 	}
-
-	// validate config?
 
 	if len(workflow.Processes) == 0 {
 		validationErrors = append(
@@ -139,8 +135,6 @@ func (process *Process) Validate(workflowIdx, processIdx int) []error {
 	// if err != nil {
 	// 	validationErrors = append(validationErrors, err)
 	// }
-
-	// validate config?
 
 	// err = process.validateObjectStore()
 	// if err != nil {

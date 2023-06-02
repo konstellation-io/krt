@@ -12,20 +12,23 @@ import (
 	"github.com/konstellation-io/krt/errors"
 )
 
+type test struct {
+	name      string
+	krtYaml   *Krt
+	wantError bool
+	errorType error
+}
+
 func TestKrtValidator(t *testing.T) {
-	tests := []struct {
-		name      string
-		krtYaml   *Krt
-		wantError bool
-		errorType error
-	}{
-		// Correct Build
+	correctBuildTests := []test{
 		{
 			name:      "KRT YAML values successfully validated",
 			krtYaml:   NewKrtBuilder().Build(),
 			wantError: false,
 		},
-		// Version related
+	}
+
+	requiredFieldsTests := []test{
 		{
 			name:      "fails if krt hasn't required field name",
 			krtYaml:   NewKrtBuilder().WithName("").Build(),
@@ -45,6 +48,39 @@ func TestKrtValidator(t *testing.T) {
 			errorType: errors.ErrMissingRequiredField,
 		},
 		{
+			name:      "fails if krt hasn't required workflows declared",
+			krtYaml:   NewKrtBuilder().WithWorkflows(nil).Build(),
+			wantError: true,
+			errorType: errors.ErrMissingRequiredField,
+		},
+		{
+			name:      "fails if krt hasn't required workflow name",
+			krtYaml:   NewKrtBuilder().WithWorkflowName("").Build(),
+			wantError: true,
+			errorType: errors.ErrMissingRequiredField,
+		},
+		{
+			name:      "fails if krt hasn't required processes declared in a workflow",
+			krtYaml:   NewKrtBuilder().WithProcesses(nil).Build(),
+			wantError: true,
+			errorType: errors.ErrMissingRequiredField,
+		},
+		{
+			name:      "fails if krt hasn't required process name",
+			krtYaml:   NewKrtBuilder().WithProcessName("", 0).Build(),
+			wantError: true,
+			errorType: errors.ErrMissingRequiredField,
+		},
+		{
+			name:      "fails if krt hasn't required process subscriptions",
+			krtYaml:   NewKrtBuilder().WithProcessSubscriptions(nil, 0).Build(),
+			wantError: true,
+			errorType: errors.ErrMissingRequiredField,
+		},
+	}
+
+	invalidNameTests := []test{
+		{
 			name:      "fails if version name has an invalid format",
 			krtYaml:   NewKrtBuilder().WithVersion("Invalid string!").Build(),
 			wantError: true,
@@ -55,19 +91,6 @@ func TestKrtValidator(t *testing.T) {
 			krtYaml:   NewKrtBuilder().WithVersion("this-version-name-length-is-higher-than-the-maximum").Build(),
 			wantError: true,
 			errorType: errors.ErrInvalidLengthField,
-		},
-		{
-			name:      "fails if krt hasn't required workflows declared",
-			krtYaml:   NewKrtBuilder().WithWorkflows(nil).Build(),
-			wantError: true,
-			errorType: errors.ErrMissingRequiredField,
-		},
-		// Workflow related
-		{
-			name:      "fails if krt hasn't required workflow name",
-			krtYaml:   NewKrtBuilder().WithWorkflowName("").Build(),
-			wantError: true,
-			errorType: errors.ErrMissingRequiredField,
 		},
 		{
 			name:      "fails if krt workflow name has an invalid format",
@@ -84,25 +107,6 @@ func TestKrtValidator(t *testing.T) {
 			errorType: errors.ErrInvalidLengthField,
 		},
 		{
-			name:      "fails if krt hasn't a valid workflow type",
-			krtYaml:   NewKrtBuilder().WithWorkflowType("").Build(),
-			wantError: true,
-			errorType: errors.ErrInvalidWorkflowType,
-		},
-		{
-			name:      "fails if krt hasn't required processes declared in a workflow",
-			krtYaml:   NewKrtBuilder().WithProcesses(nil).Build(),
-			wantError: true,
-			errorType: errors.ErrMissingRequiredField,
-		},
-		// Process related
-		{
-			name:      "fails if krt hasn't required process name",
-			krtYaml:   NewKrtBuilder().WithProcessName("", 0).Build(),
-			wantError: true,
-			errorType: errors.ErrMissingRequiredField,
-		},
-		{
 			name:      "fails if krt process name has an invalid format",
 			krtYaml:   NewKrtBuilder().WithProcessName("Invalid string!", 0).Build(),
 			wantError: true,
@@ -117,21 +121,30 @@ func TestKrtValidator(t *testing.T) {
 			wantError: true,
 			errorType: errors.ErrInvalidLengthField,
 		},
+	}
+
+	invalidTypeTests := []test{
+		{
+			name:      "fails if krt hasn't a valid workflow type",
+			krtYaml:   NewKrtBuilder().WithWorkflowType("").Build(),
+			wantError: true,
+			errorType: errors.ErrInvalidWorkflowType,
+		},
 		{
 			name:      "fails if krt hasn't a valid process type",
 			krtYaml:   NewKrtBuilder().WithProcessType("", 0).Build(),
 			wantError: true,
 			errorType: errors.ErrInvalidProcessType,
 		},
-		{
-			name:      "fails if krt hasn't required process subscriptions",
-			krtYaml:   NewKrtBuilder().WithProcessSubscriptions(nil, 0).Build(),
-			wantError: true,
-			errorType: errors.ErrMissingRequiredField,
-		},
 	}
 
-	for _, tc := range tests {
+	allTests := make([]test, 0)
+	allTests = append(allTests, correctBuildTests...)
+	allTests = append(allTests, requiredFieldsTests...)
+	allTests = append(allTests, invalidNameTests...)
+	allTests = append(allTests, invalidTypeTests...)
+
+	for _, tc := range allTests {
 		t.Run(tc.name, func(t *testing.T) {
 			errs := tc.krtYaml.Validate()
 			if tc.wantError {
