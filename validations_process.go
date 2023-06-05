@@ -101,13 +101,22 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
 	var totalError error
 	var processTypesByNames = make(map[string]ProcessType)
+	processCountByType := map[ProcessType]int{
+		ProcessTypeTrigger: 0,
+		ProcessTypeTask:    0,
+		ProcessTypeExit:    0,
+	}
 
 	// loop 1, load processes names and type
-	// also, check if there are duplicated names
+	// also, checks if there are 1 trigger and 1 exit process
+	// if there is a duplicated process name
+	// if there are duplicated subscriptions
+
+	//var ProcessNameAlreadyExists = make(map[string]bool)
 	for processIdx, process := range subscriptions {
 
+		var subscriptionAlreadyExists = make(map[string]bool)
 		for _, subscription := range process.Subscriptions {
-			var subscriptionAlreadyExists = make(map[string]bool)
 			if _, ok := subscriptionAlreadyExists[subscription]; ok {
 				totalError = errors.MergeErrors(
 					totalError,
@@ -124,7 +133,19 @@ func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
 			}
 		}
 
+		if _, ok := processCountByType[process.Type]; ok {
+			processCountByType[process.Type]++
+		}
 		processTypesByNames[process.Name] = process.Type
+	}
+
+	if processCountByType[ProcessTypeTrigger] < 1 || processCountByType[ProcessTypeExit] < 1 {
+		totalError = errors.MergeErrors(
+			totalError,
+			errors.NotEnoughProcessesError(
+				fmt.Sprintf("krt.workflows[%d].processes", workflowIdx),
+			),
+		)
 	}
 
 	// loop 2, check if all subscriptions are valid

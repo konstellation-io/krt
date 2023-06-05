@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -275,18 +276,102 @@ func TestKrtValidator(t *testing.T) {
 		},
 	}
 
+	invalidSubscriptionTests := []test{
+		{
+			name: "fails if krt has not enough processes",
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+				{
+					Name:          "test-trigger",
+					Type:          ProcessTypeTrigger,
+					Build:         ProcessBuild{Image: "test-trigger-image"},
+					Subscriptions: []string{"test-task-1"},
+				},
+				{
+					Name:          "test-task-1",
+					Type:          ProcessTypeTask,
+					Build:         ProcessBuild{Image: "test-task-image"},
+					Subscriptions: []string{"test-task-2"},
+				},
+				{
+					Name:          "test-task-2",
+					Type:          ProcessTypeTask,
+					Build:         ProcessBuild{Image: "test-task-image"},
+					Subscriptions: []string{"test-task-1"},
+				},
+			}).Build(),
+			wantError:   true,
+			errorType:   errors.ErrNotEnoughProcesses,
+			errorString: errors.NotEnoughProcessesError("krt.workflows[0].processes").Error(),
+		},
+		{
+			name: "fails if krt has duplicated process subscriptions",
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+				{
+					Name:          "test-trigger",
+					Type:          ProcessTypeTrigger,
+					Build:         ProcessBuild{Image: "test-trigger-image"},
+					Subscriptions: []string{"test-exit", "test-exit"},
+				},
+				{
+					Name:          "test-exit",
+					Type:          ProcessTypeExit,
+					Build:         ProcessBuild{Image: "test-exit-image"},
+					Subscriptions: []string{"test-trigger"},
+				},
+			}).Build(),
+			wantError:   true,
+			errorType:   errors.ErrDuplicatedProcessSubscription,
+			errorString: errors.DuplicatedProcessSubscriptionError("krt.workflows[0].processes[0].subscriptions.test-exit").Error(),
+		},
+		{
+			name: "fails if krt has invalid process subscriptions",
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+				{
+					Name:          "test-trigger",
+					Type:          ProcessTypeTrigger,
+					Build:         ProcessBuild{Image: "test-trigger-image"},
+					Subscriptions: []string{"test-exit", "test-task"},
+				},
+				{
+					Name:          "test-task",
+					Type:          ProcessTypeTask,
+					Build:         ProcessBuild{Image: "test-task-image"},
+					Subscriptions: []string{"test-trigger"},
+				},
+				{
+					Name:          "test-exit",
+					Type:          ProcessTypeExit,
+					Build:         ProcessBuild{Image: "test-exit-image"},
+					Subscriptions: []string{"test-trigger"},
+				},
+			}).Build(),
+			wantError: true,
+			errorType: errors.ErrInvalidProcessSubscription,
+			errorString: errors.InvalidProcessSubscriptionError(
+				string(ProcessTypeTrigger),
+				string(ProcessTypeTask),
+				"krt.workflows[0].processes[0].subscriptions",
+			).Error(),
+		},
+	}
+
 	allTests := make([]test, 0)
 	allTests = append(allTests, correctBuildTests...)
 	allTests = append(allTests, requiredFieldsTests...)
 	allTests = append(allTests, invalidNameTests...)
 	allTests = append(allTests, invalidTypeTests...)
+	allTests = append(allTests, invalidSubscriptionTests...)
 
-	for _, tc := range allTests {
+	wantedTests := make([]test, 0)
+	wantedTests = append(wantedTests, invalidSubscriptionTests...)
+
+	for _, tc := range wantedTests {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.krtYaml.Validate()
 			if tc.wantError {
+				fmt.Println(err)
 				assert.True(t, errors.Is(err, tc.errorType))
-				assert.True(t, errors.IsErrorStringInError(tc.errorString, err))
+				assert.ErrorContains(t, err, tc.errorString)
 			} else {
 				assert.Empty(t, err)
 			}

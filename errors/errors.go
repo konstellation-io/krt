@@ -3,7 +3,6 @@ package errors
 import (
 	"errors"
 	"fmt"
-	"strings"
 )
 
 func MergeErrors(err1, err2 error) error {
@@ -20,16 +19,6 @@ func MergeErrors(err1, err2 error) error {
 	return fmt.Errorf("%w\n%w", err1, err2)
 }
 
-func IsErrorStringInError(expectedErrorString string, err error) bool {
-	allErrorStrings := strings.Split(err.Error(), "\n")
-	for _, errorString := range allErrorStrings {
-		if errorString == expectedErrorString {
-			return true
-		}
-	}
-	return false
-}
-
 func Is(err, target error) bool {
 	return errors.Is(err, target)
 }
@@ -42,8 +31,13 @@ var ErrInvalidProcessType = errors.New("invalid process type, must be either 'tr
 var ErrInvalidProcessBuild = errors.New("invalid process build, must have either 'image' or 'dockerfile'")
 var ErrInvalidProcessObjectStoreScope = errors.New("invalid process object store scope, must be either 'product' or 'workflow'")
 var ErrInvalidNetworkingProtocol = errors.New("invalid networking protocol, must be either 'UDP' or 'TCP'")
+var ErrNotEnoughProcesses = errors.New("not enough processes declared for this workflow, needed at least 1 trigger and 1 exit process")
 var ErrDuplicatedProcessSubscription = errors.New("subscriptions cannot be duplicated")
 var ErrInvalidProcessSubscription = errors.New("invalid subscription")
+
+// duplicated process names
+// duplicated workflow names
+// cannot subcribe to itself
 
 func MissingRequiredFieldError(field string) error {
 	return fmt.Errorf("%w: %s", ErrMissingRequiredField, field)
@@ -75,6 +69,10 @@ func InvalidProcessObjectStoreScopeError(field string) error {
 
 func InvalidNetworkingProtocolError(field string) error {
 	return fmt.Errorf("%w: %s", ErrInvalidNetworkingProtocol, field)
+}
+
+func NotEnoughProcessesError(field string) error {
+	return fmt.Errorf("%w: %s", ErrNotEnoughProcesses, field)
 }
 
 func DuplicatedProcessSubscriptionError(field string) error {
