@@ -30,6 +30,10 @@ func IsErrorStringInError(expectedErrorString string, err error) bool {
 	return false
 }
 
+func Is(err, target error) bool {
+	return errors.Is(err, target)
+}
+
 var ErrMissingRequiredField = errors.New("missing required field")
 var ErrInvalidFieldName = errors.New("invalid field name; only numbers, hyphens and lowercase letters are allowed")
 var ErrInvalidLengthField = errors.New("field length is higher than the maximum")

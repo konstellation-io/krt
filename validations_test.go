@@ -3,7 +3,6 @@
 package main
 
 import (
-	errorUtils "errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -286,7 +285,7 @@ func TestKrtValidator(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.krtYaml.Validate()
 			if tc.wantError {
-				assert.True(t, errorUtils.Is(err, tc.errorType))
+				assert.True(t, errors.Is(err, tc.errorType))
 				assert.True(t, errors.IsErrorStringInError(tc.errorString, err))
 			} else {
 				assert.Empty(t, err)
