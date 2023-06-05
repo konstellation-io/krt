@@ -46,3 +46,7 @@ func (krt *Krt) validateDescription() error {
 func (krt *Krt) validateVersion() error {
 	return validateName(krt.Version, "krt.version")
 }
+
+// TODO:
+// Parse methods
+// Tests with yaml files

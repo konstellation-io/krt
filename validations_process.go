@@ -201,9 +201,3 @@ func isValidSubscription(processType, subscriptionProcessType ProcessType) bool 
 		return false
 	}
 }
-
-// TODO:
-// Github actions
-// Sonarcloud config
-// Parse methods
-// Tests with yaml files
