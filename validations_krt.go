@@ -20,6 +20,9 @@ func (krt *Krt) Validate() error {
 			errors.MissingRequiredFieldError("krt.workflows"),
 		)
 	} else {
+		err = validateWorkflowDuplicates(krt.Workflows)
+		totalError = errors.MergeErrors(totalError, err)
+
 		for idx, workflow := range krt.Workflows {
 			err := workflow.Validate(idx)
 			totalError = errors.MergeErrors(totalError, err)

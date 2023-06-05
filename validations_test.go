@@ -3,7 +3,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -175,6 +174,24 @@ func TestKrtValidator(t *testing.T) {
 			errorString: errors.InvalidLengthFieldError("krt.workflows[0].name", maxFieldNameLength).Error(),
 		},
 		{
+			name: "fails if krt workflow name is duplicated",
+			krtYaml: NewKrtBuilder().WithWorkflows([]Workflow{
+				{
+					Name:      "test-workflow",
+					Type:      WorkflowTypeTraining,
+					Processes: []Process{},
+				},
+				{
+					Name:      "test-workflow",
+					Type:      WorkflowTypeTraining,
+					Processes: []Process{},
+				},
+			}).Build(),
+			wantError:   true,
+			errorType:   errors.ErrDuplicatedWorkflowName,
+			errorString: errors.DuplicatedWorkflowNameError("krt.workflows[1].name").Error(),
+		},
+		{
 			name:        "fails if krt process name has an invalid format",
 			krtYaml:     NewKrtBuilder().WithProcessName(invalidName, 0).Build(),
 			wantError:   true,
@@ -213,6 +230,24 @@ func TestKrtValidator(t *testing.T) {
 			wantError:   true,
 			errorType:   errors.ErrInvalidLengthField,
 			errorString: errors.InvalidLengthFieldError("krt.workflows[0].processes[0].objectStore.name", maxFieldNameLength).Error(),
+		},
+		{
+			name: "fails if krt process name is duplicated",
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+				{
+					Name:  "test-process",
+					Type:  ProcessTypeTrigger,
+					Build: ProcessBuild{Image: "test-image"},
+				},
+				{
+					Name:  "test-process",
+					Type:  ProcessTypeTask,
+					Build: ProcessBuild{Image: "test-image"},
+				},
+			}).Build(),
+			wantError:   true,
+			errorType:   errors.ErrDuplicatedProcessName,
+			errorString: errors.DuplicatedProcessNameError("krt.workflows[0].processes[1].name").Error(),
 		},
 	}
 
@@ -353,6 +388,20 @@ func TestKrtValidator(t *testing.T) {
 				"krt.workflows[0].processes[0].subscriptions",
 			).Error(),
 		},
+		{
+			name: "fails if krt has a process subscribing to itself",
+			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+				{
+					Name:          "test-trigger",
+					Type:          ProcessTypeTrigger,
+					Build:         ProcessBuild{Image: "test-trigger-image"},
+					Subscriptions: []string{"test-trigger"},
+				},
+			}).Build(),
+			wantError:   true,
+			errorType:   errors.ErrCannotSubscribeToItself,
+			errorString: errors.CannotSubscribeToItselfError("krt.workflows[0].processes[0].subscriptions.test-trigger").Error(),
+		},
 	}
 
 	allTests := make([]test, 0)
@@ -362,14 +411,10 @@ func TestKrtValidator(t *testing.T) {
 	allTests = append(allTests, invalidTypeTests...)
 	allTests = append(allTests, invalidSubscriptionTests...)
 
-	wantedTests := make([]test, 0)
-	wantedTests = append(wantedTests, invalidSubscriptionTests...)
-
-	for _, tc := range wantedTests {
+	for _, tc := range allTests {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.krtYaml.Validate()
 			if tc.wantError {
-				fmt.Println(err)
 				assert.True(t, errors.Is(err, tc.errorType))
 				assert.ErrorContains(t, err, tc.errorString)
 			} else {

@@ -136,7 +136,18 @@ func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
 		if _, ok := processCountByType[process.Type]; ok {
 			processCountByType[process.Type]++
 		}
-		processTypesByNames[process.Name] = process.Type
+
+		if _, ok := processTypesByNames[process.Name]; ok {
+			totalError = errors.MergeErrors(
+				totalError,
+				errors.DuplicatedProcessNameError(
+					fmt.Sprintf("krt.workflows[%d].processes[%d].name", workflowIdx, processIdx),
+				),
+			)
+		} else {
+			processTypesByNames[process.Name] = process.Type
+		}
+
 	}
 
 	if processCountByType[ProcessTypeTrigger] < 1 || processCountByType[ProcessTypeExit] < 1 {
@@ -151,6 +162,17 @@ func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
 	// loop 2, check if all subscriptions are valid
 	for processIdx, process := range subscriptions {
 		for _, subscription := range process.Subscriptions {
+
+			if process.Name == subscription {
+				totalError = errors.MergeErrors(totalError, errors.CannotSubscribeToItselfError(
+					fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions.%s",
+						workflowIdx,
+						processIdx,
+						subscription,
+					),
+				))
+			}
+
 			if !isValidSubscription(process.Type, processTypesByNames[subscription]) {
 				totalError = errors.MergeErrors(totalError, errors.InvalidProcessSubscriptionError(
 					string(process.Type),
@@ -162,6 +184,7 @@ func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
 					),
 				))
 			}
+
 		}
 	}
 
@@ -180,7 +203,6 @@ func isValidSubscription(processType, subscriptionProcessType ProcessType) bool 
 }
 
 // TODO:
-// Subscriptions validation logic
 // Github actions
 // Sonarcloud config
 // Parse methods

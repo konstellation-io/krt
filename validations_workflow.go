@@ -43,3 +43,17 @@ func (workflow *Workflow) validateType(workflowIdx int) error {
 	}
 	return nil
 }
+
+func validateWorkflowDuplicates(workflows []Workflow) error {
+	var totalError error
+
+	workflowNames := make(map[string]bool)
+	for workflowIdx, workflow := range workflows {
+		if workflowNames[workflow.Name] {
+			totalError = errors.MergeErrors(totalError, errors.DuplicatedWorkflowNameError(fmt.Sprintf("krt.workflows[%d].name", workflowIdx)))
+		}
+		workflowNames[workflow.Name] = true
+	}
+
+	return totalError
+}
