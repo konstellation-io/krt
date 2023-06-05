@@ -25,6 +25,9 @@ func (workflow *Workflow) Validate(workflowIdx int) error {
 			err := process.Validate(workflowIdx, idx)
 			totalError = errors.MergeErrors(totalError, err)
 		}
+
+		err := validateSubscritpions(workflow.Processes, workflowIdx)
+		totalError = errors.MergeErrors(totalError, err)
 	}
 
 	return totalError

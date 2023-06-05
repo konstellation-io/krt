@@ -96,6 +96,63 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 	return totalError
 }
 
+// validateSubscritpions checks if subscriptions for all process are valid.
+// All requirements for subscritpions to be valid can be found in the readme.
+func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
+	var totalError error
+	var processTypesByNames = make(map[string]ProcessType)
+
+	// loop 1, load processes names and type
+	// also, check if there are duplicated names
+	for processIdx, process := range subscriptions {
+		if process.Subscriptions == nil || len(process.Subscriptions) == 0 {
+			totalError = errors.MergeErrors(totalError, errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions", workflowIdx, processIdx)))
+		}
+
+		for _, subscription := range process.Subscriptions {
+			var subscriptionAlreadyExists = make(map[string]bool)
+
+			if _, ok := subscriptionAlreadyExists[subscription]; ok {
+				totalError = errors.MergeErrors(totalError, errors.DuplicatedProcessSubscriptionError(fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions.%s", workflowIdx, processIdx, subscription)))
+			} else {
+				subscriptionAlreadyExists[subscription] = true
+			}
+		}
+
+		processTypesByNames[process.Name] = process.Type
+	}
+
+	// loop 2, check if all subscriptions are valid
+	for processIdx, process := range subscriptions {
+		for _, subscription := range process.Subscriptions {
+			if !isValidSubscription(process.Type, processTypesByNames[subscription]) {
+				totalError = errors.MergeErrors(totalError, errors.InvalidProcessSubscriptionError(
+					string(process.Type),
+					string(processTypesByNames[subscription]),
+					fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions.%s",
+						workflowIdx,
+						processIdx,
+						subscription,
+					),
+				))
+			}
+		}
+	}
+
+	return totalError
+}
+
+func isValidSubscription(processType, subscriptionProcessType ProcessType) bool {
+	switch processType {
+	case ProcessTypeTrigger:
+		return subscriptionProcessType == ProcessTypeExit
+	case ProcessTypeTask, ProcessTypeExit:
+		return subscriptionProcessType != ProcessTypeExit
+	default:
+		return false
+	}
+}
+
 // TODO:
 // Subscriptions validation logic
 // Github actions
