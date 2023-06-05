@@ -105,15 +105,20 @@ func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
 	// loop 1, load processes names and type
 	// also, check if there are duplicated names
 	for processIdx, process := range subscriptions {
-		if process.Subscriptions == nil || len(process.Subscriptions) == 0 {
-			totalError = errors.MergeErrors(totalError, errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions", workflowIdx, processIdx)))
-		}
 
 		for _, subscription := range process.Subscriptions {
 			var subscriptionAlreadyExists = make(map[string]bool)
-
 			if _, ok := subscriptionAlreadyExists[subscription]; ok {
-				totalError = errors.MergeErrors(totalError, errors.DuplicatedProcessSubscriptionError(fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions.%s", workflowIdx, processIdx, subscription)))
+				totalError = errors.MergeErrors(
+					totalError,
+					errors.DuplicatedProcessSubscriptionError(
+						fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions.%s",
+							workflowIdx,
+							processIdx,
+							subscription,
+						),
+					),
+				)
 			} else {
 				subscriptionAlreadyExists[subscription] = true
 			}

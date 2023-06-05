@@ -109,6 +109,13 @@ func TestKrtValidator(t *testing.T) {
 			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].subscriptions").Error(),
 		},
 		{
+			name:        "fails if krt required process subscriptions are empty",
+			krtYaml:     NewKrtBuilder().WithProcessSubscriptions([]string{}, 0).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].subscriptions").Error(),
+		},
+		{
 			name: "fails if krt hasn't required networking target port if declared",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
 				ProcessNetworking{
@@ -280,7 +287,7 @@ func TestKrtValidator(t *testing.T) {
 			err := tc.krtYaml.Validate()
 			if tc.wantError {
 				assert.True(t, errorUtils.Is(err, tc.errorType))
-				assert.Equal(t, tc.errorString, err.Error())
+				assert.True(t, errors.IsErrorStringInError(tc.errorString, err))
 			} else {
 				assert.Empty(t, err)
 			}

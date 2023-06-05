@@ -3,6 +3,7 @@ package errors
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 func MergeErrors(err1, err2 error) error {
@@ -17,6 +18,16 @@ func MergeErrors(err1, err2 error) error {
 	}
 
 	return fmt.Errorf("%w\n%w", err1, err2)
+}
+
+func IsErrorStringInError(expectedErrorString string, err error) bool {
+	allErrorStrings := strings.Split(err.Error(), "\n")
+	for _, errorString := range allErrorStrings {
+		if errorString == expectedErrorString {
+			return true
+		}
+	}
+	return false
 }
 
 var ErrMissingRequiredField = errors.New("missing required field")
