@@ -38,9 +38,10 @@ func (workflow *Workflow) validateName(workflowIdx int) error {
 }
 
 func (workflow *Workflow) validateType(workflowIdx int) error {
-	if _, ok := WorkflowTypeMap[string(workflow.Type)]; !ok {
+	if !isValidWorkflowType(string(workflow.Type)) {
 		return errors.InvalidWorkflowTypeError(fmt.Sprintf("krt.workflows[%d].type", workflowIdx))
 	}
+
 	return nil
 }
 
@@ -50,8 +51,14 @@ func validateWorkflowDuplicates(workflows []Workflow) error {
 	workflowNames := make(map[string]bool)
 	for workflowIdx, workflow := range workflows {
 		if workflowNames[workflow.Name] {
-			totalError = errors.MergeErrors(totalError, errors.DuplicatedWorkflowNameError(fmt.Sprintf("krt.workflows[%d].name", workflowIdx)))
+			totalError = errors.MergeErrors(
+				totalError,
+				errors.DuplicatedWorkflowNameError(
+					fmt.Sprintf("krt.workflows[%d].name", workflowIdx),
+				),
+			)
 		}
+
 		workflowNames[workflow.Name] = true
 	}
 

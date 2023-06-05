@@ -17,11 +17,14 @@ func validateName(name, nameLocation string) error {
 	if name == "" {
 		return errors.MissingRequiredFieldError(nameLocation)
 	}
+
 	if !isValidResourceName(name) {
 		return errors.InvalidFieldNameError(nameLocation)
 	}
+
 	if len(name) > maxFieldNameLength {
 		return errors.InvalidLengthFieldError(nameLocation, maxFieldNameLength)
 	}
+
 	return nil
 }

@@ -24,11 +24,17 @@ const (
 	WorkflowTypeServing  WorkflowType = "serving"
 )
 
-var WorkflowTypeMap = map[string]WorkflowType{
-	string(WorkflowTypeData):     WorkflowTypeData,
-	string(WorkflowTypeTraining): WorkflowTypeTraining,
-	string(WorkflowTypeFeedback): WorkflowTypeFeedback,
-	string(WorkflowTypeServing):  WorkflowTypeServing,
+func isValidWorkflowType(workflowType string) bool {
+	var workflowTypeMap = map[string]WorkflowType{
+		string(WorkflowTypeData):     WorkflowTypeData,
+		string(WorkflowTypeTraining): WorkflowTypeTraining,
+		string(WorkflowTypeFeedback): WorkflowTypeFeedback,
+		string(WorkflowTypeServing):  WorkflowTypeServing,
+	}
+
+	_, ok := workflowTypeMap[workflowType]
+
+	return ok
 }
 
 type Process struct {
@@ -52,10 +58,16 @@ const (
 	ProcessTypeExit    ProcessType = "exit"
 )
 
-var ProcessTypeMap = map[string]ProcessType{
-	string(ProcessTypeTrigger): ProcessTypeTrigger,
-	string(ProcessTypeTask):    ProcessTypeTask,
-	string(ProcessTypeExit):    ProcessTypeExit,
+func isValidProcessType(processType string) bool {
+	var processTypeMap = map[string]ProcessType{
+		string(ProcessTypeTrigger): ProcessTypeTrigger,
+		string(ProcessTypeTask):    ProcessTypeTask,
+		string(ProcessTypeExit):    ProcessTypeExit,
+	}
+
+	_, ok := processTypeMap[processType]
+
+	return ok
 }
 
 type ProcessBuild struct {
@@ -75,9 +87,15 @@ const (
 	ObjectStoreScopeWorkflow ObjectStoreScope = "workflow"
 )
 
-var ObjectStoreScopeMap = map[string]ObjectStoreScope{
-	string(ObjectStoreScopeProduct):  ObjectStoreScopeProduct,
-	string(ObjectStoreScopeWorkflow): ObjectStoreScopeWorkflow,
+func isValidObjectStoreScope(scope string) bool {
+	var objectStoreScopeMap = map[string]ObjectStoreScope{
+		string(ObjectStoreScopeProduct):  ObjectStoreScopeProduct,
+		string(ObjectStoreScopeWorkflow): ObjectStoreScopeWorkflow,
+	}
+
+	_, ok := objectStoreScopeMap[scope]
+
+	return ok
 }
 
 type ProcessNetworking struct {
@@ -94,7 +112,13 @@ const (
 	NetworkingProtocolUDP NetworkingProtocol = "UDP"
 )
 
-var NetworkingProtocolMap = map[string]NetworkingProtocol{
-	string(NetworkingProtocolTCP): NetworkingProtocolTCP,
-	string(NetworkingProtocolUDP): NetworkingProtocolUDP,
+func isValidNetworkingProtocol(protocol string) bool {
+	var networkingProtocolMap = map[string]NetworkingProtocol{
+		string(NetworkingProtocolTCP): NetworkingProtocolTCP,
+		string(NetworkingProtocolUDP): NetworkingProtocolUDP,
+	}
+
+	_, ok := networkingProtocolMap[protocol]
+
+	return ok
 }

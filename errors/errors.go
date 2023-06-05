@@ -9,9 +9,11 @@ func MergeErrors(err1, err2 error) error {
 	if err1 == nil && err2 == nil {
 		return nil
 	}
+
 	if err1 == nil && err2 != nil {
 		return err2
 	}
+
 	if err1 != nil && err2 == nil {
 		return err1
 	}
@@ -90,7 +92,13 @@ func DuplicatedProcessSubscriptionError(field string) error {
 }
 
 func InvalidProcessSubscriptionError(processType, subscritpionProcessType, field string) error {
-	return fmt.Errorf("%w: this process of type %q cannot subscribe to %q processes, in %s", ErrInvalidProcessSubscription, processType, subscritpionProcessType, field)
+	return fmt.Errorf(
+		"%w: this process of type %q cannot subscribe to %q processes, in %s",
+		ErrInvalidProcessSubscription,
+		processType,
+		subscritpionProcessType,
+		field,
+	)
 }
 
 func CannotSubscribeToItselfError(field string) error {

@@ -40,6 +40,7 @@ func (krt *Krt) validateDescription() error {
 	if krt.Description == "" {
 		return errors.MissingRequiredFieldError("krt.description")
 	}
+
 	return nil
 }
 
@@ -47,6 +48,6 @@ func (krt *Krt) validateVersion() error {
 	return validateName(krt.Version, "krt.version")
 }
 
-// TODO:
+// Things left:
 // Parse methods
 // Tests with yaml files
