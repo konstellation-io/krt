@@ -6,6 +6,8 @@ import (
 	"github.com/konstellation-io/krt/pkg/errors"
 )
 
+const subscritpionLocation = "krt.workflows[%d].processes[%d].subscriptions.%s"
+
 func (process *Process) Validate(workflowIdx, processIdx int) error {
 	var totalError error
 
@@ -147,7 +149,21 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 
 // validateSubscritpions checks if subscriptions for all process are valid.
 // All requirements for subscritpions to be valid can be found in the readme.
-func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
+func validateSubscritpions(processes []Process, workflowIdx int) error {
+	var totalError error
+
+	processTypesByNames, err := countProcessesSubscriptions(processes, workflowIdx)
+	totalError = errors.MergeErrors(totalError, err)
+
+	err = checkSubscriptions(processes, workflowIdx, processTypesByNames)
+	totalError = errors.MergeErrors(totalError, err)
+
+	return totalError
+}
+
+// countProcessesSubscriptions, will load processes types by their names
+// also, checks if there are enough processes, a duplicated process name or duplicated subscriptions
+func countProcessesSubscriptions(processes []Process, workflowIdx int) (map[string]ProcessType, error) {
 	var (
 		totalError          error
 		processTypesByNames = make(map[string]ProcessType)
@@ -159,20 +175,14 @@ func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
 		ProcessTypeExit:    0,
 	}
 
-	// loop 1, load processes names and type
-	// also, checks if there are enough processes, a duplicated process name or duplicated subscriptions
-	for processIdx, process := range subscriptions {
+	for processIdx, process := range processes {
 		var subscriptionAlreadyExists = make(map[string]bool)
 		for _, subscription := range process.Subscriptions {
 			if _, ok := subscriptionAlreadyExists[subscription]; ok {
 				totalError = errors.MergeErrors(
 					totalError,
 					errors.DuplicatedProcessSubscriptionError(
-						fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions.%s",
-							workflowIdx,
-							processIdx,
-							subscription,
-						),
+						fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
 					),
 				)
 			} else {
@@ -196,25 +206,30 @@ func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
 		}
 	}
 
-	if processCountByType[ProcessTypeTrigger] < 1 || processCountByType[ProcessTypeExit] < 1 {
-		totalError = errors.MergeErrors(
-			totalError,
-			errors.NotEnoughProcessesError(
-				fmt.Sprintf("krt.workflows[%d].processes", workflowIdx),
-			),
+	err := checkProcessCount(processCountByType, workflowIdx)
+	totalError = errors.MergeErrors(totalError, err)
+
+	return processTypesByNames, totalError
+}
+
+func checkProcessCount(processesCount map[ProcessType]int, workflowIdx int) error {
+	if processesCount[ProcessTypeTrigger] < 1 || processesCount[ProcessTypeExit] < 1 {
+		return errors.NotEnoughProcessesError(
+			fmt.Sprintf("krt.workflows[%d].processes", workflowIdx),
 		)
 	}
 
-	// loop 2, check if all subscriptions are valid
-	for processIdx, process := range subscriptions {
+	return nil
+}
+
+func checkSubscriptions(processes []Process, workflowIdx int, processTypesByNames map[string]ProcessType) error {
+	var totalError error
+
+	for processIdx, process := range processes {
 		for _, subscription := range process.Subscriptions {
 			if process.Name == subscription {
 				totalError = errors.MergeErrors(totalError, errors.CannotSubscribeToItselfError(
-					fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions.%s",
-						workflowIdx,
-						processIdx,
-						subscription,
-					),
+					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
 				))
 			}
 
@@ -222,11 +237,7 @@ func validateSubscritpions(subscriptions []Process, workflowIdx int) error {
 				totalError = errors.MergeErrors(totalError, errors.InvalidProcessSubscriptionError(
 					string(process.Type),
 					string(processTypesByNames[subscription]),
-					fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions.%s",
-						workflowIdx,
-						processIdx,
-						subscription,
-					),
+					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
 				))
 			}
 		}
