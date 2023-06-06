@@ -7,7 +7,7 @@ on:
       - develop
   pull_request:
     paths:
-      - './**/*'
+      - '**/*'
       - '.github/workflows/test-krt.yaml'
   workflow_dispatch:
 
@@ -26,11 +26,11 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
-          working-directory: .
+          working-directory: ./
           args: --timeout=5m
       - name: Run unit tests
         run: go test ./... -cover -v -coverprofile=coverage-unit.out --tags=unit
-        working-directory: .
+        working-directory: ./
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:
@@ -49,11 +49,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: coverage-report
-          path: .
+          path: ./
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
-          projectBaseDir: .
+          projectBaseDir: ./
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_KRT }}
