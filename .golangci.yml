@@ -1,9 +1,4 @@
 linters-settings:
-  depguard:
-    list-type: blacklist
-    include-go-root: true
-    packages-with-error-message:
-      - io/ioutil: 'ioutil is deprecated starting with Go 1.16'
   dupl:
     threshold: 100
   funlen:
