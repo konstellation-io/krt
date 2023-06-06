@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/konstellation-io/krt/errors"
+	"github.com/konstellation-io/krt/pkg/errors"
 )
 
 const largeName = "this-name-is-higher-than-the-maximum-allowed"

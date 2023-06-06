@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/konstellation-io/krt/errors"
+	"github.com/konstellation-io/krt/pkg/errors"
 )
 
 func (workflow *Workflow) Validate(workflowIdx int) error {

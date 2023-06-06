@@ -1,6 +1,6 @@
 package main
 
-import "github.com/konstellation-io/krt/errors"
+import "github.com/konstellation-io/krt/pkg/errors"
 
 func (krt *Krt) Validate() error {
 	var totalError error

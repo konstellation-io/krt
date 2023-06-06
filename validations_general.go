@@ -3,7 +3,7 @@ package main
 import (
 	"regexp"
 
-	"github.com/konstellation-io/krt/errors"
+	"github.com/konstellation-io/krt/pkg/errors"
 )
 
 const maxFieldNameLength = 20
