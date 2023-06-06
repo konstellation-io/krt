@@ -1,4 +1,4 @@
-package main
+package krt
 
 import "github.com/konstellation-io/krt/pkg/errors"
 

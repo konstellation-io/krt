@@ -1,6 +1,6 @@
 //go:build unit
 
-package main
+package krt
 
 type KrtBuilder struct {
 	krtYaml *Krt

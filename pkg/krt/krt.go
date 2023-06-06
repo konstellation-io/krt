@@ -1,4 +1,4 @@
-package main
+package krt
 
 type Krt struct {
 	Name        string            `yaml:"name"`
