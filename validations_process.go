@@ -162,7 +162,7 @@ func validateSubscritpions(processes []Process, workflowIdx int) error {
 }
 
 // countProcessesSubscriptions, will load processes types by their names
-// also, checks if there are enough processes, a duplicated process name or duplicated subscriptions
+// also, checks if there are enough processes, a duplicated process name or duplicated subscriptions.
 func countProcessesSubscriptions(processes []Process, workflowIdx int) (map[string]ProcessType, error) {
 	var (
 		totalError          error
