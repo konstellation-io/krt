@@ -81,16 +81,16 @@ func TestKrtValidator(t *testing.T) {
 			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].name").Error(),
 		},
 		{
-			name:        "fails if krt hasn't required process build",
-			krtYaml:     NewKrtBuilder().WithProcessBuild(ProcessBuild{}, 0).Build(),
+			name:        "fails if krt hasn't required process image",
+			krtYaml:     NewKrtBuilder().WithProcessImage("", 0).Build(),
 			wantError:   true,
-			errorType:   errors.ErrInvalidProcessBuild,
-			errorString: errors.InvalidProcessBuildError("krt.workflows[0].processes[0].build").Error(),
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].image").Error(),
 		},
 		{
 			name: "fails if krt hasn't required object store name if declared",
 			krtYaml: NewKrtBuilder().WithProcessObjectStore(
-				ProcessObjectStore{
+				&ProcessObjectStore{
 					Name:  "",
 					Scope: ObjectStoreScopeProduct,
 				},
@@ -117,7 +117,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't required networking target port if declared",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
-				ProcessNetworking{
+				&ProcessNetworking{
 					TargetProtocol:      "UDP",
 					DestinationPort:     9000,
 					DestinationProtocol: "UDP",
@@ -131,7 +131,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't required networking destination port if declared",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
-				ProcessNetworking{
+				&ProcessNetworking{
 					TargetPort:          9000,
 					TargetProtocol:      "UDP",
 					DestinationProtocol: "UDP",
@@ -208,7 +208,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt process object store name has an invalid format",
 			krtYaml: NewKrtBuilder().WithProcessObjectStore(
-				ProcessObjectStore{
+				&ProcessObjectStore{
 					Name:  invalidName,
 					Scope: ObjectStoreScopeProduct,
 				},
@@ -221,7 +221,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt process object store name has an invalid length",
 			krtYaml: NewKrtBuilder().WithProcessObjectStore(
-				ProcessObjectStore{
+				&ProcessObjectStore{
 					Name:  largeName,
 					Scope: ObjectStoreScopeProduct,
 				},
@@ -237,12 +237,12 @@ func TestKrtValidator(t *testing.T) {
 				{
 					Name:  "test-process",
 					Type:  ProcessTypeTrigger,
-					Build: ProcessBuild{Image: "test-image"},
+					Image: "test-image",
 				},
 				{
 					Name:  "test-process",
 					Type:  ProcessTypeTask,
-					Build: ProcessBuild{Image: "test-image"},
+					Image: "test-image",
 				},
 			}).Build(),
 			wantError:   true,
@@ -269,7 +269,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't a valid process object store scope",
 			krtYaml: NewKrtBuilder().WithProcessObjectStore(
-				ProcessObjectStore{
+				&ProcessObjectStore{
 					Name:  "test",
 					Scope: "invalid",
 				},
@@ -282,7 +282,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't a valid process networking target protocol",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
-				ProcessNetworking{
+				&ProcessNetworking{
 					TargetPort:          9000,
 					TargetProtocol:      invalidName,
 					DestinationPort:     9000,
@@ -297,7 +297,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't a valid process networking destination protocol",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
-				ProcessNetworking{
+				&ProcessNetworking{
 					TargetPort:          9000,
 					TargetProtocol:      "UDP",
 					DestinationPort:     9000,
@@ -318,19 +318,19 @@ func TestKrtValidator(t *testing.T) {
 				{
 					Name:          "test-trigger",
 					Type:          ProcessTypeTrigger,
-					Build:         ProcessBuild{Image: "test-trigger-image"},
+					Image:         "test-trigger-image",
 					Subscriptions: []string{"test-task-1"},
 				},
 				{
 					Name:          "test-task-1",
 					Type:          ProcessTypeTask,
-					Build:         ProcessBuild{Image: "test-task-image"},
+					Image:         "test-task-image",
 					Subscriptions: []string{"test-task-2"},
 				},
 				{
 					Name:          "test-task-2",
 					Type:          ProcessTypeTask,
-					Build:         ProcessBuild{Image: "test-task-image"},
+					Image:         "test-task-image",
 					Subscriptions: []string{"test-task-1"},
 				},
 			}).Build(),
@@ -344,13 +344,13 @@ func TestKrtValidator(t *testing.T) {
 				{
 					Name:          "test-trigger",
 					Type:          ProcessTypeTrigger,
-					Build:         ProcessBuild{Image: "test-trigger-image"},
+					Image:         "test-trigger-image",
 					Subscriptions: []string{"test-exit", "test-exit"},
 				},
 				{
 					Name:          "test-exit",
 					Type:          ProcessTypeExit,
-					Build:         ProcessBuild{Image: "test-exit-image"},
+					Image:         "test-exit-image",
 					Subscriptions: []string{"test-trigger"},
 				},
 			}).Build(),
@@ -364,19 +364,19 @@ func TestKrtValidator(t *testing.T) {
 				{
 					Name:          "test-trigger",
 					Type:          ProcessTypeTrigger,
-					Build:         ProcessBuild{Image: "test-trigger-image"},
+					Image:         "test-trigger-image",
 					Subscriptions: []string{"test-exit", "test-task"},
 				},
 				{
 					Name:          "test-task",
 					Type:          ProcessTypeTask,
-					Build:         ProcessBuild{Image: "test-task-image"},
+					Image:         "test-task-image",
 					Subscriptions: []string{"test-trigger"},
 				},
 				{
 					Name:          "test-exit",
 					Type:          ProcessTypeExit,
-					Build:         ProcessBuild{Image: "test-exit-image"},
+					Image:         "test-exit-image",
 					Subscriptions: []string{"test-trigger"},
 				},
 			}).Build(),
@@ -394,7 +394,7 @@ func TestKrtValidator(t *testing.T) {
 				{
 					Name:          "test-trigger",
 					Type:          ProcessTypeTrigger,
-					Build:         ProcessBuild{Image: "test-trigger-image"},
+					Image:         "test-trigger-image",
 					Subscriptions: []string{"test-trigger"},
 				},
 			}).Build(),
@@ -415,7 +415,7 @@ func TestKrtValidator(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.krtYaml.Validate()
 			if tc.wantError {
-				assert.True(t, errors.Is(err, tc.errorType))
+				assert.ErrorIs(t, err, tc.errorType)
 				assert.ErrorContains(t, err, tc.errorString)
 			} else {
 				assert.Empty(t, err)

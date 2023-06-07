@@ -20,7 +20,7 @@ func NewKrtBuilder() *KrtBuilder {
 						{
 							Name:  "test-trigger",
 							Type:  ProcessTypeTrigger,
-							Build: ProcessBuild{Image: "test-trigger-image"},
+							Image: "test-trigger-image",
 							Subscriptions: []string{
 								"test-exit",
 							},
@@ -28,7 +28,7 @@ func NewKrtBuilder() *KrtBuilder {
 						{
 							Name:  "test-exit",
 							Type:  ProcessTypeExit,
-							Build: ProcessBuild{Image: "test-exit-image"},
+							Image: "test-exit-image",
 							Subscriptions: []string{
 								"test-trigger",
 							},
@@ -90,17 +90,17 @@ func (k *KrtBuilder) WithProcessType(processType ProcessType, processIdx int) *K
 	return k
 }
 
-func (k *KrtBuilder) WithProcessBuild(build ProcessBuild, processIdx int) *KrtBuilder {
-	k.krtYaml.Workflows[0].Processes[processIdx].Build = build
+func (k *KrtBuilder) WithProcessImage(image string, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Image = image
 	return k
 }
 
-func (k *KrtBuilder) WithProcessReplicas(replicas int, processIdx int) *KrtBuilder {
+func (k *KrtBuilder) WithProcessReplicas(replicas *int, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Replicas = replicas
 	return k
 }
 
-func (k *KrtBuilder) WithProcessGPU(gpu bool, processIdx int) *KrtBuilder {
+func (k *KrtBuilder) WithProcessGPU(gpu *bool, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].GPU = gpu
 	return k
 }
@@ -110,12 +110,12 @@ func (k *KrtBuilder) WithProcessConfig(config map[string]string, processIdx int)
 	return k
 }
 
-func (k *KrtBuilder) WithProcessObjectStore(objectStore ProcessObjectStore, processIdx int) *KrtBuilder {
+func (k *KrtBuilder) WithProcessObjectStore(objectStore *ProcessObjectStore, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].ObjectStore = objectStore
 	return k
 }
 
-func (k *KrtBuilder) WithProcessSecrets(secrets []string, processIdx int) *KrtBuilder {
+func (k *KrtBuilder) WithProcessSecrets(secrets map[string]string, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Secrets = secrets
 	return k
 }
@@ -125,7 +125,7 @@ func (k *KrtBuilder) WithProcessSubscriptions(subscriptions []string, processIdx
 	return k
 }
 
-func (k *KrtBuilder) WithProcessNetworking(networking ProcessNetworking, processIdx int) *KrtBuilder {
+func (k *KrtBuilder) WithProcessNetworking(networking *ProcessNetworking, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Networking = networking
 	return k
 }

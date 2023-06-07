@@ -5,6 +5,7 @@ import "github.com/konstellation-io/krt/pkg/errors"
 func (krt *Krt) Validate() error {
 	var totalError error
 
+	// all this in an errors.Join
 	err := krt.validateName()
 	totalError = errors.MergeErrors(totalError, err)
 
@@ -14,6 +15,7 @@ func (krt *Krt) Validate() error {
 	err = krt.validateVersion()
 	totalError = errors.MergeErrors(totalError, err)
 
+	// separate this logic in a function
 	if len(krt.Workflows) == 0 {
 		totalError = errors.MergeErrors(
 			totalError,
@@ -47,7 +49,3 @@ func (krt *Krt) validateDescription() error {
 func (krt *Krt) validateVersion() error {
 	return validateName(krt.Version, "krt.version")
 }
-
-// Things left:
-// Parse methods
-// Tests with yaml files

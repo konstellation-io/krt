@@ -17,7 +17,7 @@ func (process *Process) Validate(workflowIdx, processIdx int) error {
 	err = process.validateType(workflowIdx, processIdx)
 	totalError = errors.MergeErrors(totalError, err)
 
-	err = process.validateBuild(workflowIdx, processIdx)
+	err = process.validateImage(workflowIdx, processIdx)
 	totalError = errors.MergeErrors(totalError, err)
 
 	err = process.validateObjectStore(workflowIdx, processIdx)
@@ -58,10 +58,10 @@ func (process *Process) validateType(workflowIdx, processIdx int) error {
 	return nil
 }
 
-func (process *Process) validateBuild(workflowIdx, processIdx int) error {
-	if process.Build.Dockerfile == "" && process.Build.Image == "" {
-		return errors.InvalidProcessBuildError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].build", workflowIdx, processIdx),
+func (process *Process) validateImage(workflowIdx, processIdx int) error {
+	if process.Image == "" {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].image", workflowIdx, processIdx),
 		)
 	}
 
@@ -69,8 +69,7 @@ func (process *Process) validateBuild(workflowIdx, processIdx int) error {
 }
 
 func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
-	EmptyObjectStore := ProcessObjectStore{}
-	if process.ObjectStore == EmptyObjectStore {
+	if process.ObjectStore == nil {
 		return nil
 	}
 
@@ -103,8 +102,7 @@ func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
 }
 
 func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
-	emptyNetworking := ProcessNetworking{}
-	if process.Networking == emptyNetworking {
+	if process.Networking == nil {
 		return nil
 	}
 

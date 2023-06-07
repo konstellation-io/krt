@@ -38,16 +38,16 @@ func isValidWorkflowType(workflowType string) bool {
 }
 
 type Process struct {
-	Name          string             `yaml:"name"`
-	Type          ProcessType        `yaml:"type"`
-	Build         ProcessBuild       `yaml:"build"`
-	Replicas      int                `yaml:"replicas"`
-	GPU           bool               `yaml:"gpu"`
-	Config        map[string]string  `yaml:"config"`
-	ObjectStore   ProcessObjectStore `yaml:"objectStore"`
-	Secrets       []string           `yaml:"secrets"`
-	Subscriptions []string           `yaml:"subscriptions"`
-	Networking    ProcessNetworking  `yaml:"networking"`
+	Name          string              `yaml:"name"`
+	Type          ProcessType         `yaml:"type"`
+	Image         string              `yaml:"image"`
+	Replicas      *int                `yaml:"replicas"`
+	GPU           *bool               `yaml:"gpu"`
+	Config        map[string]string   `yaml:"config"`
+	ObjectStore   *ProcessObjectStore `yaml:"objectStore"`
+	Secrets       map[string]string   `yaml:"secrets"`
+	Subscriptions []string            `yaml:"subscriptions"`
+	Networking    *ProcessNetworking  `yaml:"networking"`
 }
 
 type ProcessType string
@@ -68,11 +68,6 @@ func isValidProcessType(processType string) bool {
 	_, ok := processTypeMap[processType]
 
 	return ok
-}
-
-type ProcessBuild struct {
-	Image      string `yaml:"image"`
-	Dockerfile string `yaml:"dockerfile"`
 }
 
 type ProcessObjectStore struct {
