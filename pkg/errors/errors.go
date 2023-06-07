@@ -13,6 +13,8 @@ func Is(err, target error) bool {
 	return errors.Is(err, target)
 }
 
+// Validation errors.
+
 var ErrMissingRequiredField = errors.New("missing required field")
 var ErrInvalidFieldName = errors.New("invalid field name; only numbers, hyphens and lowercase letters are allowed")
 var ErrInvalidLengthField = errors.New("field length is higher than the maximum")
@@ -86,4 +88,17 @@ func InvalidProcessSubscriptionError(processType, subscritpionProcessType, field
 
 func CannotSubscribeToItselfError(field string) error {
 	return fmt.Errorf("%w: %s", ErrCannotSubscribeToItself, field)
+}
+
+// Parse errors.
+
+var ErrInvalidYaml = errors.New("invalid yaml")
+var ErrReadingFile = errors.New("error reading file")
+
+func InvalidYamlError(err error) error {
+	return fmt.Errorf("error unmarshalling krt yaml, %w: %w", ErrInvalidYaml, err)
+}
+
+func ReadingFileError(err error) error {
+	return fmt.Errorf("%w: %w", ErrReadingFile, err)
 }

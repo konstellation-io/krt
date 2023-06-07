@@ -9,7 +9,7 @@ import (
 const maxFieldNameLength = 20
 
 func isValidResourceName(name string) bool {
-	reResourceName := regexp.MustCompile("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
+	reResourceName := regexp.MustCompile(`^[a-z0-9]([-|.a-z0-9]*[a-z0-9])?$`)
 	return reResourceName.MatchString(name)
 }
 

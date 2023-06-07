@@ -11,7 +11,7 @@ func NewKrtBuilder() *KrtBuilder {
 		krtYaml: &Krt{
 			Name:        "test-krt",
 			Description: "Test description",
-			Version:     "version-name",
+			Version:     "v1.0",
 			Workflows: []Workflow{
 				{
 					Name: "test-workflow",
