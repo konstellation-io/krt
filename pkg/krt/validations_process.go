@@ -9,36 +9,18 @@ import (
 const subscritpionLocation = "krt.workflows[%d].processes[%d].subscriptions.%s"
 
 func (process *Process) Validate(workflowIdx, processIdx int) error {
-	var totalError error
-
-	err := process.validateName(workflowIdx, processIdx)
-	totalError = errors.MergeErrors(totalError, err)
-
-	err = process.validateType(workflowIdx, processIdx)
-	totalError = errors.MergeErrors(totalError, err)
-
-	err = process.validateImage(workflowIdx, processIdx)
-	totalError = errors.MergeErrors(totalError, err)
-
-	err = process.validateObjectStore(workflowIdx, processIdx)
-	totalError = errors.MergeErrors(totalError, err)
-
-	if process.Subscriptions == nil || len(process.Subscriptions) == 0 {
-		totalError = errors.MergeErrors(
-			totalError,
-			errors.MissingRequiredFieldError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions",
-					workflowIdx,
-					processIdx,
-				),
-			),
-		)
-	}
-
-	err = process.validateNetworking(workflowIdx, processIdx)
-	totalError = errors.MergeErrors(totalError, err)
-
-	return totalError
+	return errors.Join(
+		process.validateName(workflowIdx, processIdx),
+		process.validateType(workflowIdx, processIdx),
+		process.validateImage(workflowIdx, processIdx),
+		process.validateReplicas(workflowIdx, processIdx),
+		process.validateGPU(workflowIdx, processIdx),
+		process.validateConfig(workflowIdx, processIdx),
+		process.validateObjectStore(workflowIdx, processIdx),
+		process.validateSecrets(workflowIdx, processIdx),
+		process.validateSubscriptions(workflowIdx, processIdx),
+		process.validateNetworking(workflowIdx, processIdx),
+	)
 }
 
 func (process *Process) validateName(workflowIdx, processIdx int) error {
@@ -68,6 +50,18 @@ func (process *Process) validateImage(workflowIdx, processIdx int) error {
 	return nil
 }
 
+func (process *Process) validateReplicas(workflowIdx, processIdx int) error {
+	return nil
+}
+
+func (process *Process) validateGPU(workflowIdx, processIdx int) error {
+	return nil
+}
+
+func (process *Process) validateConfig(workflowIdx, processIdx int) error {
+	return nil
+}
+
 func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
 	if process.ObjectStore == nil {
 		return nil
@@ -75,7 +69,7 @@ func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
 
 	var totalError error
 	if process.ObjectStore.Name == "" {
-		totalError = errors.MergeErrors(
+		totalError = errors.Join(
 			totalError,
 			errors.MissingRequiredFieldError(
 				fmt.Sprintf("krt.workflows[%d].processes[%d].objectStore.name", workflowIdx, processIdx),
@@ -86,11 +80,11 @@ func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
 			process.ObjectStore.Name,
 			fmt.Sprintf("krt.workflows[%d].processes[%d].objectStore.name", workflowIdx, processIdx),
 		)
-		totalError = errors.MergeErrors(totalError, err)
+		totalError = errors.Join(totalError, err)
 	}
 
 	if !isValidObjectStoreScope(string(process.ObjectStore.Scope)) {
-		totalError = errors.MergeErrors(
+		totalError = errors.Join(
 			totalError,
 			errors.InvalidProcessObjectStoreScopeError(
 				fmt.Sprintf("krt.workflows[%d].processes[%d].objectStore.scope", workflowIdx, processIdx),
@@ -101,6 +95,23 @@ func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
 	return totalError
 }
 
+func (process *Process) validateSecrets(workflowIdx, processIdx int) error {
+	return nil
+}
+
+func (process *Process) validateSubscriptions(workflowIdx, processIdx int) error {
+	if process.Subscriptions == nil {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions",
+				workflowIdx,
+				processIdx,
+			),
+		)
+	}
+
+	return nil
+}
+
 func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 	if process.Networking == nil {
 		return nil
@@ -108,7 +119,7 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 
 	var totalError error
 	if process.Networking.TargetPort == 0 {
-		totalError = errors.MergeErrors(
+		totalError = errors.Join(
 			totalError,
 			errors.MissingRequiredFieldError(
 				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetPort", workflowIdx, processIdx),
@@ -117,7 +128,7 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 	}
 
 	if !isValidNetworkingProtocol(string(process.Networking.TargetProtocol)) {
-		totalError = errors.MergeErrors(
+		totalError = errors.Join(
 			totalError, errors.InvalidNetworkingProtocolError(
 				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetProtocol", workflowIdx, processIdx),
 			),
@@ -125,7 +136,7 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 	}
 
 	if process.Networking.DestinationPort == 0 {
-		totalError = errors.MergeErrors(
+		totalError = errors.Join(
 			totalError,
 			errors.MissingRequiredFieldError(
 				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.destinationPort", workflowIdx, processIdx),
@@ -134,7 +145,7 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 	}
 
 	if !isValidNetworkingProtocol(string(process.Networking.DestinationProtocol)) {
-		totalError = errors.MergeErrors(
+		totalError = errors.Join(
 			totalError,
 			errors.InvalidNetworkingProtocolError(
 				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.destinationProtocol", workflowIdx, processIdx),
@@ -151,10 +162,9 @@ func validateSubscritpions(processes []Process, workflowIdx int) error {
 	var totalError error
 
 	processTypesByNames, err := countProcessesSubscriptions(processes, workflowIdx)
-	totalError = errors.MergeErrors(totalError, err)
+	totalError = errors.Join(totalError, err)
 
-	err = checkSubscriptions(processes, workflowIdx, processTypesByNames)
-	totalError = errors.MergeErrors(totalError, err)
+	totalError = errors.Join(totalError, checkSubscriptions(processes, workflowIdx, processTypesByNames))
 
 	return totalError
 }
@@ -177,7 +187,7 @@ func countProcessesSubscriptions(processes []Process, workflowIdx int) (map[stri
 		var subscriptionAlreadyExists = make(map[string]bool)
 		for _, subscription := range process.Subscriptions {
 			if _, ok := subscriptionAlreadyExists[subscription]; ok {
-				totalError = errors.MergeErrors(
+				totalError = errors.Join(
 					totalError,
 					errors.DuplicatedProcessSubscriptionError(
 						fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
@@ -193,7 +203,7 @@ func countProcessesSubscriptions(processes []Process, workflowIdx int) (map[stri
 		}
 
 		if _, ok := processTypesByNames[process.Name]; ok {
-			totalError = errors.MergeErrors(
+			totalError = errors.Join(
 				totalError,
 				errors.DuplicatedProcessNameError(
 					fmt.Sprintf("krt.workflows[%d].processes[%d].name", workflowIdx, processIdx),
@@ -204,8 +214,7 @@ func countProcessesSubscriptions(processes []Process, workflowIdx int) (map[stri
 		}
 	}
 
-	err := checkProcessCount(processCountByType, workflowIdx)
-	totalError = errors.MergeErrors(totalError, err)
+	totalError = errors.Join(totalError, checkProcessCount(processCountByType, workflowIdx))
 
 	return processTypesByNames, totalError
 }
@@ -226,13 +235,13 @@ func checkSubscriptions(processes []Process, workflowIdx int, processTypesByName
 	for processIdx, process := range processes {
 		for _, subscription := range process.Subscriptions {
 			if process.Name == subscription {
-				totalError = errors.MergeErrors(totalError, errors.CannotSubscribeToItselfError(
+				totalError = errors.Join(totalError, errors.CannotSubscribeToItselfError(
 					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
 				))
 			}
 
 			if !isValidSubscription(process.Type, processTypesByNames[subscription]) {
-				totalError = errors.MergeErrors(totalError, errors.InvalidProcessSubscriptionError(
+				totalError = errors.Join(totalError, errors.InvalidProcessSubscriptionError(
 					string(process.Type),
 					string(processTypesByNames[subscription]),
 					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),

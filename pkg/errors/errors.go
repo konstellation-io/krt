@@ -9,23 +9,6 @@ func Join(errs ...error) error {
 	return errors.Join(errs...)
 }
 
-// Use join instead of merge
-func MergeErrors(err1, err2 error) error {
-	if err1 == nil && err2 == nil {
-		return nil
-	}
-
-	if err1 == nil && err2 != nil {
-		return err2
-	}
-
-	if err1 != nil && err2 == nil {
-		return err1
-	}
-
-	return fmt.Errorf("%w\n%w", err1, err2)
-}
-
 func Is(err, target error) bool {
 	return errors.Is(err, target)
 }

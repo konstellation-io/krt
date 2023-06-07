@@ -3,35 +3,13 @@ package krt
 import "github.com/konstellation-io/krt/pkg/errors"
 
 func (krt *Krt) Validate() error {
-	var totalError error
-
-	// all this in an errors.Join
-	err := krt.validateName()
-	totalError = errors.MergeErrors(totalError, err)
-
-	err = krt.validateDescription()
-	totalError = errors.MergeErrors(totalError, err)
-
-	err = krt.validateVersion()
-	totalError = errors.MergeErrors(totalError, err)
-
-	// separate this logic in a function
-	if len(krt.Workflows) == 0 {
-		totalError = errors.MergeErrors(
-			totalError,
-			errors.MissingRequiredFieldError("krt.workflows"),
-		)
-	} else {
-		err = validateWorkflowDuplicates(krt.Workflows)
-		totalError = errors.MergeErrors(totalError, err)
-
-		for idx, workflow := range krt.Workflows {
-			err := workflow.Validate(idx)
-			totalError = errors.MergeErrors(totalError, err)
-		}
-	}
-
-	return totalError
+	return errors.Join(
+		krt.validateName(),
+		krt.validateDescription(),
+		krt.validateVersion(),
+		krt.validateVersionConfig(),
+		krt.validateWorkflows(),
+	)
 }
 
 func (krt *Krt) validateName() error {
@@ -48,4 +26,29 @@ func (krt *Krt) validateDescription() error {
 
 func (krt *Krt) validateVersion() error {
 	return validateName(krt.Version, "krt.version")
+}
+
+func (krt *Krt) validateVersionConfig() error {
+	return nil
+}
+
+func (krt *Krt) validateWorkflows() error {
+	var totalError error
+
+	if len(krt.Workflows) == 0 {
+		totalError = errors.Join(
+			totalError,
+			errors.MissingRequiredFieldError("krt.workflows"),
+		)
+	} else {
+		err := validateWorkflowDuplicates(krt.Workflows)
+		totalError = errors.Join(totalError, err)
+
+		for idx, workflow := range krt.Workflows {
+			err := workflow.Validate(idx)
+			totalError = errors.Join(totalError, err)
+		}
+	}
+
+	return totalError
 }

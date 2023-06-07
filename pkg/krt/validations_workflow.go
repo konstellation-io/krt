@@ -7,30 +7,12 @@ import (
 )
 
 func (workflow *Workflow) Validate(workflowIdx int) error {
-	var totalError error
-
-	err := workflow.validateName(workflowIdx)
-	totalError = errors.MergeErrors(totalError, err)
-
-	err = workflow.validateType(workflowIdx)
-	totalError = errors.MergeErrors(totalError, err)
-
-	if len(workflow.Processes) == 0 {
-		totalError = errors.MergeErrors(
-			totalError,
-			errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes", workflowIdx)),
-		)
-	} else {
-		for idx, process := range workflow.Processes {
-			err := process.Validate(workflowIdx, idx)
-			totalError = errors.MergeErrors(totalError, err)
-		}
-
-		err := validateSubscritpions(workflow.Processes, workflowIdx)
-		totalError = errors.MergeErrors(totalError, err)
-	}
-
-	return totalError
+	return errors.Join(
+		workflow.validateName(workflowIdx),
+		workflow.validateType(workflowIdx),
+		workflow.validateVersionConfig(workflowIdx),
+		workflow.validateProcesses(workflowIdx),
+	)
 }
 
 func (workflow *Workflow) validateName(workflowIdx int) error {
@@ -45,13 +27,36 @@ func (workflow *Workflow) validateType(workflowIdx int) error {
 	return nil
 }
 
+func (workflow *Workflow) validateVersionConfig(workflowIdx int) error {
+	return nil
+}
+
+func (workflow *Workflow) validateProcesses(workflowIdx int) error {
+	var totalError error
+
+	if len(workflow.Processes) == 0 {
+		totalError = errors.Join(
+			totalError,
+			errors.MissingRequiredFieldError(fmt.Sprintf("krt.workflows[%d].processes", workflowIdx)),
+		)
+	} else {
+		for idx, process := range workflow.Processes {
+			totalError = errors.Join(totalError, process.Validate(workflowIdx, idx))
+		}
+
+		totalError = errors.Join(totalError, validateSubscritpions(workflow.Processes, workflowIdx))
+	}
+
+	return totalError
+}
+
 func validateWorkflowDuplicates(workflows []Workflow) error {
 	var totalError error
 
 	workflowNames := make(map[string]bool)
 	for workflowIdx, workflow := range workflows {
 		if workflowNames[workflow.Name] {
-			totalError = errors.MergeErrors(
+			totalError = errors.Join(
 				totalError,
 				errors.DuplicatedWorkflowNameError(
 					fmt.Sprintf("krt.workflows[%d].name", workflowIdx),
