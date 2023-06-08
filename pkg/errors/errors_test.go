@@ -110,3 +110,21 @@ func TestCannotSubscribeToItselfError(t *testing.T) {
 
 	assert.ErrorIs(t, err, ErrCannotSubscribeToItself)
 }
+
+func TestInvalidYamlError(t *testing.T) {
+	err := InvalidYamlError(errTest)
+
+	assert.ErrorIs(t, err, ErrInvalidYaml)
+}
+
+func TestReadingFileError(t *testing.T) {
+	err := ReadingFileError(errTest)
+
+	assert.ErrorIs(t, err, ErrReadingFile)
+}
+
+func TestSetDefaultsError(t *testing.T) {
+	err := SetDefaultsError(errTest)
+
+	assert.ErrorIs(t, err, ErrSetDefaults)
+}
