@@ -20,7 +20,7 @@ func ParseKrt(krtYaml []byte) (*krt.Krt, error) {
 		return nil, errors.InvalidYamlError(err)
 	}
 
-	err = setDefaultsForStruct(&parsedKrt)
+	err = defaults.Set(&parsedKrt)
 	if err != nil {
 		return nil, errors.SetDefaultsError(err)
 	}
@@ -36,13 +36,4 @@ func ParseFile(yamlFile string) (*krt.Krt, error) {
 	}
 
 	return ParseKrt(krtYml)
-}
-
-func setDefaultsForStruct(v interface{}) error {
-	err := defaults.Set(v)
-	if err != nil {
-		return errors.SetDefaultsError(err)
-	}
-
-	return nil
 }

@@ -34,31 +34,6 @@ func TestInvalidFile(t *testing.T) {
 	assert.Nil(t, krt)
 }
 
-func TestInvalidDefaults(t *testing.T) {
-	type processAlias struct {
-		Replicas int `yaml:"replicas" default:"invalid"`
-	}
-	type workflowAlias struct {
-		Processes []processAlias `yaml:"processes"`
-	}
-	type krtAlias struct {
-		Workflows []workflowAlias `yaml:"workflows"`
-	}
-
-	alias := krtAlias{
-		Workflows: []workflowAlias{
-			{
-				Processes: []processAlias{
-					{},
-				},
-			},
-		},
-	}
-	err := setDefaultsForStruct(&alias.Workflows[0].Processes[0].Replicas)
-	assert.Error(t, err)
-	assert.ErrorIs(t, err, errors.ErrSetDefaults)
-}
-
 func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 	parsedKrt, err := ParseFile("./test_files/missing_defaults_krt.yaml")
 	assert.NoError(t, err)
