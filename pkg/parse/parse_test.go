@@ -20,6 +20,45 @@ func TestCorrectKrtFile(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestNonExistentFile(t *testing.T) {
+	krt, err := ParseFile("./test_files/non_existent_krt.yaml")
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, errors.ErrReadingFile)
+	assert.Nil(t, krt)
+}
+
+func TestInvalidFile(t *testing.T) {
+	krt, err := ParseFile("./test_files/invalid_file.yaml")
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, errors.ErrInvalidYaml)
+	assert.Nil(t, krt)
+}
+
+func TestInvalidDefaults(t *testing.T) {
+	type processAlias struct {
+		Replicas int `yaml:"replicas" default:"invalid"`
+	}
+	type workflowAlias struct {
+		Processes []processAlias `yaml:"processes"`
+	}
+	type krtAlias struct {
+		Workflows []workflowAlias `yaml:"workflows"`
+	}
+
+	alias := krtAlias{
+		Workflows: []workflowAlias{
+			{
+				Processes: []processAlias{
+					{},
+				},
+			},
+		},
+	}
+	err := setDefaultsForStruct(&alias.Workflows[0].Processes[0].Replicas)
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, errors.ErrSetDefaults)
+}
+
 func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 	parsedKrt, err := ParseFile("./test_files/missing_defaults_krt.yaml")
 	assert.NoError(t, err)

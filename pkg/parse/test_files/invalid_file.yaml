@@ -1,0 +1,14 @@
+name: valid-name
+description: This is not a valid krt file.
+version: v1.0.0
+
+workflows:
+  - name: valid-name
+    config: #config should be a map
+      - wrong: config
+      - wrong2: config
+    processes:
+      - name: entrypoint
+        type: trigger
+        subscriptions:
+          - 'entrypoint'
