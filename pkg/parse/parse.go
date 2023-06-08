@@ -8,11 +8,11 @@ import (
 
 	"github.com/konstellation-io/krt/pkg/errors"
 	"github.com/konstellation-io/krt/pkg/krt"
-	// talk about this shadow import
 )
 
 // ParseKrt parses a Krt struct from a given yaml bytes.
 func ParseKrt(krtYaml []byte) (*krt.Krt, error) {
+	// talk about this shadow import
 	var parsedKrt krt.Krt
 
 	err := yaml.Unmarshal(krtYaml, &parsedKrt)
