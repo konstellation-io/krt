@@ -51,6 +51,26 @@ func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 	}
 }
 
+func TestNotValidKrt(t *testing.T) {
+	parsedKrt, err := ParseFile("./test_files/not_valid_krt.yaml")
+	assert.NoError(t, err)
+
+	err = parsedKrt.Validate()
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, errors.ErrInvalidFieldName)
+	assert.Contains(t, err.Error(), "krt.name", "krt.version", "krt.workflows[0].name")
+	assert.ErrorIs(t, err, errors.ErrInvalidWorkflowType)
+	assert.Contains(t, err.Error(), "krt.workflows[0].type")
+	assert.ErrorIs(t, err, errors.ErrMissingRequiredField)
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].image")
+	assert.ErrorIs(t, err, errors.ErrNotEnoughProcesses)
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes")
+	assert.ErrorIs(t, err, errors.ErrCannotSubscribeToItself)
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].subscriptions.entrypoint")
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessSubscription)
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].subscriptions.entrypoint")
+}
+
 func TestNotValidTypesKrt(t *testing.T) {
 	parsedKrt, err := ParseFile("./test_files/not_valid_types_krt.yaml")
 	assert.NoError(t, err)
