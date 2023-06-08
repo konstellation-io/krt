@@ -20,10 +20,7 @@ func ParseKrt(krtYaml []byte) (*krt.Krt, error) {
 		return nil, errors.InvalidYamlError(err)
 	}
 
-	err = defaults.Set(&parsedKrt)
-	if err != nil {
-		return nil, errors.SetDefaultsError(err)
-	}
+	defaults.MustSet(&parsedKrt)
 
 	return &parsedKrt, nil
 }

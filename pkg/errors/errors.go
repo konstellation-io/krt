@@ -92,13 +92,8 @@ func CannotSubscribeToItselfError(field string) error {
 
 // Parse errors.
 
-var ErrSetDefaults = errors.New("error setting defaults")
 var ErrInvalidYaml = errors.New("invalid yaml")
 var ErrReadingFile = errors.New("error reading file")
-
-func SetDefaultsError(err error) error {
-	return fmt.Errorf("%w: %w", ErrSetDefaults, err)
-}
 
 func InvalidYamlError(err error) error {
 	return fmt.Errorf("error unmarshalling krt yaml, %w: %w", ErrInvalidYaml, err)
