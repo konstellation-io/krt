@@ -3,8 +3,11 @@
 package parse
 
 import (
+	"fmt"
 	"testing"
 
+	"bou.ke/monkey"
+	"github.com/creasty/defaults"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -31,6 +34,17 @@ func TestInvalidFile(t *testing.T) {
 	krt, err := ParseFile("./test_files/invalid_file.yaml")
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, errors.ErrInvalidYaml)
+	assert.Nil(t, krt)
+}
+
+func TestSetDefaultsWithError(t *testing.T) {
+	monkey.Patch(defaults.Set, func(interface{}) error {
+		return fmt.Errorf("patched error")
+	})
+
+	krt, err := ParseFile("./test_files/missing_defaults_krt.yaml")
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, errors.ErrSetDefaults)
 	assert.Nil(t, krt)
 }
 
