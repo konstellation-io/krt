@@ -41,8 +41,8 @@ type Process struct {
 	Name          string              `yaml:"name"`
 	Type          ProcessType         `yaml:"type"`
 	Image         string              `yaml:"image"`
-	Replicas      *int                `yaml:"replicas"`
-	GPU           *bool               `yaml:"gpu"`
+	Replicas      *int                `yaml:"replicas" default:"1"`
+	GPU           *bool               `yaml:"gpu" default:"false" `
 	Config        map[string]string   `yaml:"config"`
 	ObjectStore   *ProcessObjectStore `yaml:"objectStore"`
 	Secrets       map[string]string   `yaml:"secrets"`
@@ -94,10 +94,10 @@ func isValidObjectStoreScope(scope string) bool {
 }
 
 type ProcessNetworking struct {
-	TargetPort          int                `yaml:"targetPort"`
-	TargetProtocol      NetworkingProtocol `yaml:"targetProtocol"`
-	DestinationPort     int                `yaml:"destinationPort"`
-	DestinationProtocol NetworkingProtocol `yaml:"destinationProtocol"`
+	TargetPort          int                `yaml:"targetPort" default:"9000" `
+	TargetProtocol      NetworkingProtocol `yaml:"targetProtocol" default:"TCP" `
+	DestinationPort     int                `yaml:"destinationPort" default:"9000" `
+	DestinationProtocol NetworkingProtocol `yaml:"destinationProtocol" default:"TCP" `
 }
 
 type NetworkingProtocol string

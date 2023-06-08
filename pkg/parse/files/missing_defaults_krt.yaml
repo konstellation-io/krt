@@ -1,4 +1,4 @@
-name: Demo email classificator
+name: email-classificator
 description: Demo email classificator for branching features.
 version: v1.0.0
 
@@ -7,6 +7,7 @@ config:
   key2: value2
 workflows:
   - name: py-classificator
+    type: data
     config:
       key1: value1
       key2: value2
@@ -14,16 +15,17 @@ workflows:
       - name: entrypoint
         type: trigger
         image: konstellation/kai-grpc-trigger:latest
+        gpu: true
+        replicas: 2
         subscriptions:
           - 'exitpoint'
         networking:
-          target_port: 9000
-          destination_port: 9000
+          targetProtocol: 'UDP'
+          destinationProtocol: 'UDP'
 
       - name: etl
         type: task
-        build:
-          dockerfile: /path/to/Dockerfile
+        image: konstellation/kai-etl-task:latest
         config:
           key1: value1
           key2: value2
@@ -68,17 +70,16 @@ workflows:
           - 'stats-storer'
 
   - name: go-classificator
-    entrypoint: GoClassificator
-    exitpoint: exitpoint
-    nodes:
+    type: data
+    processes:
       - name: entrypoint
         type: trigger
         image: konstellation/kai-grpc-trigger:latest
         subscriptions:
           - 'exitpoint'
         networking:
-          target_port: 9000
-          destination_port: 9000
+          targetPort: 8000
+          destinationPort: 8000
 
       - name: etl
         type: task
