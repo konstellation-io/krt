@@ -46,6 +46,8 @@ func TestSetDefaultsWithError(t *testing.T) {
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, errors.ErrSetDefaults)
 	assert.Nil(t, krt)
+
+	monkey.Unpatch(defaults.Set)
 }
 
 func TestCorrectKrtFileSettingDefaults(t *testing.T) {
