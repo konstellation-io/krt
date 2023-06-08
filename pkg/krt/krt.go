@@ -24,7 +24,7 @@ const (
 	WorkflowTypeServing  WorkflowType = "serving"
 )
 
-func isValidWorkflowType(workflowType string) bool {
+func (wt WorkflowType) IsValid() bool {
 	var workflowTypeMap = map[string]WorkflowType{
 		string(WorkflowTypeData):     WorkflowTypeData,
 		string(WorkflowTypeTraining): WorkflowTypeTraining,
@@ -32,7 +32,7 @@ func isValidWorkflowType(workflowType string) bool {
 		string(WorkflowTypeServing):  WorkflowTypeServing,
 	}
 
-	_, ok := workflowTypeMap[workflowType]
+	_, ok := workflowTypeMap[string(wt)]
 
 	return ok
 }
@@ -58,14 +58,14 @@ const (
 	ProcessTypeExit    ProcessType = "exit"
 )
 
-func isValidProcessType(processType string) bool {
+func (pt ProcessType) IsValid() bool {
 	var processTypeMap = map[string]ProcessType{
 		string(ProcessTypeTrigger): ProcessTypeTrigger,
 		string(ProcessTypeTask):    ProcessTypeTask,
 		string(ProcessTypeExit):    ProcessTypeExit,
 	}
 
-	_, ok := processTypeMap[processType]
+	_, ok := processTypeMap[string(pt)]
 
 	return ok
 }
@@ -82,13 +82,13 @@ const (
 	ObjectStoreScopeWorkflow ObjectStoreScope = "workflow"
 )
 
-func isValidObjectStoreScope(scope string) bool {
+func (s ObjectStoreScope) IsValid() bool {
 	var objectStoreScopeMap = map[string]ObjectStoreScope{
 		string(ObjectStoreScopeProduct):  ObjectStoreScopeProduct,
 		string(ObjectStoreScopeWorkflow): ObjectStoreScopeWorkflow,
 	}
 
-	_, ok := objectStoreScopeMap[scope]
+	_, ok := objectStoreScopeMap[string(s)]
 
 	return ok
 }
@@ -107,13 +107,13 @@ const (
 	NetworkingProtocolUDP NetworkingProtocol = "UDP"
 )
 
-func isValidNetworkingProtocol(protocol string) bool {
+func (np NetworkingProtocol) IsValid() bool {
 	var networkingProtocolMap = map[string]NetworkingProtocol{
 		string(NetworkingProtocolTCP): NetworkingProtocolTCP,
 		string(NetworkingProtocolUDP): NetworkingProtocolUDP,
 	}
 
-	_, ok := networkingProtocolMap[protocol]
+	_, ok := networkingProtocolMap[string(np)]
 
 	return ok
 }

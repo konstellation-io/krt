@@ -31,7 +31,7 @@ func (process *Process) validateName(workflowIdx, processIdx int) error {
 }
 
 func (process *Process) validateType(workflowIdx, processIdx int) error {
-	if !isValidProcessType(string(process.Type)) {
+	if !process.Type.IsValid() {
 		return errors.InvalidProcessTypeError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].type", workflowIdx, processIdx),
 		)
@@ -83,7 +83,7 @@ func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
 		totalError = errors.Join(totalError, err)
 	}
 
-	if !isValidObjectStoreScope(string(process.ObjectStore.Scope)) {
+	if !process.ObjectStore.Scope.IsValid() {
 		totalError = errors.Join(
 			totalError,
 			errors.InvalidProcessObjectStoreScopeError(
@@ -127,7 +127,7 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 		)
 	}
 
-	if !isValidNetworkingProtocol(string(process.Networking.TargetProtocol)) {
+	if !process.Networking.TargetProtocol.IsValid() {
 		totalError = errors.Join(
 			totalError, errors.InvalidNetworkingProtocolError(
 				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetProtocol", workflowIdx, processIdx),
@@ -144,7 +144,7 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 		)
 	}
 
-	if !isValidNetworkingProtocol(string(process.Networking.DestinationProtocol)) {
+	if !process.Networking.DestinationProtocol.IsValid() {
 		totalError = errors.Join(
 			totalError,
 			errors.InvalidNetworkingProtocolError(
