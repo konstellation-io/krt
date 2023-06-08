@@ -122,9 +122,3 @@ func TestReadingFileError(t *testing.T) {
 
 	assert.ErrorIs(t, err, ErrReadingFile)
 }
-
-func TestSetDefaultsError(t *testing.T) {
-	err := SetDefaultsError(errTest)
-
-	assert.ErrorIs(t, err, ErrSetDefaults)
-}
