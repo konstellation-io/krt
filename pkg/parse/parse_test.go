@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/konstellation-io/krt/pkg/errors"
 	"github.com/konstellation-io/krt/pkg/krt"
 )
 
@@ -48,4 +49,16 @@ func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestNotValidTypesKrt(t *testing.T) {
+	parsedKrt, err := ParseFile("./files/not_valid_types_krt.yaml")
+	assert.NoError(t, err)
+
+	err = parsedKrt.Validate()
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessType)
+	assert.ErrorIs(t, err, errors.ErrInvalidWorkflowType)
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessObjectStoreScope)
+	assert.ErrorIs(t, err, errors.ErrInvalidNetworkingProtocol)
 }
