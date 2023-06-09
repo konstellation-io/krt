@@ -1,6 +1,6 @@
 //go:build unit
 
-package parse
+package parse_test
 
 import (
 	"testing"
@@ -10,10 +10,11 @@ import (
 
 	"github.com/konstellation-io/krt/pkg/errors"
 	"github.com/konstellation-io/krt/pkg/krt"
+	"github.com/konstellation-io/krt/pkg/parse"
 )
 
 func TestCorrectKrtFile(t *testing.T) {
-	krt, err := ParseFile("./test_files/correct_krt.yaml")
+	krt, err := parse.ParseFile("./test_files/correct_krt.yaml")
 	assert.NoError(t, err)
 
 	err = krt.Validate()
@@ -21,21 +22,21 @@ func TestCorrectKrtFile(t *testing.T) {
 }
 
 func TestNonExistentFile(t *testing.T) {
-	krt, err := ParseFile("./test_files/non_existent_krt.yaml")
+	krt, err := parse.ParseFile("./test_files/non_existent_krt.yaml")
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, errors.ErrReadingFile)
 	assert.Nil(t, krt)
 }
 
 func TestInvalidFile(t *testing.T) {
-	krt, err := ParseFile("./test_files/invalid_file.yaml")
+	krt, err := parse.ParseFile("./test_files/invalid_file.yaml")
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, errors.ErrInvalidYaml)
 	assert.Nil(t, krt)
 }
 
 func TestCorrectKrtFileSettingDefaults(t *testing.T) {
-	parsedKrt, err := ParseFile("./test_files/missing_defaults_krt.yaml")
+	parsedKrt, err := parse.ParseFile("./test_files/missing_defaults_krt.yaml")
 	assert.NoError(t, err)
 
 	err = parsedKrt.Validate()
@@ -66,7 +67,7 @@ func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 }
 
 func TestNotValidKrt(t *testing.T) {
-	parsedKrt, err := ParseFile("./test_files/not_valid_krt.yaml")
+	parsedKrt, err := parse.ParseFile("./test_files/not_valid_krt.yaml")
 	assert.NoError(t, err)
 
 	err = parsedKrt.Validate()
@@ -86,7 +87,7 @@ func TestNotValidKrt(t *testing.T) {
 }
 
 func TestNotValidTypesKrt(t *testing.T) {
-	parsedKrt, err := ParseFile("./test_files/not_valid_types_krt.yaml")
+	parsedKrt, err := parse.ParseFile("./test_files/not_valid_types_krt.yaml")
 	assert.NoError(t, err)
 
 	err = parsedKrt.Validate()
