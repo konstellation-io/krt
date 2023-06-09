@@ -5,20 +5,8 @@ import (
 	"fmt"
 )
 
-func MergeErrors(err1, err2 error) error {
-	if err1 == nil && err2 == nil {
-		return nil
-	}
-
-	if err1 == nil && err2 != nil {
-		return err2
-	}
-
-	if err1 != nil && err2 == nil {
-		return err1
-	}
-
-	return fmt.Errorf("%w\n%w", err1, err2)
+func Join(errs ...error) error {
+	return errors.Join(errs...)
 }
 
 func Is(err, target error) bool {
@@ -33,7 +21,6 @@ var ErrDuplicatedWorkflowName = errors.New("workflow names must be unique")
 var ErrInvalidWorkflowType = errors.New("invalid workflow type, must be either 'data', 'training' 'feedback' or 'serving'")
 
 var ErrInvalidProcessType = errors.New("invalid process type, must be either 'trigger', 'task' or 'exit'")
-var ErrInvalidProcessBuild = errors.New("invalid process build, must have either 'image' or 'dockerfile'")
 var ErrInvalidProcessObjectStoreScope = errors.New("invalid process object store scope, must be either 'product' or 'workflow'")
 var ErrInvalidNetworkingProtocol = errors.New("invalid networking protocol, must be either 'UDP' or 'TCP'")
 
@@ -65,10 +52,6 @@ func InvalidWorkflowTypeError(field string) error {
 
 func InvalidProcessTypeError(field string) error {
 	return fmt.Errorf("%w: %s", ErrInvalidProcessType, field)
-}
-
-func InvalidProcessBuildError(field string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidProcessBuild, field)
 }
 
 func InvalidProcessObjectStoreScopeError(field string) error {
