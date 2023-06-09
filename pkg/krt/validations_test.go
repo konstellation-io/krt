@@ -1,6 +1,6 @@
 //go:build unit
 
-package krt
+package krt_test
 
 import (
 	"testing"
@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/konstellation-io/krt/pkg/errors"
+	"github.com/konstellation-io/krt/pkg/krt"
 )
 
 const largeName = "this-name-is-higher-than-the-maximum-allowed"
@@ -15,7 +16,7 @@ const invalidName = "Invalid string!"
 
 type test struct {
 	name        string
-	krtYaml     *Krt
+	krtYaml     *krt.Krt
 	wantError   bool
 	errorType   error
 	errorString string
@@ -90,9 +91,9 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't required object store name if declared",
 			krtYaml: NewKrtBuilder().WithProcessObjectStore(
-				&ProcessObjectStore{
+				&krt.ProcessObjectStore{
 					Name:  "",
-					Scope: ObjectStoreScopeProduct,
+					Scope: krt.ObjectStoreScopeProduct,
 				},
 				0,
 			).Build(),
@@ -110,7 +111,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't required networking target port if declared",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
-				&ProcessNetworking{
+				&krt.ProcessNetworking{
 					TargetProtocol:      "UDP",
 					DestinationPort:     9000,
 					DestinationProtocol: "UDP",
@@ -124,7 +125,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't required networking destination port if declared",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
-				&ProcessNetworking{
+				&krt.ProcessNetworking{
 					TargetPort:          9000,
 					TargetProtocol:      "UDP",
 					DestinationProtocol: "UDP",
@@ -150,7 +151,7 @@ func TestKrtValidator(t *testing.T) {
 			krtYaml:     NewKrtBuilder().WithVersion(largeName).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidLengthField,
-			errorString: errors.InvalidLengthFieldError("krt.version", maxFieldNameLength).Error(),
+			errorString: errors.InvalidLengthFieldError("krt.version", krt.MaxFieldNameLength).Error(),
 		},
 		{
 			name:        "fails if krt workflow name has an invalid format",
@@ -164,20 +165,20 @@ func TestKrtValidator(t *testing.T) {
 			krtYaml:     NewKrtBuilder().WithWorkflowName(largeName).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidLengthField,
-			errorString: errors.InvalidLengthFieldError("krt.workflows[0].name", maxFieldNameLength).Error(),
+			errorString: errors.InvalidLengthFieldError("krt.workflows[0].name", krt.MaxFieldNameLength).Error(),
 		},
 		{
 			name: "fails if krt workflow name is duplicated",
-			krtYaml: NewKrtBuilder().WithWorkflows([]Workflow{
+			krtYaml: NewKrtBuilder().WithWorkflows([]krt.Workflow{
 				{
 					Name:      "test-workflow",
-					Type:      WorkflowTypeTraining,
-					Processes: []Process{},
+					Type:      krt.WorkflowTypeTraining,
+					Processes: []krt.Process{},
 				},
 				{
 					Name:      "test-workflow",
-					Type:      WorkflowTypeTraining,
-					Processes: []Process{},
+					Type:      krt.WorkflowTypeTraining,
+					Processes: []krt.Process{},
 				},
 			}).Build(),
 			wantError:   true,
@@ -196,14 +197,14 @@ func TestKrtValidator(t *testing.T) {
 			krtYaml:     NewKrtBuilder().WithProcessName(largeName, 0).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidLengthField,
-			errorString: errors.InvalidLengthFieldError("krt.workflows[0].processes[0].name", maxFieldNameLength).Error(),
+			errorString: errors.InvalidLengthFieldError("krt.workflows[0].processes[0].name", krt.MaxFieldNameLength).Error(),
 		},
 		{
 			name: "fails if krt process object store name has an invalid format",
 			krtYaml: NewKrtBuilder().WithProcessObjectStore(
-				&ProcessObjectStore{
+				&krt.ProcessObjectStore{
 					Name:  invalidName,
-					Scope: ObjectStoreScopeProduct,
+					Scope: krt.ObjectStoreScopeProduct,
 				},
 				0,
 			).Build(),
@@ -214,27 +215,27 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt process object store name has an invalid length",
 			krtYaml: NewKrtBuilder().WithProcessObjectStore(
-				&ProcessObjectStore{
+				&krt.ProcessObjectStore{
 					Name:  largeName,
-					Scope: ObjectStoreScopeProduct,
+					Scope: krt.ObjectStoreScopeProduct,
 				},
 				0,
 			).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidLengthField,
-			errorString: errors.InvalidLengthFieldError("krt.workflows[0].processes[0].objectStore.name", maxFieldNameLength).Error(),
+			errorString: errors.InvalidLengthFieldError("krt.workflows[0].processes[0].objectStore.name", krt.MaxFieldNameLength).Error(),
 		},
 		{
 			name: "fails if krt process name is duplicated",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]krt.Process{
 				{
 					Name:  "test-process",
-					Type:  ProcessTypeTrigger,
+					Type:  krt.ProcessTypeTrigger,
 					Image: "test-image",
 				},
 				{
 					Name:  "test-process",
-					Type:  ProcessTypeTask,
+					Type:  krt.ProcessTypeTask,
 					Image: "test-image",
 				},
 			}).Build(),
@@ -262,7 +263,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't a valid process object store scope",
 			krtYaml: NewKrtBuilder().WithProcessObjectStore(
-				&ProcessObjectStore{
+				&krt.ProcessObjectStore{
 					Name:  "test",
 					Scope: "invalid",
 				},
@@ -275,7 +276,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't a valid process networking target protocol",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
-				&ProcessNetworking{
+				&krt.ProcessNetworking{
 					TargetPort:          9000,
 					TargetProtocol:      invalidName,
 					DestinationPort:     9000,
@@ -290,7 +291,7 @@ func TestKrtValidator(t *testing.T) {
 		{
 			name: "fails if krt hasn't a valid process networking destination protocol",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
-				&ProcessNetworking{
+				&krt.ProcessNetworking{
 					TargetPort:          9000,
 					TargetProtocol:      "UDP",
 					DestinationPort:     9000,
@@ -307,22 +308,22 @@ func TestKrtValidator(t *testing.T) {
 	invalidSubscriptionTests := []test{
 		{
 			name: "fails if krt has not enough processes",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]krt.Process{
 				{
 					Name:          "test-trigger",
-					Type:          ProcessTypeTrigger,
+					Type:          krt.ProcessTypeTrigger,
 					Image:         "test-trigger-image",
 					Subscriptions: []string{"test-task-1"},
 				},
 				{
 					Name:          "test-task-1",
-					Type:          ProcessTypeTask,
+					Type:          krt.ProcessTypeTask,
 					Image:         "test-task-image",
 					Subscriptions: []string{"test-task-2"},
 				},
 				{
 					Name:          "test-task-2",
-					Type:          ProcessTypeTask,
+					Type:          krt.ProcessTypeTask,
 					Image:         "test-task-image",
 					Subscriptions: []string{"test-task-1"},
 				},
@@ -333,16 +334,16 @@ func TestKrtValidator(t *testing.T) {
 		},
 		{
 			name: "fails if krt has duplicated process subscriptions",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]krt.Process{
 				{
 					Name:          "test-trigger",
-					Type:          ProcessTypeTrigger,
+					Type:          krt.ProcessTypeTrigger,
 					Image:         "test-trigger-image",
 					Subscriptions: []string{"test-exit", "test-exit"},
 				},
 				{
 					Name:          "test-exit",
-					Type:          ProcessTypeExit,
+					Type:          krt.ProcessTypeExit,
 					Image:         "test-exit-image",
 					Subscriptions: []string{"test-trigger"},
 				},
@@ -353,22 +354,22 @@ func TestKrtValidator(t *testing.T) {
 		},
 		{
 			name: "fails if krt has invalid process subscriptions",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]krt.Process{
 				{
 					Name:          "test-trigger",
-					Type:          ProcessTypeTrigger,
+					Type:          krt.ProcessTypeTrigger,
 					Image:         "test-trigger-image",
 					Subscriptions: []string{"test-exit", "test-task"},
 				},
 				{
 					Name:          "test-task",
-					Type:          ProcessTypeTask,
+					Type:          krt.ProcessTypeTask,
 					Image:         "test-task-image",
 					Subscriptions: []string{"test-trigger"},
 				},
 				{
 					Name:          "test-exit",
-					Type:          ProcessTypeExit,
+					Type:          krt.ProcessTypeExit,
 					Image:         "test-exit-image",
 					Subscriptions: []string{"test-trigger"},
 				},
@@ -376,17 +377,17 @@ func TestKrtValidator(t *testing.T) {
 			wantError: true,
 			errorType: errors.ErrInvalidProcessSubscription,
 			errorString: errors.InvalidProcessSubscriptionError(
-				string(ProcessTypeTrigger),
-				string(ProcessTypeTask),
+				string(krt.ProcessTypeTrigger),
+				string(krt.ProcessTypeTask),
 				"krt.workflows[0].processes[0].subscriptions",
 			).Error(),
 		},
 		{
 			name: "fails if krt has a process subscribing to itself",
-			krtYaml: NewKrtBuilder().WithProcesses([]Process{
+			krtYaml: NewKrtBuilder().WithProcesses([]krt.Process{
 				{
 					Name:          "test-trigger",
-					Type:          ProcessTypeTrigger,
+					Type:          krt.ProcessTypeTrigger,
 					Image:         "test-trigger-image",
 					Subscriptions: []string{"test-trigger"},
 				},
