@@ -1,0 +1,11 @@
+name: not a valid name!
+description: This is not a valid krt file.
+version: v1.0.0/1
+
+workflows:
+  - name: not a valid name!
+    processes:
+      - name: entrypoint
+        type: trigger
+        subscriptions:
+          - 'entrypoint'

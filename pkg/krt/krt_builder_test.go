@@ -1,25 +1,27 @@
 //go:build unit
 
-package krt
+package krt_test
+
+import "github.com/konstellation-io/krt/pkg/krt"
 
 type KrtBuilder struct {
-	krtYaml *Krt
+	krtYaml *krt.Krt
 }
 
 func NewKrtBuilder() *KrtBuilder {
 	return &KrtBuilder{
-		krtYaml: &Krt{
+		krtYaml: &krt.Krt{
 			Name:        "test-krt",
 			Description: "Test description",
-			Version:     "version-name",
-			Workflows: []Workflow{
+			Version:     "v1.0",
+			Workflows: []krt.Workflow{
 				{
 					Name: "test-workflow",
-					Type: WorkflowTypeTraining,
-					Processes: []Process{
+					Type: krt.WorkflowTypeTraining,
+					Processes: []krt.Process{
 						{
 							Name:  "test-trigger",
-							Type:  ProcessTypeTrigger,
+							Type:  krt.ProcessTypeTrigger,
 							Image: "test-trigger-image",
 							Subscriptions: []string{
 								"test-exit",
@@ -27,7 +29,7 @@ func NewKrtBuilder() *KrtBuilder {
 						},
 						{
 							Name:  "test-exit",
-							Type:  ProcessTypeExit,
+							Type:  krt.ProcessTypeExit,
 							Image: "test-exit-image",
 							Subscriptions: []string{
 								"test-trigger",
@@ -60,7 +62,7 @@ func (k *KrtBuilder) WithVersionConfig(config map[string]string) *KrtBuilder {
 	return k
 }
 
-func (k *KrtBuilder) WithWorkflows(workflows []Workflow) *KrtBuilder {
+func (k *KrtBuilder) WithWorkflows(workflows []krt.Workflow) *KrtBuilder {
 	k.krtYaml.Workflows = workflows
 	return k
 }
@@ -70,12 +72,12 @@ func (k *KrtBuilder) WithWorkflowName(name string) *KrtBuilder {
 	return k
 }
 
-func (k *KrtBuilder) WithWorkflowType(workflowType WorkflowType) *KrtBuilder {
+func (k *KrtBuilder) WithWorkflowType(workflowType krt.WorkflowType) *KrtBuilder {
 	k.krtYaml.Workflows[0].Type = workflowType
 	return k
 }
 
-func (k *KrtBuilder) WithProcesses(processes []Process) *KrtBuilder {
+func (k *KrtBuilder) WithProcesses(processes []krt.Process) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes = processes
 	return k
 }
@@ -85,7 +87,7 @@ func (k *KrtBuilder) WithProcessName(name string, processIdx int) *KrtBuilder {
 	return k
 }
 
-func (k *KrtBuilder) WithProcessType(processType ProcessType, processIdx int) *KrtBuilder {
+func (k *KrtBuilder) WithProcessType(processType krt.ProcessType, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Type = processType
 	return k
 }
@@ -110,7 +112,7 @@ func (k *KrtBuilder) WithProcessConfig(config map[string]string, processIdx int)
 	return k
 }
 
-func (k *KrtBuilder) WithProcessObjectStore(objectStore *ProcessObjectStore, processIdx int) *KrtBuilder {
+func (k *KrtBuilder) WithProcessObjectStore(objectStore *krt.ProcessObjectStore, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].ObjectStore = objectStore
 	return k
 }
@@ -125,11 +127,11 @@ func (k *KrtBuilder) WithProcessSubscriptions(subscriptions []string, processIdx
 	return k
 }
 
-func (k *KrtBuilder) WithProcessNetworking(networking *ProcessNetworking, processIdx int) *KrtBuilder {
+func (k *KrtBuilder) WithProcessNetworking(networking *krt.ProcessNetworking, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Networking = networking
 	return k
 }
 
-func (k *KrtBuilder) Build() *Krt {
+func (k *KrtBuilder) Build() *krt.Krt {
 	return k.krtYaml
 }

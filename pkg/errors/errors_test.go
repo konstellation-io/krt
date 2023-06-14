@@ -1,24 +1,26 @@
 //go:build unit
 
-package errors
+package errors_test
 
 import (
-	"errors"
+	errUtils "errors"
 	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/konstellation-io/krt/pkg/errors"
 )
 
-var errTest = errors.New("test error")
-var errTestAlternative = errors.New("test error alternative")
+var errTest = errUtils.New("test error")
+var errTestAlternative = errUtils.New("test error alternative")
 
 func wrapError(err error) error {
 	return fmt.Errorf("%w: wrap error", err)
 }
 
 func TestErrorsJoin(t *testing.T) {
-	err := Join(
+	err := errors.Join(
 		errTest,
 		errTestAlternative,
 	)
@@ -29,84 +31,80 @@ func TestErrorsJoin(t *testing.T) {
 
 func TestIs(t *testing.T) {
 	err := wrapError(errTest)
-
-	assert.Equal(t, errors.Is(err, errTest), Is(err, errTest))
+	assert.Equal(t, errUtils.Is(err, errTest), errors.Is(err, errTest))
 }
 
 func TestMissingRequiredFieldError(t *testing.T) {
-	err := MissingRequiredFieldError("test")
-
-	assert.ErrorIs(t, err, ErrMissingRequiredField)
+	err := errors.MissingRequiredFieldError("test")
+	assert.ErrorIs(t, err, errors.ErrMissingRequiredField)
 }
 
 func TestInvalidFieldNameError(t *testing.T) {
-	err := InvalidFieldNameError("test")
-
-	assert.ErrorIs(t, err, ErrInvalidFieldName)
+	err := errors.InvalidFieldNameError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidFieldName)
 }
 
 func TestInvalidLengthFieldError(t *testing.T) {
-	err := InvalidLengthFieldError("test", 10)
-
-	assert.ErrorIs(t, err, ErrInvalidLengthField)
+	err := errors.InvalidLengthFieldError("test", 10)
+	assert.ErrorIs(t, err, errors.ErrInvalidLengthField)
 }
 
 func TestDuplicatedWorkflowNameError(t *testing.T) {
-	err := DuplicatedWorkflowNameError("test")
-
-	assert.ErrorIs(t, err, ErrDuplicatedWorkflowName)
+	err := errors.DuplicatedWorkflowNameError("test")
+	assert.ErrorIs(t, err, errors.ErrDuplicatedWorkflowName)
 }
 
 func TestInvalidWorkflowTypeError(t *testing.T) {
-	err := InvalidWorkflowTypeError("test")
-
-	assert.ErrorIs(t, err, ErrInvalidWorkflowType)
+	err := errors.InvalidWorkflowTypeError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidWorkflowType)
 }
 
 func TestInvalidProcessTypeError(t *testing.T) {
-	err := InvalidProcessTypeError("test")
-
-	assert.ErrorIs(t, err, ErrInvalidProcessType)
+	err := errors.InvalidProcessTypeError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessType)
 }
 
 func TestInvalidProcessObjectStoreScopeError(t *testing.T) {
-	err := InvalidProcessObjectStoreScopeError("test")
-
-	assert.ErrorIs(t, err, ErrInvalidProcessObjectStoreScope)
+	err := errors.InvalidProcessObjectStoreScopeError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessObjectStoreScope)
 }
 
 func TestInvalidNetworkingProtocolError(t *testing.T) {
-	err := InvalidNetworkingProtocolError("test")
-
-	assert.ErrorIs(t, err, ErrInvalidNetworkingProtocol)
+	err := errors.InvalidNetworkingProtocolError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidNetworkingProtocol)
 }
 
 func TestNotEnoughProcessesError(t *testing.T) {
-	err := NotEnoughProcessesError("test")
-
-	assert.ErrorIs(t, err, ErrNotEnoughProcesses)
+	err := errors.NotEnoughProcessesError("test")
+	assert.ErrorIs(t, err, errors.ErrNotEnoughProcesses)
 }
 
 func TestDuplicatedProcessNameError(t *testing.T) {
-	err := DuplicatedProcessNameError("test")
-
-	assert.ErrorIs(t, err, ErrDuplicatedProcessName)
+	err := errors.DuplicatedProcessNameError("test")
+	assert.ErrorIs(t, err, errors.ErrDuplicatedProcessName)
 }
 
 func TestDuplicatedProcessSubscriptionError(t *testing.T) {
-	err := DuplicatedProcessSubscriptionError("test")
-
-	assert.ErrorIs(t, err, ErrDuplicatedProcessSubscription)
+	err := errors.DuplicatedProcessSubscriptionError("test")
+	assert.ErrorIs(t, err, errors.ErrDuplicatedProcessSubscription)
 }
 
 func TestInvalidProcessSubscriptionError(t *testing.T) {
-	err := InvalidProcessSubscriptionError("test", "test", "test")
-
-	assert.ErrorIs(t, err, ErrInvalidProcessSubscription)
+	err := errors.InvalidProcessSubscriptionError("test", "test", "test")
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessSubscription)
 }
 
 func TestCannotSubscribeToItselfError(t *testing.T) {
-	err := CannotSubscribeToItselfError("test")
+	err := errors.CannotSubscribeToItselfError("test")
+	assert.ErrorIs(t, err, errors.ErrCannotSubscribeToItself)
+}
 
-	assert.ErrorIs(t, err, ErrCannotSubscribeToItself)
+func TestInvalidYamlError(t *testing.T) {
+	err := errors.InvalidYamlError(errTest)
+	assert.ErrorIs(t, err, errors.ErrInvalidYaml)
+}
+
+func TestReadingFileError(t *testing.T) {
+	err := errors.ReadingFileError(errTest)
+	assert.ErrorIs(t, err, errors.ErrReadingFile)
 }

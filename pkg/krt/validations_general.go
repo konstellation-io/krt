@@ -6,10 +6,10 @@ import (
 	"github.com/konstellation-io/krt/pkg/errors"
 )
 
-const maxFieldNameLength = 20
+const MaxFieldNameLength = 20
 
 func isValidResourceName(name string) bool {
-	reResourceName := regexp.MustCompile("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
+	reResourceName := regexp.MustCompile(`^[a-z0-9]([-|.a-z0-9]*[a-z0-9])?$`)
 	return reResourceName.MatchString(name)
 }
 
@@ -22,8 +22,8 @@ func validateName(name, nameLocation string) error {
 		return errors.InvalidFieldNameError(nameLocation)
 	}
 
-	if len(name) > maxFieldNameLength {
-		return errors.InvalidLengthFieldError(nameLocation, maxFieldNameLength)
+	if len(name) > MaxFieldNameLength {
+		return errors.InvalidLengthFieldError(nameLocation, MaxFieldNameLength)
 	}
 
 	return nil

@@ -20,7 +20,7 @@ func (workflow *Workflow) validateName(workflowIdx int) error {
 }
 
 func (workflow *Workflow) validateType(workflowIdx int) error {
-	if !isValidWorkflowType(string(workflow.Type)) {
+	if !workflow.Type.IsValid() {
 		return errors.InvalidWorkflowTypeError(fmt.Sprintf("krt.workflows[%d].type", workflowIdx))
 	}
 

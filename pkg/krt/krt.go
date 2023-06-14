@@ -24,7 +24,7 @@ const (
 	WorkflowTypeServing  WorkflowType = "serving"
 )
 
-func isValidWorkflowType(workflowType string) bool {
+func (wt WorkflowType) IsValid() bool {
 	var workflowTypeMap = map[string]WorkflowType{
 		string(WorkflowTypeData):     WorkflowTypeData,
 		string(WorkflowTypeTraining): WorkflowTypeTraining,
@@ -32,7 +32,7 @@ func isValidWorkflowType(workflowType string) bool {
 		string(WorkflowTypeServing):  WorkflowTypeServing,
 	}
 
-	_, ok := workflowTypeMap[workflowType]
+	_, ok := workflowTypeMap[string(wt)]
 
 	return ok
 }
@@ -41,8 +41,8 @@ type Process struct {
 	Name          string              `yaml:"name"`
 	Type          ProcessType         `yaml:"type"`
 	Image         string              `yaml:"image"`
-	Replicas      *int                `yaml:"replicas"`
-	GPU           *bool               `yaml:"gpu"`
+	Replicas      *int                `yaml:"replicas" default:"1"`
+	GPU           *bool               `yaml:"gpu" default:"false" `
 	Config        map[string]string   `yaml:"config"`
 	ObjectStore   *ProcessObjectStore `yaml:"objectStore"`
 	Secrets       map[string]string   `yaml:"secrets"`
@@ -58,14 +58,14 @@ const (
 	ProcessTypeExit    ProcessType = "exit"
 )
 
-func isValidProcessType(processType string) bool {
+func (pt ProcessType) IsValid() bool {
 	var processTypeMap = map[string]ProcessType{
 		string(ProcessTypeTrigger): ProcessTypeTrigger,
 		string(ProcessTypeTask):    ProcessTypeTask,
 		string(ProcessTypeExit):    ProcessTypeExit,
 	}
 
-	_, ok := processTypeMap[processType]
+	_, ok := processTypeMap[string(pt)]
 
 	return ok
 }
@@ -82,22 +82,22 @@ const (
 	ObjectStoreScopeWorkflow ObjectStoreScope = "workflow"
 )
 
-func isValidObjectStoreScope(scope string) bool {
+func (s ObjectStoreScope) IsValid() bool {
 	var objectStoreScopeMap = map[string]ObjectStoreScope{
 		string(ObjectStoreScopeProduct):  ObjectStoreScopeProduct,
 		string(ObjectStoreScopeWorkflow): ObjectStoreScopeWorkflow,
 	}
 
-	_, ok := objectStoreScopeMap[scope]
+	_, ok := objectStoreScopeMap[string(s)]
 
 	return ok
 }
 
 type ProcessNetworking struct {
-	TargetPort          int                `yaml:"targetPort"`
-	TargetProtocol      NetworkingProtocol `yaml:"targetProtocol"`
-	DestinationPort     int                `yaml:"destinationPort"`
-	DestinationProtocol NetworkingProtocol `yaml:"destinationProtocol"`
+	TargetPort          int                `yaml:"targetPort" default:"9000" `
+	TargetProtocol      NetworkingProtocol `yaml:"targetProtocol" default:"TCP" `
+	DestinationPort     int                `yaml:"destinationPort" default:"9000" `
+	DestinationProtocol NetworkingProtocol `yaml:"destinationProtocol" default:"TCP" `
 }
 
 type NetworkingProtocol string
@@ -107,13 +107,13 @@ const (
 	NetworkingProtocolUDP NetworkingProtocol = "UDP"
 )
 
-func isValidNetworkingProtocol(protocol string) bool {
+func (np NetworkingProtocol) IsValid() bool {
 	var networkingProtocolMap = map[string]NetworkingProtocol{
 		string(NetworkingProtocolTCP): NetworkingProtocolTCP,
 		string(NetworkingProtocolUDP): NetworkingProtocolUDP,
 	}
 
-	_, ok := networkingProtocolMap[protocol]
+	_, ok := networkingProtocolMap[string(np)]
 
 	return ok
 }
