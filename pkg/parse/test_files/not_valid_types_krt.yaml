@@ -1,0 +1,28 @@
+name: email-classificator
+description: Email classificator for branching features.
+version: v1.0.0
+
+workflows:
+  - name: go-classificator
+    type: invalid
+
+    processes:
+      - name: entrypoint
+        type: invalid
+        image: konstellation/kai-grpc-trigger:latest
+        subscriptions:
+          - 'exitpoint'
+        networking:
+          targetPort: 9000
+          targetProtocol: invalid
+          destinationPort: 9000
+          destinationProtocol: invalid
+
+      - name: exitpoint
+        type: invalid
+        image: konstellation/kai-exitpoint:latest
+        objectStore:
+          name: emails
+          scope: invalid
+        subscriptions:
+          - 'entrypoint'
