@@ -13,6 +13,7 @@ type Workflow struct {
 	Type      WorkflowType      `yaml:"type"`
 	Config    map[string]string `yaml:"config"`
 	Processes []Process         `yaml:"processes"`
+	Stream    string
 }
 
 type WorkflowType string
@@ -37,6 +38,11 @@ func (wt WorkflowType) IsValid() bool {
 	return ok
 }
 
+const (
+	DefaultNumberOfReplicas = 1
+	DefaultGPUValue         = false
+)
+
 type Process struct {
 	Name          string              `yaml:"name"`
 	Type          ProcessType         `yaml:"type"`
@@ -48,6 +54,7 @@ type Process struct {
 	Secrets       map[string]string   `yaml:"secrets"`
 	Subscriptions []string            `yaml:"subscriptions"`
 	Networking    *ProcessNetworking  `yaml:"networking"`
+	Status        ProcessStatus
 }
 
 type ProcessType string
@@ -93,6 +100,13 @@ func (s ObjectStoreScope) IsValid() bool {
 	return ok
 }
 
+const (
+	DefaultTargetPort          = 9000
+	DefaultTargetProtocol      = NetworkingProtocolTCP
+	DefaultDestinationPort     = 9000
+	DefaultDestinationProtocol = NetworkingProtocolTCP
+)
+
 type ProcessNetworking struct {
 	TargetPort          int                `yaml:"targetPort" default:"9000" `
 	TargetProtocol      NetworkingProtocol `yaml:"targetProtocol" default:"TCP" `
@@ -116,4 +130,17 @@ func (np NetworkingProtocol) IsValid() bool {
 	_, ok := networkingProtocolMap[string(np)]
 
 	return ok
+}
+
+type ProcessStatus string
+
+const (
+	ProcessStatusStarting ProcessStatus = "STARTING"
+	ProcessStatusStarted  ProcessStatus = "STARTED"
+	ProcessStatusStopped  ProcessStatus = "STOPPED"
+	ProcessStatusError    ProcessStatus = "ERROR"
+)
+
+func (ps ProcessStatus) String() string {
+	return string(ps)
 }
