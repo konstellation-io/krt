@@ -141,6 +141,19 @@ const (
 	ProcessStatusError    ProcessStatus = "ERROR"
 )
 
+func (ps ProcessStatus) IsValid() bool {
+	var processStatusMap = map[string]ProcessStatus{
+		string(ProcessStatusStarting): ProcessStatusStarting,
+		string(ProcessStatusStarted):  ProcessStatusStarted,
+		string(ProcessStatusStopped):  ProcessStatusStopped,
+		string(ProcessStatusError):    ProcessStatusError,
+	}
+
+	_, ok := processStatusMap[string(ps)]
+
+	return ok
+}
+
 func (ps ProcessStatus) String() string {
 	return string(ps)
 }
