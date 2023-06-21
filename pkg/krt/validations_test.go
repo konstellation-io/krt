@@ -417,3 +417,11 @@ func TestKrtValidator(t *testing.T) {
 		})
 	}
 }
+
+func TestProcessStatusIsValid(t *testing.T) {
+	validStatus := krt.ProcessStatusStarting
+	invalidStatus := "invalid"
+
+	assert.True(t, validStatus.IsValid())
+	assert.False(t, krt.ProcessStatus(invalidStatus).IsValid())
+}
