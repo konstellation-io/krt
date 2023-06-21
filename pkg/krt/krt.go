@@ -153,7 +153,3 @@ func (ps ProcessStatus) IsValid() bool {
 
 	return ok
 }
-
-func (ps ProcessStatus) String() string {
-	return string(ps)
-}
