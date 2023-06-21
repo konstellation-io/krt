@@ -112,9 +112,8 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt hasn't required networking target port if declared",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
 				&krt.ProcessNetworking{
-					TargetProtocol:      "UDP",
-					DestinationPort:     9000,
-					DestinationProtocol: "UDP",
+					DestinationPort: 9000,
+					Protocol:        "UDP",
 				},
 				0,
 			).Build(),
@@ -126,9 +125,8 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt hasn't required networking destination port if declared",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
 				&krt.ProcessNetworking{
-					TargetPort:          9000,
-					TargetProtocol:      "UDP",
-					DestinationProtocol: "UDP",
+					TargetPort: 9000,
+					Protocol:   "UDP",
 				},
 				0,
 			).Build(),
@@ -274,34 +272,18 @@ func TestKrtValidator(t *testing.T) {
 			errorString: errors.InvalidProcessObjectStoreScopeError("krt.workflows[0].processes[0].objectStore.scope").Error(),
 		},
 		{
-			name: "fails if krt hasn't a valid process networking target protocol",
+			name: "fails if krt hasn't a valid process networking protocol",
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
 				&krt.ProcessNetworking{
-					TargetPort:          9000,
-					TargetProtocol:      invalidName,
-					DestinationPort:     9000,
-					DestinationProtocol: "UDP",
+					TargetPort:      9000,
+					DestinationPort: 9000,
+					Protocol:        invalidName,
 				},
 				0,
 			).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidNetworkingProtocol,
-			errorString: errors.InvalidNetworkingProtocolError("krt.workflows[0].processes[0].networking.targetProtocol").Error(),
-		},
-		{
-			name: "fails if krt hasn't a valid process networking destination protocol",
-			krtYaml: NewKrtBuilder().WithProcessNetworking(
-				&krt.ProcessNetworking{
-					TargetPort:          9000,
-					TargetProtocol:      "UDP",
-					DestinationPort:     9000,
-					DestinationProtocol: invalidName,
-				},
-				0,
-			).Build(),
-			wantError:   true,
-			errorType:   errors.ErrInvalidNetworkingProtocol,
-			errorString: errors.InvalidNetworkingProtocolError("krt.workflows[0].processes[0].networking.destinationProtocol").Error(),
+			errorString: errors.InvalidNetworkingProtocolError("krt.workflows[0].processes[0].networking.protocol").Error(),
 		},
 	}
 

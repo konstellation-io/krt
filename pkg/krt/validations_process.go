@@ -127,14 +127,6 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 		)
 	}
 
-	if !process.Networking.TargetProtocol.IsValid() {
-		totalError = errors.Join(
-			totalError, errors.InvalidNetworkingProtocolError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetProtocol", workflowIdx, processIdx),
-			),
-		)
-	}
-
 	if process.Networking.DestinationPort == 0 {
 		totalError = errors.Join(
 			totalError,
@@ -144,11 +136,10 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 		)
 	}
 
-	if !process.Networking.DestinationProtocol.IsValid() {
+	if !process.Networking.Protocol.IsValid() {
 		totalError = errors.Join(
-			totalError,
-			errors.InvalidNetworkingProtocolError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.destinationProtocol", workflowIdx, processIdx),
+			totalError, errors.InvalidNetworkingProtocolError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.protocol", workflowIdx, processIdx),
 			),
 		)
 	}
