@@ -13,7 +13,6 @@ type Workflow struct {
 	Type      WorkflowType      `yaml:"type"`
 	Config    map[string]string `yaml:"config"`
 	Processes []Process         `yaml:"processes"`
-	Stream    string
 }
 
 type WorkflowType string
