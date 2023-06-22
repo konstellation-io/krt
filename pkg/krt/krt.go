@@ -54,7 +54,6 @@ type Process struct {
 	Secrets       map[string]string   `yaml:"secrets"`
 	Subscriptions []string            `yaml:"subscriptions"`
 	Networking    *ProcessNetworking  `yaml:"networking"`
-	Status        ProcessStatus
 }
 
 type ProcessType string
@@ -101,10 +100,9 @@ func (s ObjectStoreScope) IsValid() bool {
 }
 
 const (
-	DefaultTargetPort          = 9000
-	DefaultTargetProtocol      = NetworkingProtocolTCP
-	DefaultDestinationPort     = 9000
-	DefaultDestinationProtocol = NetworkingProtocolTCP
+	DefaultTargetPort      = 9000
+	DefaultDestinationPort = 9000
+	DefaultProtocol        = NetworkingProtocolTCP
 )
 
 type ProcessNetworking struct {
@@ -127,28 +125,6 @@ func (np NetworkingProtocol) IsValid() bool {
 	}
 
 	_, ok := networkingProtocolMap[string(np)]
-
-	return ok
-}
-
-type ProcessStatus string
-
-const (
-	ProcessStatusStarting ProcessStatus = "STARTING"
-	ProcessStatusStarted  ProcessStatus = "STARTED"
-	ProcessStatusStopped  ProcessStatus = "STOPPED"
-	ProcessStatusError    ProcessStatus = "ERROR"
-)
-
-func (ps ProcessStatus) IsValid() bool {
-	var processStatusMap = map[string]ProcessStatus{
-		string(ProcessStatusStarting): ProcessStatusStarting,
-		string(ProcessStatusStarted):  ProcessStatusStarted,
-		string(ProcessStatusStopped):  ProcessStatusStopped,
-		string(ProcessStatusError):    ProcessStatusError,
-	}
-
-	_, ok := processStatusMap[string(ps)]
 
 	return ok
 }
