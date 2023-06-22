@@ -19,9 +19,8 @@ workflows:
           - 'exitpoint'
         networking:
           targetPort: 9000
-          targetProtocol: TCP
           destinationPort: 9000
-          destinationProtocol: TCP
+          protocol: TCP
 
       - name: etl
         type: task
@@ -82,9 +81,8 @@ workflows:
           - 'exitpoint'
         networking:
           targetPort: 9000
-          targetProtocol: TCP
           destinationPort: 9000
-          destinationProtocol: TCP
+          protocol: TCP
 
       - name: etl
         type: task
