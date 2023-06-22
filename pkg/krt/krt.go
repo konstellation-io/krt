@@ -99,14 +99,12 @@ func (s ObjectStoreScope) IsValid() bool {
 }
 
 const (
-	DefaultTargetPort      = 9000
-	DefaultDestinationPort = 9000
-	DefaultProtocol        = NetworkingProtocolTCP
+	DefaultProtocol = NetworkingProtocolTCP
 )
 
 type ProcessNetworking struct {
-	TargetPort      int                `yaml:"targetPort" default:"9000" `
-	DestinationPort int                `yaml:"destinationPort" default:"9000" `
+	TargetPort      int                `yaml:"targetPort"`
+	DestinationPort int                `yaml:"destinationPort"`
 	Protocol        NetworkingProtocol `yaml:"protocol" default:"TCP" `
 }
 

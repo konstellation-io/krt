@@ -21,6 +21,7 @@ workflows:
           - 'exitpoint'
         networking:
           targetPort: 8000
+          destinationPort: 8000
 
       - name: etl
         type: task
