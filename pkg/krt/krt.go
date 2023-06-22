@@ -108,10 +108,9 @@ const (
 )
 
 type ProcessNetworking struct {
-	TargetPort          int                `yaml:"targetPort" default:"9000" `
-	TargetProtocol      NetworkingProtocol `yaml:"targetProtocol" default:"TCP" `
-	DestinationPort     int                `yaml:"destinationPort" default:"9000" `
-	DestinationProtocol NetworkingProtocol `yaml:"destinationProtocol" default:"TCP" `
+	TargetPort      int                `yaml:"targetPort" default:"9000" `
+	DestinationPort int                `yaml:"destinationPort" default:"9000" `
+	Protocol        NetworkingProtocol `yaml:"protocol" default:"TCP" `
 }
 
 type NetworkingProtocol string

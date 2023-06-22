@@ -14,9 +14,8 @@ workflows:
           - 'exitpoint'
         networking:
           targetPort: 9000
-          targetProtocol: invalid
           destinationPort: 9000
-          destinationProtocol: invalid
+          protocol: invalid
 
       - name: exitpoint
         type: invalid
