@@ -20,8 +20,8 @@ workflows:
         subscriptions:
           - 'exitpoint'
         networking:
-          targetProtocol: 'UDP'
-          destinationProtocol: 'UDP'
+          targetPort: 8000
+          destinationPort: 8000
 
       - name: etl
         type: task
