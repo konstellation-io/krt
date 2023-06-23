@@ -37,6 +37,11 @@ func (wt WorkflowType) IsValid() bool {
 	return ok
 }
 
+const (
+	DefaultNumberOfReplicas = 1
+	DefaultGPUValue         = false
+)
+
 type Process struct {
 	Name          string              `yaml:"name"`
 	Type          ProcessType         `yaml:"type"`
@@ -93,9 +98,13 @@ func (s ObjectStoreScope) IsValid() bool {
 	return ok
 }
 
+const (
+	DefaultProtocol = NetworkingProtocolTCP
+)
+
 type ProcessNetworking struct {
-	TargetPort      int                `yaml:"targetPort" default:"9000" `
-	DestinationPort int                `yaml:"destinationPort" default:"9000" `
+	TargetPort      int                `yaml:"targetPort"`
+	DestinationPort int                `yaml:"destinationPort"`
 	Protocol        NetworkingProtocol `yaml:"protocol" default:"TCP" `
 }
 

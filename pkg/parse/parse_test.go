@@ -47,14 +47,14 @@ func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 			if idxWorkflow == 0 && idxProcess == 0 {
 				assert.True(t, *process.GPU)
 				assert.Equal(t, 2, *process.Replicas)
-				assert.Equal(t, 9000, process.Networking.DestinationPort)
-				assert.Equal(t, krt.NetworkingProtocolTCP, process.Networking.Protocol)
+				assert.Equal(t, krt.NetworkingProtocolTCP, krt.DefaultProtocol)
 			} else if idxWorkflow == 0 && idxProcess == 1 {
 				assert.Nil(t, process.Networking)
 			} else {
 				assert.NotNil(t, process.GPU)
+				assert.Equal(t, krt.DefaultGPUValue, *process.GPU)
 				require.NotNil(t, process.Replicas)
-				assert.GreaterOrEqual(t, *process.Replicas, 1)
+				assert.Equal(t, krt.DefaultNumberOfReplicas, *process.Replicas)
 				if process.Networking != nil {
 					assert.NotEmpty(t, process.Networking.TargetPort)
 					assert.NotEmpty(t, process.Networking.DestinationPort)
