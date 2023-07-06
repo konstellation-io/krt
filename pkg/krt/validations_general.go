@@ -14,7 +14,7 @@ func isValidVersion(version string) bool {
 }
 
 func isValidResourceName(name string) bool {
-	reResourceName := regexp.MustCompile(`^[a-z0-9]([-|.a-z0-9]*[a-z0-9])?$`)
+	reResourceName := regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
 	return reResourceName.MatchString(name)
 }
 
