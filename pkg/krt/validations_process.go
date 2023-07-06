@@ -229,12 +229,24 @@ func checkSubscriptions(processes []Process, workflowIdx int, processTypesByName
 				totalError = errors.Join(totalError, errors.CannotSubscribeToItselfError(
 					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
 				))
+
+				continue
 			}
 
-			if !isValidSubscription(process.Type, processTypesByNames[subscription]) {
+			fetchedSubscription, processExists := processTypesByNames[subscription]
+			if !processExists {
+				totalError = errors.Join(totalError, errors.CannotSubscribeToNonExistentProcessError(
+					subscription,
+					fmt.Sprintf("krt.workflows[%d].processes[%d]", workflowIdx, processIdx),
+				))
+
+				continue
+			}
+
+			if !isValidSubscription(process.Type, fetchedSubscription) {
 				totalError = errors.Join(totalError, errors.InvalidProcessSubscriptionError(
 					string(process.Type),
-					string(processTypesByNames[subscription]),
+					string(fetchedSubscription),
 					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
 				))
 			}
