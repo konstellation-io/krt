@@ -39,6 +39,11 @@ func TestMissingRequiredFieldError(t *testing.T) {
 	assert.ErrorIs(t, err, errors.ErrMissingRequiredField)
 }
 
+func TestInvalidVersionTagError(t *testing.T) {
+	err := errors.InvalidVersionTagError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidVersionTag)
+}
+
 func TestInvalidFieldNameError(t *testing.T) {
 	err := errors.InvalidFieldNameError("test")
 	assert.ErrorIs(t, err, errors.ErrInvalidFieldName)
@@ -97,6 +102,11 @@ func TestInvalidProcessSubscriptionError(t *testing.T) {
 func TestCannotSubscribeToItselfError(t *testing.T) {
 	err := errors.CannotSubscribeToItselfError("test")
 	assert.ErrorIs(t, err, errors.ErrCannotSubscribeToItself)
+}
+
+func TestCannotSubscribeToNonExistentProcessError(t *testing.T) {
+	err := errors.CannotSubscribeToNonExistentProcessError("test-process", "test")
+	assert.ErrorIs(t, err, errors.ErrCannotSubscribeToNonExistentProcess)
 }
 
 func TestInvalidYamlError(t *testing.T) {
