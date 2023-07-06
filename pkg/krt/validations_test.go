@@ -33,11 +33,11 @@ func TestKrtValidator(t *testing.T) {
 
 	requiredFieldsTests := []test{
 		{
-			name:        "fails if krt hasn't required field name",
-			krtYaml:     NewKrtBuilder().WithName("").Build(),
+			name:        "fails if krt hasn't required field version",
+			krtYaml:     NewKrtBuilder().WithVersion("").Build(),
 			wantError:   true,
 			errorType:   errors.ErrMissingRequiredField,
-			errorString: errors.MissingRequiredFieldError("krt.name").Error(),
+			errorString: errors.MissingRequiredFieldError("krt.version").Error(),
 		},
 		{
 			name:        "fails if krt hasn't required field description",
@@ -45,13 +45,6 @@ func TestKrtValidator(t *testing.T) {
 			wantError:   true,
 			errorType:   errors.ErrMissingRequiredField,
 			errorString: errors.MissingRequiredFieldError("krt.description").Error(),
-		},
-		{
-			name:        "fails if krt hasn't required field version",
-			krtYaml:     NewKrtBuilder().WithVersion("").Build(),
-			wantError:   true,
-			errorType:   errors.ErrMissingRequiredField,
-			errorString: errors.MissingRequiredFieldError("krt.version").Error(),
 		},
 		{
 			name:        "fails if krt hasn't required workflows declared",

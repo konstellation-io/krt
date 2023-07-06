@@ -4,16 +4,11 @@ import "github.com/konstellation-io/krt/pkg/errors"
 
 func (krt *Krt) Validate() error {
 	return errors.Join(
-		krt.validateName(),
 		krt.validateDescription(),
 		krt.validateVersion(),
 		krt.validateVersionConfig(),
 		krt.validateWorkflows(),
 	)
-}
-
-func (krt *Krt) validateName() error {
-	return validateName(krt.Name, "krt.name")
 }
 
 func (krt *Krt) validateDescription() error {
