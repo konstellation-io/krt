@@ -236,7 +236,7 @@ func checkSubscriptions(processes []Process, workflowIdx int, processTypesByName
 				continue
 			}
 
-			processBeingSubscribedType, processExists := processTypesByNames[cleanSubscription]
+			subscribedProcessType, processExists := processTypesByNames[cleanSubscription]
 			if !processExists {
 				totalError = errors.Join(totalError, errors.CannotSubscribeToNonExistentProcessError(
 					subscription,
@@ -246,10 +246,10 @@ func checkSubscriptions(processes []Process, workflowIdx int, processTypesByName
 				continue
 			}
 
-			if !isValidSubscription(process.Type, processBeingSubscribedType) {
+			if !isValidSubscription(process.Type, subscribedProcessType) {
 				totalError = errors.Join(totalError, errors.InvalidProcessSubscriptionError(
 					string(process.Type),
-					string(processBeingSubscribedType),
+					string(subscribedProcessType),
 					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
 				))
 			}
