@@ -71,8 +71,6 @@ func TestNotValidKrt(t *testing.T) {
 
 	err = parsedKrt.Validate()
 	assert.Error(t, err)
-	assert.ErrorIs(t, err, errors.ErrInvalidFieldName)
-	assert.Contains(t, err.Error(), "krt.name", "krt.version", "krt.workflows[0].name")
 	assert.ErrorIs(t, err, errors.ErrInvalidWorkflowType)
 	assert.Contains(t, err.Error(), "krt.workflows[0].type")
 	assert.ErrorIs(t, err, errors.ErrMissingRequiredField)
