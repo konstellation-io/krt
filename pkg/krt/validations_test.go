@@ -13,6 +13,7 @@ import (
 
 const largeName = "this-name-is-higher-than-the-maximum-allowed"
 const invalidName = "Invalid string!"
+const invalidVersion = "1.0.0"
 
 type test struct {
 	name        string
@@ -33,11 +34,11 @@ func TestKrtValidator(t *testing.T) {
 
 	requiredFieldsTests := []test{
 		{
-			name:        "fails if krt hasn't required field name",
-			krtYaml:     NewKrtBuilder().WithName("").Build(),
+			name:        "fails if krt hasn't required field version",
+			krtYaml:     NewKrtBuilder().WithVersion("").Build(),
 			wantError:   true,
 			errorType:   errors.ErrMissingRequiredField,
-			errorString: errors.MissingRequiredFieldError("krt.name").Error(),
+			errorString: errors.MissingRequiredFieldError("krt.version").Error(),
 		},
 		{
 			name:        "fails if krt hasn't required field description",
@@ -45,13 +46,6 @@ func TestKrtValidator(t *testing.T) {
 			wantError:   true,
 			errorType:   errors.ErrMissingRequiredField,
 			errorString: errors.MissingRequiredFieldError("krt.description").Error(),
-		},
-		{
-			name:        "fails if krt hasn't required field version",
-			krtYaml:     NewKrtBuilder().WithVersion("").Build(),
-			wantError:   true,
-			errorType:   errors.ErrMissingRequiredField,
-			errorString: errors.MissingRequiredFieldError("krt.version").Error(),
 		},
 		{
 			name:        "fails if krt hasn't required workflows declared",
@@ -138,18 +132,11 @@ func TestKrtValidator(t *testing.T) {
 
 	invalidNameTests := []test{
 		{
-			name:        "fails if version name has an invalid format",
-			krtYaml:     NewKrtBuilder().WithVersion(invalidName).Build(),
+			name:        "fails if version tag has an invalid format",
+			krtYaml:     NewKrtBuilder().WithVersion(invalidVersion).Build(),
 			wantError:   true,
-			errorType:   errors.ErrInvalidFieldName,
-			errorString: errors.InvalidFieldNameError("krt.version").Error(),
-		},
-		{
-			name:        "fails if version name has an invalid length",
-			krtYaml:     NewKrtBuilder().WithVersion(largeName).Build(),
-			wantError:   true,
-			errorType:   errors.ErrInvalidLengthField,
-			errorString: errors.InvalidLengthFieldError("krt.version", krt.MaxFieldNameLength).Error(),
+			errorType:   errors.ErrInvalidVersionTag,
+			errorString: errors.InvalidVersionTagError("krt.version").Error(),
 		},
 		{
 			name:        "fails if krt workflow name has an invalid format",
@@ -377,6 +364,20 @@ func TestKrtValidator(t *testing.T) {
 			wantError:   true,
 			errorType:   errors.ErrCannotSubscribeToItself,
 			errorString: errors.CannotSubscribeToItselfError("krt.workflows[0].processes[0].subscriptions.test-trigger").Error(),
+		},
+		{
+			name: "fails if krt has a process subscribing to a non existing process",
+			krtYaml: NewKrtBuilder().WithProcesses([]krt.Process{
+				{
+					Name:          "test-trigger",
+					Type:          krt.ProcessTypeTrigger,
+					Image:         "test-trigger-image",
+					Subscriptions: []string{"non-existent"},
+				},
+			}).Build(),
+			wantError:   true,
+			errorType:   errors.ErrCannotSubscribeToNonExistentProcess,
+			errorString: errors.CannotSubscribeToNonExistentProcessError("non-existent", "krt.workflows[0].processes[0]").Error(),
 		},
 	}
 

@@ -3,6 +3,7 @@
 package parse_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,32 +16,32 @@ import (
 
 func TestCorrectKrtFile(t *testing.T) {
 	krt, err := parse.ParseFile("./test_files/correct_krt.yaml")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = krt.Validate()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestNonExistentFile(t *testing.T) {
 	krt, err := parse.ParseFile("./test_files/non_existent_krt.yaml")
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.ErrorIs(t, err, errors.ErrReadingFile)
 	assert.Nil(t, krt)
 }
 
 func TestInvalidFile(t *testing.T) {
 	krt, err := parse.ParseFile("./test_files/invalid_file.yaml")
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.ErrorIs(t, err, errors.ErrInvalidYaml)
 	assert.Nil(t, krt)
 }
 
 func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 	parsedKrt, err := parse.ParseFile("./test_files/missing_defaults_krt.yaml")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = parsedKrt.Validate()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	for idxWorkflow, workflows := range parsedKrt.Workflows {
 		for idxProcess, process := range workflows.Processes {
@@ -67,22 +68,46 @@ func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 
 func TestNotValidKrt(t *testing.T) {
 	parsedKrt, err := parse.ParseFile("./test_files/not_valid_krt.yaml")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = parsedKrt.Validate()
-	assert.Error(t, err)
+	require.Error(t, err)
+
+	errList := strings.Split(err.Error(), "\n")
+	require.Len(t, errList, 10)
+
+	assert.ErrorIs(t, err, errors.ErrInvalidVersionTag)
+	assert.Contains(t, err.Error(), "krt.version")
+
 	assert.ErrorIs(t, err, errors.ErrInvalidFieldName)
-	assert.Contains(t, err.Error(), "krt.name", "krt.version", "krt.workflows[0].name")
+	assert.Contains(t, err.Error(), "krt.workflows[0].name")
+
 	assert.ErrorIs(t, err, errors.ErrInvalidWorkflowType)
 	assert.Contains(t, err.Error(), "krt.workflows[0].type")
+
 	assert.ErrorIs(t, err, errors.ErrMissingRequiredField)
 	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].image")
+
 	assert.ErrorIs(t, err, errors.ErrNotEnoughProcesses)
 	assert.Contains(t, err.Error(), "krt.workflows[0].processes")
+
 	assert.ErrorIs(t, err, errors.ErrCannotSubscribeToItself)
 	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].subscriptions.entrypoint")
+
 	assert.ErrorIs(t, err, errors.ErrInvalidProcessSubscription)
 	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].subscriptions.entrypoint")
+
+	assert.ErrorIs(t, err, errors.ErrInvalidFieldName)
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[1].name")
+
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessType)
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[1].type")
+
+	assert.ErrorIs(t, err, errors.ErrCannotSubscribeToNonExistentProcess)
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[1]")
+
+	assert.ErrorIs(t, err, errors.ErrNotEnoughProcesses)
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes")
 }
 
 func TestNotValidTypesKrt(t *testing.T) {

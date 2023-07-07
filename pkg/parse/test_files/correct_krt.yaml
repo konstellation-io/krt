@@ -1,6 +1,5 @@
-name: email-classificator
-description: Email classificator for branching features.
 version: v1.0.0
+description: Email classificator for branching features.
 
 config:
   key1: value1

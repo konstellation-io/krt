@@ -2,6 +2,7 @@ package krt
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/konstellation-io/krt/pkg/errors"
 )
@@ -225,16 +226,30 @@ func checkSubscriptions(processes []Process, workflowIdx int, processTypesByName
 
 	for processIdx, process := range processes {
 		for _, subscription := range process.Subscriptions {
-			if process.Name == subscription {
+			cleanSubscription := strings.Split(subscription, ".")[0]
+
+			if process.Name == cleanSubscription {
 				totalError = errors.Join(totalError, errors.CannotSubscribeToItselfError(
 					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
 				))
+
+				continue
 			}
 
-			if !isValidSubscription(process.Type, processTypesByNames[subscription]) {
+			subscribedProcessType, processExists := processTypesByNames[cleanSubscription]
+			if !processExists {
+				totalError = errors.Join(totalError, errors.CannotSubscribeToNonExistentProcessError(
+					subscription,
+					fmt.Sprintf("krt.workflows[%d].processes[%d]", workflowIdx, processIdx),
+				))
+
+				continue
+			}
+
+			if !isValidSubscription(process.Type, subscribedProcessType) {
 				totalError = errors.Join(totalError, errors.InvalidProcessSubscriptionError(
 					string(process.Type),
-					string(processTypesByNames[subscription]),
+					string(subscribedProcessType),
 					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
 				))
 			}

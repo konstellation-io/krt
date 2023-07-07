@@ -16,6 +16,7 @@ func Is(err, target error) bool {
 // Validation errors.
 
 var ErrMissingRequiredField = errors.New("missing required field")
+var ErrInvalidVersionTag = errors.New("invalid version tag; must follow the format 'vX.Y.Z'")
 var ErrInvalidFieldName = errors.New("invalid field name; only numbers, hyphens and lowercase letters are allowed")
 var ErrInvalidLengthField = errors.New("field length is higher than the maximum")
 
@@ -31,9 +32,14 @@ var ErrDuplicatedProcessName = errors.New("process names must be unique")
 var ErrDuplicatedProcessSubscription = errors.New("subscriptions cannot be duplicated")
 var ErrInvalidProcessSubscription = errors.New("invalid subscription")
 var ErrCannotSubscribeToItself = errors.New("cannot subscribe to itself")
+var ErrCannotSubscribeToNonExistentProcess = errors.New("cannot subscribe to non existent process")
 
 func MissingRequiredFieldError(field string) error {
 	return fmt.Errorf("%w: %s", ErrMissingRequiredField, field)
+}
+
+func InvalidVersionTagError(field string) error {
+	return fmt.Errorf("%w: %s", ErrInvalidVersionTag, field)
 }
 
 func InvalidFieldNameError(field string) error {
@@ -88,6 +94,10 @@ func InvalidProcessSubscriptionError(processType, subscritpionProcessType, field
 
 func CannotSubscribeToItselfError(field string) error {
 	return fmt.Errorf("%w: %s", ErrCannotSubscribeToItself, field)
+}
+
+func CannotSubscribeToNonExistentProcessError(process, field string) error {
+	return fmt.Errorf("%w: process named %q does not exist %s", ErrCannotSubscribeToNonExistentProcess, process, field)
 }
 
 // Parse errors.

@@ -1,6 +1,5 @@
-name: not a valid name!
+version: v1.0.0/invalid
 description: This is not a valid krt file.
-version: v1.0.0/1
 
 workflows:
   - name: not a valid name!
@@ -9,3 +8,9 @@ workflows:
         type: trigger
         subscriptions:
           - 'entrypoint'
+          - 'not a valid name!'
+      - name: not a valid name!
+        type: invalid
+        image: valid-image
+        subscriptions:
+          - 'non existing'

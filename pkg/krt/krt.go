@@ -1,9 +1,8 @@
 package krt
 
 type Krt struct {
-	Name        string            `yaml:"name"`
-	Description string            `yaml:"description"`
 	Version     string            `yaml:"version"`
+	Description string            `yaml:"description"`
 	Config      map[string]string `yaml:"config"`
 	Workflows   []Workflow        `yaml:"workflows"`
 }

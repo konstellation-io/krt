@@ -11,9 +11,8 @@ type KrtBuilder struct {
 func NewKrtBuilder() *KrtBuilder {
 	return &KrtBuilder{
 		krtYaml: &krt.Krt{
-			Name:        "test-krt",
+			Version:     "v1.0.0",
 			Description: "Test description",
-			Version:     "v1.0",
 			Workflows: []krt.Workflow{
 				{
 					Name: "test-workflow",
@@ -40,11 +39,6 @@ func NewKrtBuilder() *KrtBuilder {
 			},
 		},
 	}
-}
-
-func (k *KrtBuilder) WithName(name string) *KrtBuilder {
-	k.krtYaml.Name = name
-	return k
 }
 
 func (k *KrtBuilder) WithVersion(version string) *KrtBuilder {
