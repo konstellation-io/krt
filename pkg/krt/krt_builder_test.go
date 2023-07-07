@@ -11,7 +11,7 @@ type KrtBuilder struct {
 func NewKrtBuilder() *KrtBuilder {
 	return &KrtBuilder{
 		krtYaml: &krt.Krt{
-			Version:     "v1.0",
+			Version:     "v1.0.0",
 			Description: "Test description",
 			Workflows: []krt.Workflow{
 				{

@@ -8,3 +8,9 @@ workflows:
         type: trigger
         subscriptions:
           - 'entrypoint'
+          - 'not a valid name!'
+      - name: not a valid name!
+        type: invalid
+        image: valid-image
+        subscriptions:
+          - 'non existing'
