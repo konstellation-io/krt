@@ -52,6 +52,8 @@ type Process struct {
 	Secrets       map[string]string   `yaml:"secrets"`
 	Subscriptions []string            `yaml:"subscriptions"`
 	Networking    *ProcessNetworking  `yaml:"networking"`
+	CPU           *ProcessCPU         `yaml:"CPU"`
+	Memory        *ProcessMemory      `yaml:"memory"`
 }
 
 type ProcessType string
@@ -123,4 +125,14 @@ func (np NetworkingProtocol) IsValid() bool {
 	_, ok := networkingProtocolMap[string(np)]
 
 	return ok
+}
+
+type ProcessCPU struct {
+	Request string `yaml:"request"`
+	Limit   string `yaml:"limit"`
+}
+
+type ProcessMemory struct {
+	Request string `yaml:"request"`
+	Limit   string `yaml:"limit"`
 }

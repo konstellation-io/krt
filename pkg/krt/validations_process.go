@@ -2,6 +2,8 @@ package krt
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/konstellation-io/krt/pkg/errors"
@@ -21,6 +23,8 @@ func (process *Process) Validate(workflowIdx, processIdx int) error {
 		process.validateSecrets(workflowIdx, processIdx),
 		process.validateSubscriptions(workflowIdx, processIdx),
 		process.validateNetworking(workflowIdx, processIdx),
+		process.validateCPU(workflowIdx, processIdx),
+		process.validateMemory(workflowIdx, processIdx),
 	)
 }
 
@@ -111,41 +115,6 @@ func (process *Process) validateSubscriptions(workflowIdx, processIdx int) error
 	}
 
 	return nil
-}
-
-func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
-	if process.Networking == nil {
-		return nil
-	}
-
-	var totalError error
-	if process.Networking.TargetPort == 0 {
-		totalError = errors.Join(
-			totalError,
-			errors.MissingRequiredFieldError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetPort", workflowIdx, processIdx),
-			),
-		)
-	}
-
-	if process.Networking.DestinationPort == 0 {
-		totalError = errors.Join(
-			totalError,
-			errors.MissingRequiredFieldError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.destinationPort", workflowIdx, processIdx),
-			),
-		)
-	}
-
-	if !process.Networking.Protocol.IsValid() {
-		totalError = errors.Join(
-			totalError, errors.InvalidNetworkingProtocolError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.protocol", workflowIdx, processIdx),
-			),
-		)
-	}
-
-	return totalError
 }
 
 // validateSubscritpions checks if subscriptions for all process are valid.
@@ -268,4 +237,230 @@ func isValidSubscription(processType, subscriptionProcessType ProcessType) bool 
 	default:
 		return false
 	}
+}
+
+func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
+	if process.Networking == nil {
+		return nil
+	}
+
+	var totalError error
+	if process.Networking.TargetPort == 0 {
+		totalError = errors.Join(
+			totalError,
+			errors.MissingRequiredFieldError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetPort", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	if process.Networking.DestinationPort == 0 {
+		totalError = errors.Join(
+			totalError,
+			errors.MissingRequiredFieldError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.destinationPort", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	if !process.Networking.Protocol.IsValid() {
+		totalError = errors.Join(
+			totalError, errors.InvalidNetworkingProtocolError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.protocol", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	return totalError
+}
+
+type cpuForm int
+
+const (
+	cpuFormFractional cpuForm = iota
+	cpuFormMilli
+)
+
+func isValidCPU(cpu string) (bool, cpuForm) {
+	fractionalCPU := regexp.MustCompile(`^\d{1}\.\d{1}$`)
+	milliCPU := regexp.MustCompile(`^\d{3}m$`)
+
+	if fractionalCPU.MatchString(cpu) {
+		return true, cpuFormFractional
+	}
+
+	if milliCPU.MatchString(cpu) {
+		return true, cpuFormMilli
+	}
+
+	return false, 0
+}
+
+func getCPUValue(cpu string, form cpuForm) (float64, error) {
+	if form == cpuFormFractional {
+		cpuValue, err := strconv.ParseFloat(cpu, 32)
+		if err != nil {
+			return 0, err
+		}
+		return cpuValue * 1000, nil
+	} else {
+		cpuValue, err := strconv.ParseFloat(strings.ReplaceAll(cpu, "m", ""), 32)
+		if err != nil {
+			return 0, err
+		}
+		return cpuValue, nil
+	}
+}
+
+func compareRequestLimitCPU(request, limit string, requestForm, limitForm cpuForm, workflowIdx, processIdx int) error {
+	requestValue, err := getCPUValue(request, requestForm)
+	if err != nil {
+		return err
+	}
+
+	limitValue, err := getCPUValue(limit, limitForm)
+	if err != nil {
+		return err
+	}
+
+	if limitValue < requestValue {
+		return errors.InvalidProcessCPURelationError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU", workflowIdx, processIdx),
+		)
+	}
+
+	return nil
+}
+
+func (process *Process) validateCPU(workflowIdx, processIdx int) error {
+	if process.CPU == nil {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU", workflowIdx, processIdx),
+		)
+	}
+
+	if process.CPU.Request == "" {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU.request", workflowIdx, processIdx),
+		)
+	}
+
+	var totalError error
+	var requestForm, limitForm cpuForm
+
+	requestOk, requestForm := isValidCPU(process.CPU.Request)
+	if !requestOk {
+		totalError = errors.Join(
+			totalError,
+			errors.InvalidProcessCPUError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU.request", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	if process.CPU.Limit != "" {
+		var limitOk bool
+		limitOk, limitForm = isValidCPU(process.CPU.Limit)
+		if !limitOk {
+			totalError = errors.Join(
+				totalError,
+				errors.InvalidProcessCPUError(
+					fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU.limit", workflowIdx, processIdx),
+				),
+			)
+		}
+	} else {
+		process.CPU.Limit = process.CPU.Request
+		limitForm = requestForm
+	}
+
+	if totalError == nil {
+		totalError = compareRequestLimitCPU(
+			process.CPU.Request, process.CPU.Limit, requestForm, limitForm, workflowIdx, processIdx,
+		)
+	}
+
+	return totalError
+}
+
+func isValidMemory(memory string) bool {
+	megaBMemory := regexp.MustCompile(`^\d+M$`)
+
+	if megaBMemory.MatchString(memory) {
+		return true
+	}
+
+	return false
+}
+
+func getMemoryValue(memory string) (int, error) {
+	return strconv.Atoi(memory)
+}
+
+func compareRequestLimitMemory(request, limit string, workflowIdx, processIdx int) error {
+	requestValue, err := getMemoryValue(request)
+	if err != nil {
+		return err
+	}
+
+	limitValue, err := getMemoryValue(limit)
+	if err != nil {
+		return err
+	}
+
+	if limitValue < requestValue {
+		return errors.InvalidProcessMemoryRelationError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory", workflowIdx, processIdx),
+		)
+	}
+
+	return nil
+}
+
+func (process *Process) validateMemory(workflowIdx, processIdx int) error {
+	if process.Memory == nil {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory", workflowIdx, processIdx),
+		)
+	}
+
+	if process.Memory.Request == "" {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory.request", workflowIdx, processIdx),
+		)
+	}
+
+	var totalError error
+
+	requestOk := isValidMemory(process.Memory.Request)
+	if !requestOk {
+		totalError = errors.Join(
+			totalError,
+			errors.InvalidProcessMemoryError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory.request", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	if process.Memory.Limit != "" {
+		limitOk := isValidMemory(process.Memory.Limit)
+		if !limitOk {
+			totalError = errors.Join(
+				totalError,
+				errors.InvalidProcessMemoryError(
+					fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory.limit", workflowIdx, processIdx),
+				),
+			)
+		}
+	} else {
+		process.Memory.Limit = process.Memory.Request
+	}
+
+	if totalError == nil {
+		totalError = compareRequestLimitMemory(
+			process.CPU.Request, process.CPU.Limit, workflowIdx, processIdx,
+		)
+	}
+
+	return totalError
 }
