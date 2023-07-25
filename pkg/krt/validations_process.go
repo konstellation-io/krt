@@ -325,7 +325,7 @@ func compareRequestLimitCPU(request, limit string, requestForm, limitForm cpuFor
 
 	if limitValue < requestValue {
 		return errors.InvalidProcessCPURelationError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].CPU", workflowIdx, processIdx),
 		)
 	}
 
@@ -335,13 +335,13 @@ func compareRequestLimitCPU(request, limit string, requestForm, limitForm cpuFor
 func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 	if process.CPU == nil {
 		return errors.MissingRequiredFieldError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].CPU", workflowIdx, processIdx),
 		)
 	}
 
 	if process.CPU.Request == "" {
 		return errors.MissingRequiredFieldError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU.request", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].CPU.request", workflowIdx, processIdx),
 		)
 	}
 
@@ -353,7 +353,7 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 		totalError = errors.Join(
 			totalError,
 			errors.InvalidProcessCPUError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU.request", workflowIdx, processIdx),
+				fmt.Sprintf("krt.workflows[%d].processes[%d].CPU.request", workflowIdx, processIdx),
 			),
 		)
 	}
@@ -365,7 +365,7 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 			totalError = errors.Join(
 				totalError,
 				errors.InvalidProcessCPUError(
-					fmt.Sprintf("krt.workflows[%d].processes[%d].networking.CPU.limit", workflowIdx, processIdx),
+					fmt.Sprintf("krt.workflows[%d].processes[%d].CPU.limit", workflowIdx, processIdx),
 				),
 			)
 		}
@@ -385,16 +385,11 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 
 func isValidMemory(memory string) bool {
 	megaBMemory := regexp.MustCompile(`^\d+M$`)
-
-	if megaBMemory.MatchString(memory) {
-		return true
-	}
-
-	return false
+	return megaBMemory.MatchString(memory)
 }
 
 func getMemoryValue(memory string) (int, error) {
-	return strconv.Atoi(memory)
+	return strconv.Atoi(strings.ReplaceAll(memory, "M", ""))
 }
 
 func compareRequestLimitMemory(request, limit string, workflowIdx, processIdx int) error {
@@ -410,7 +405,7 @@ func compareRequestLimitMemory(request, limit string, workflowIdx, processIdx in
 
 	if limitValue < requestValue {
 		return errors.InvalidProcessMemoryRelationError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].memory", workflowIdx, processIdx),
 		)
 	}
 
@@ -420,13 +415,13 @@ func compareRequestLimitMemory(request, limit string, workflowIdx, processIdx in
 func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 	if process.Memory == nil {
 		return errors.MissingRequiredFieldError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].memory", workflowIdx, processIdx),
 		)
 	}
 
 	if process.Memory.Request == "" {
 		return errors.MissingRequiredFieldError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory.request", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].memory.request", workflowIdx, processIdx),
 		)
 	}
 
@@ -437,7 +432,7 @@ func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 		totalError = errors.Join(
 			totalError,
 			errors.InvalidProcessMemoryError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory.request", workflowIdx, processIdx),
+				fmt.Sprintf("krt.workflows[%d].processes[%d].memory.request", workflowIdx, processIdx),
 			),
 		)
 	}
@@ -448,7 +443,7 @@ func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 			totalError = errors.Join(
 				totalError,
 				errors.InvalidProcessMemoryError(
-					fmt.Sprintf("krt.workflows[%d].processes[%d].networking.memory.limit", workflowIdx, processIdx),
+					fmt.Sprintf("krt.workflows[%d].processes[%d].memory.limit", workflowIdx, processIdx),
 				),
 			)
 		}
@@ -458,7 +453,7 @@ func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 
 	if totalError == nil {
 		totalError = compareRequestLimitMemory(
-			process.CPU.Request, process.CPU.Limit, workflowIdx, processIdx,
+			process.Memory.Request, process.Memory.Limit, workflowIdx, processIdx,
 		)
 	}
 

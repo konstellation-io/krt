@@ -128,6 +128,50 @@ func TestKrtValidator(t *testing.T) {
 			errorType:   errors.ErrMissingRequiredField,
 			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].networking.destinationPort").Error(),
 		},
+		{
+			name: "fails if krt hasn't required process cpu",
+			krtYaml: NewKrtBuilder().WithProcessCPU(
+				nil,
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].CPU").Error(),
+		},
+		{
+			name: "fails if krt hasn't required process cpu request",
+			krtYaml: NewKrtBuilder().WithProcessCPU(
+				&krt.ProcessCPU{
+					Limit: "1",
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].CPU.request").Error(),
+		},
+		{
+			name: "fails if krt hasn't required process memory",
+			krtYaml: NewKrtBuilder().WithProcessMemory(
+				nil,
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].memory").Error(),
+		},
+		{
+			name: "fails if krt hasn't required process memory request",
+			krtYaml: NewKrtBuilder().WithProcessMemory(
+				&krt.ProcessMemory{
+					Limit: "100M",
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].memory.request").Error(),
+		},
 	}
 
 	invalidNameTests := []test{

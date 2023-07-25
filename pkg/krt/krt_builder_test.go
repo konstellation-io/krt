@@ -22,6 +22,14 @@ func NewKrtBuilder() *KrtBuilder {
 							Name:  "test-trigger",
 							Type:  krt.ProcessTypeTrigger,
 							Image: "test-trigger-image",
+							CPU: &krt.ProcessCPU{
+								Request: "100m",
+								Limit:   "200m",
+							},
+							Memory: &krt.ProcessMemory{
+								Request: "100M",
+								Limit:   "200M",
+							},
 							Subscriptions: []string{
 								"test-exit",
 							},
@@ -30,6 +38,14 @@ func NewKrtBuilder() *KrtBuilder {
 							Name:  "test-exit",
 							Type:  krt.ProcessTypeExit,
 							Image: "test-exit-image",
+							CPU: &krt.ProcessCPU{
+								Request: "100m",
+								Limit:   "200m",
+							},
+							Memory: &krt.ProcessMemory{
+								Request: "100M",
+								Limit:   "200M",
+							},
 							Subscriptions: []string{
 								"test-trigger",
 							},
@@ -123,6 +139,16 @@ func (k *KrtBuilder) WithProcessSubscriptions(subscriptions []string, processIdx
 
 func (k *KrtBuilder) WithProcessNetworking(networking *krt.ProcessNetworking, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Networking = networking
+	return k
+}
+
+func (k *KrtBuilder) WithProcessCPU(cpu *krt.ProcessCPU, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].CPU = cpu
+	return k
+}
+
+func (k *KrtBuilder) WithProcessMemory(memory *krt.ProcessMemory, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].Memory = memory
 	return k
 }
 
