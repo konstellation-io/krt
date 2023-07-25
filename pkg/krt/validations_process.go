@@ -282,7 +282,7 @@ const (
 )
 
 func isValidCPU(cpu string) (bool, cpuForm) {
-	fractionalCPU := regexp.MustCompile(`^\d{1}\.\d{1}$`)
+	fractionalCPU := regexp.MustCompile(`^\d\.\d$`)
 	milliCPU := regexp.MustCompile(`^\d{3}m$`)
 
 	if fractionalCPU.MatchString(cpu) {
@@ -302,12 +302,14 @@ func getCPUValue(cpu string, form cpuForm) (float64, error) {
 		if err != nil {
 			return 0, err
 		}
+
 		return cpuValue * 1000, nil
 	} else {
 		cpuValue, err := strconv.ParseFloat(strings.ReplaceAll(cpu, "m", ""), 32)
 		if err != nil {
 			return 0, err
 		}
+
 		return cpuValue, nil
 	}
 }
@@ -345,8 +347,11 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 		)
 	}
 
-	var totalError error
-	var requestForm, limitForm cpuForm
+	var (
+		totalError  error
+		requestForm cpuForm
+		limitForm   cpuForm
+	)
 
 	requestOk, requestForm := isValidCPU(process.CPU.Request)
 	if !requestOk {
@@ -361,6 +366,7 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 	if process.CPU.Limit != "" {
 		var limitOk bool
 		limitOk, limitForm = isValidCPU(process.CPU.Limit)
+
 		if !limitOk {
 			totalError = errors.Join(
 				totalError,
