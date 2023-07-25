@@ -18,10 +18,8 @@ workflows:
         replicas: 2
         CPU:
           request: 100m
-          limit: 200m
         memory:
           request: 100M
-          limit: 200M
         subscriptions:
           - 'exitpoint'
         networking:

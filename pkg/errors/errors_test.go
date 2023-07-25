@@ -79,6 +79,26 @@ func TestInvalidNetworkingProtocolError(t *testing.T) {
 	assert.ErrorIs(t, err, errors.ErrInvalidNetworkingProtocol)
 }
 
+func TestInvalidProcessCPUError(t *testing.T) {
+	err := errors.InvalidProcessCPUError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessCPU)
+}
+
+func TestInvalidProcessCPURelationError(t *testing.T) {
+	err := errors.InvalidProcessCPURelationError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessCPURelation)
+}
+
+func TestInvalidProcessMemoryError(t *testing.T) {
+	err := errors.InvalidProcessMemoryError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessMemory)
+}
+
+func TestInvalidProcessMemoryRelationError(t *testing.T) {
+	err := errors.InvalidProcessMemoryRelationError("test")
+	assert.ErrorIs(t, err, errors.ErrInvalidProcessMemoryRelation)
+}
+
 func TestNotEnoughProcessesError(t *testing.T) {
 	err := errors.NotEnoughProcessesError("test")
 	assert.ErrorIs(t, err, errors.ErrNotEnoughProcesses)

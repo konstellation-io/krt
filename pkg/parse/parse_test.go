@@ -48,7 +48,9 @@ func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 			if idxWorkflow == 0 && idxProcess == 0 {
 				assert.True(t, *process.GPU)
 				assert.Equal(t, 2, *process.Replicas)
-				assert.Equal(t, krt.NetworkingProtocolTCP, krt.DefaultProtocol)
+				assert.Equal(t, process.Networking.Protocol, krt.DefaultProtocol)
+				assert.Equal(t, process.CPU.Request, process.CPU.Limit)
+				assert.Equal(t, process.Memory.Request, process.Memory.Limit)
 			} else if idxWorkflow == 0 && idxProcess == 1 {
 				assert.Nil(t, process.Networking)
 			} else {
