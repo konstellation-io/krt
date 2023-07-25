@@ -28,7 +28,7 @@ var ErrInvalidProcessObjectStoreScope = errors.New("invalid process object store
 var ErrInvalidNetworkingProtocol = errors.New("invalid networking protocol, must be either 'UDP' or 'TCP'")
 var ErrInvalidProcessCPU = errors.New("invalid process CPU, must be of form '1', '0.5' or '100m'")
 var ErrInvalidProcessCPURelation = errors.New("invalid process CPU relation, 'limit' cannot be lower than 'request'")
-var ErrInvalidProcessMemory = errors.New("invalid process memory, must be of form '350M'")
+var ErrInvalidProcessMemory = errors.New("invalid process memory, must be of form '350M' or '1Gi'")
 var ErrInvalidProcessMemoryRelation = errors.New("invalid process memory relation, 'limit' cannot be lower than 'request'")
 
 var ErrNotEnoughProcesses = errors.New("not enough processes declared for this workflow, needed at least 1 trigger and 1 exit process")
