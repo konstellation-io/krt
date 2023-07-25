@@ -28,7 +28,7 @@ jobs:
           working-directory: ./
           args: --timeout=5m
       - name: Run unit tests
-        run: go test ./... -cover -v -coverprofile=coverage-unit.out --tags=unit
+        run: go test ./... -cover -v -coverpkg=./... -coverprofile=coverage-unit.out --tags=unit
         working-directory: ./
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
