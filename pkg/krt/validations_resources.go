@@ -63,7 +63,7 @@ func compareRequestLimitCPU(request, limit string, requestForm, limitForm cpuFor
 
 	if limitValue < requestValue {
 		return errors.InvalidProcessCPURelationError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].CPU", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU", workflowIdx, processIdx),
 		)
 	}
 
@@ -92,7 +92,7 @@ func compareRequestLimitMemory(request, limit string, workflowIdx, processIdx in
 
 	if limitValue < requestValue {
 		return errors.InvalidProcessMemoryRelationError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].memory", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory", workflowIdx, processIdx),
 		)
 	}
 
