@@ -14,6 +14,13 @@ workflows:
       - name: entrypoint
         type: trigger
         image: konstellation/kai-grpc-trigger:latest
+        resourceLimits:
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'exitpoint'
         networking:
@@ -30,6 +37,13 @@ workflows:
         objectStore:
           name: emails
           scope: workflow
+        resourceLimits:  
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'entrypoint'
 
@@ -39,12 +53,26 @@ workflows:
         objectStore:
           name: emails
           scope: workflow
+        resourceLimits:  
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'etl'
 
       - name: repairs-handler
         type: task
         image: konstellation/kai-rh-task:latest
+        resourceLimits:  
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'email-classificator.repairs'
 
@@ -54,6 +82,13 @@ workflows:
         objectStore:
           name: emails
           scope: workflow
+        resourceLimits:
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M  
         subscriptions:
           - 'email-classificator'
 
@@ -63,6 +98,13 @@ workflows:
         objectStore:
           name: emails
           scope: workflow
+        resourceLimits:
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'etl'
           - 'stats-storer'
@@ -76,6 +118,13 @@ workflows:
       - name: entrypoint
         type: trigger
         image: konstellation/kai-grpc-trigger:latest
+        resourceLimits:
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'exitpoint'
         networking:
@@ -89,6 +138,13 @@ workflows:
         objectStore:
           name: emails
           scope: workflow
+        resourceLimits:  
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'entrypoint'
 
@@ -98,12 +154,26 @@ workflows:
         objectStore:
           name: emails
           scope: workflow
+        resourceLimits:  
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'etl'
 
       - name: repairs-handler
         type: task
         image: konstellation/kai-rh-task:latest
+        resourceLimits:  
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'email-classificator.repairs'
 
@@ -113,6 +183,13 @@ workflows:
         objectStore:
           name: emails
           scope: workflow
+        resourceLimits:  
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'email-classificator'
 
@@ -122,6 +199,13 @@ workflows:
         objectStore:
           name: emails
           scope: workflow
+        resourceLimits:  
+          CPU:
+            request: 100m
+            limit: 200m
+          memory:
+            request: 100M
+            limit: 200M
         subscriptions:
           - 'etl'
           - 'stats-storer'

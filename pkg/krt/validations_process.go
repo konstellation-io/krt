@@ -21,6 +21,7 @@ func (process *Process) Validate(workflowIdx, processIdx int) error {
 		process.validateSecrets(workflowIdx, processIdx),
 		process.validateSubscriptions(workflowIdx, processIdx),
 		process.validateNetworking(workflowIdx, processIdx),
+		process.validateResourceLimits(workflowIdx, processIdx),
 	)
 }
 
@@ -111,41 +112,6 @@ func (process *Process) validateSubscriptions(workflowIdx, processIdx int) error
 	}
 
 	return nil
-}
-
-func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
-	if process.Networking == nil {
-		return nil
-	}
-
-	var totalError error
-	if process.Networking.TargetPort == 0 {
-		totalError = errors.Join(
-			totalError,
-			errors.MissingRequiredFieldError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetPort", workflowIdx, processIdx),
-			),
-		)
-	}
-
-	if process.Networking.DestinationPort == 0 {
-		totalError = errors.Join(
-			totalError,
-			errors.MissingRequiredFieldError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.destinationPort", workflowIdx, processIdx),
-			),
-		)
-	}
-
-	if !process.Networking.Protocol.IsValid() {
-		totalError = errors.Join(
-			totalError, errors.InvalidNetworkingProtocolError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.protocol", workflowIdx, processIdx),
-			),
-		)
-	}
-
-	return totalError
 }
 
 // validateSubscritpions checks if subscriptions for all process are valid.
@@ -268,4 +234,155 @@ func isValidSubscription(processType, subscriptionProcessType ProcessType) bool 
 	default:
 		return false
 	}
+}
+
+func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
+	if process.Networking == nil {
+		return nil
+	}
+
+	var totalError error
+	if process.Networking.TargetPort == 0 {
+		totalError = errors.Join(
+			totalError,
+			errors.MissingRequiredFieldError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.targetPort", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	if process.Networking.DestinationPort == 0 {
+		totalError = errors.Join(
+			totalError,
+			errors.MissingRequiredFieldError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.destinationPort", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	if !process.Networking.Protocol.IsValid() {
+		totalError = errors.Join(
+			totalError, errors.InvalidNetworkingProtocolError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].networking.protocol", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	return totalError
+}
+
+func (process *Process) validateResourceLimits(workflowIdx, processIdx int) error {
+	if process.ResourceLimits == nil {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits", workflowIdx, processIdx),
+		)
+	}
+
+	return errors.Join(
+		process.validateCPU(workflowIdx, processIdx),
+		process.validateMemory(workflowIdx, processIdx),
+	)
+}
+
+func (process *Process) validateCPU(workflowIdx, processIdx int) error {
+	if process.ResourceLimits.CPU == nil {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU", workflowIdx, processIdx),
+		)
+	}
+
+	if process.ResourceLimits.CPU.Request == "" {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU.request", workflowIdx, processIdx),
+		)
+	}
+
+	var (
+		totalError  error
+		requestForm cpuForm
+		limitForm   cpuForm
+	)
+
+	requestOk, requestForm := isValidCPU(process.ResourceLimits.CPU.Request)
+	if !requestOk {
+		totalError = errors.Join(
+			totalError,
+			errors.InvalidProcessCPUError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU.request", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	if process.ResourceLimits.CPU.Limit != "" {
+		var limitOk bool
+		limitOk, limitForm = isValidCPU(process.ResourceLimits.CPU.Limit)
+
+		if !limitOk {
+			totalError = errors.Join(
+				totalError,
+				errors.InvalidProcessCPUError(
+					fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU.limit", workflowIdx, processIdx),
+				),
+			)
+		}
+	} else {
+		process.ResourceLimits.CPU.Limit = process.ResourceLimits.CPU.Request
+		limitForm = requestForm
+	}
+
+	if totalError == nil {
+		totalError = compareRequestLimitCPU(
+			process.ResourceLimits.CPU.Request, process.ResourceLimits.CPU.Limit, requestForm, limitForm, workflowIdx, processIdx,
+		)
+	}
+
+	return totalError
+}
+
+func (process *Process) validateMemory(workflowIdx, processIdx int) error {
+	if process.ResourceLimits.Memory == nil {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory", workflowIdx, processIdx),
+		)
+	}
+
+	if process.ResourceLimits.Memory.Request == "" {
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory.request", workflowIdx, processIdx),
+		)
+	}
+
+	var totalError error
+
+	requestOk := isValidMemory(process.ResourceLimits.Memory.Request)
+	if !requestOk {
+		totalError = errors.Join(
+			totalError,
+			errors.InvalidProcessMemoryError(
+				fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory.request", workflowIdx, processIdx),
+			),
+		)
+	}
+
+	if process.ResourceLimits.Memory.Limit != "" {
+		limitOk := isValidMemory(process.ResourceLimits.Memory.Limit)
+		if !limitOk {
+			totalError = errors.Join(
+				totalError,
+				errors.InvalidProcessMemoryError(
+					fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory.limit", workflowIdx, processIdx),
+				),
+			)
+		}
+	} else {
+		process.ResourceLimits.Memory.Limit = process.ResourceLimits.Memory.Request
+	}
+
+	if totalError == nil {
+		totalError = compareRequestLimitMemory(
+			process.ResourceLimits.Memory.Request, process.ResourceLimits.Memory.Limit, workflowIdx, processIdx,
+		)
+	}
+
+	return totalError
 }

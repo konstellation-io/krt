@@ -48,7 +48,9 @@ func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 			if idxWorkflow == 0 && idxProcess == 0 {
 				assert.True(t, *process.GPU)
 				assert.Equal(t, 2, *process.Replicas)
-				assert.Equal(t, krt.NetworkingProtocolTCP, krt.DefaultProtocol)
+				assert.Equal(t, process.Networking.Protocol, krt.DefaultProtocol)
+				assert.Equal(t, process.ResourceLimits.CPU.Request, process.ResourceLimits.CPU.Limit)
+				assert.Equal(t, process.ResourceLimits.Memory.Request, process.ResourceLimits.Memory.Limit)
 			} else if idxWorkflow == 0 && idxProcess == 1 {
 				assert.Nil(t, process.Networking)
 			} else {
@@ -74,7 +76,7 @@ func TestNotValidKrt(t *testing.T) {
 	require.Error(t, err)
 
 	errList := strings.Split(err.Error(), "\n")
-	require.Len(t, errList, 10)
+	require.Len(t, errList, 12)
 
 	assert.ErrorIs(t, err, errors.ErrInvalidVersionTag)
 	assert.Contains(t, err.Error(), "krt.version")
@@ -108,6 +110,9 @@ func TestNotValidKrt(t *testing.T) {
 
 	assert.ErrorIs(t, err, errors.ErrNotEnoughProcesses)
 	assert.Contains(t, err.Error(), "krt.workflows[0].processes")
+
+	assert.ErrorIs(t, err, errors.ErrMissingRequiredField)
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].resourceLimits")
 }
 
 func TestNotValidTypesKrt(t *testing.T) {

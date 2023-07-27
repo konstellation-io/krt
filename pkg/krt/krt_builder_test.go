@@ -22,6 +22,16 @@ func NewKrtBuilder() *KrtBuilder {
 							Name:  "test-trigger",
 							Type:  krt.ProcessTypeTrigger,
 							Image: "test-trigger-image",
+							ResourceLimits: &krt.ProcessResourceLimits{
+								CPU: &krt.ResourceLimit{
+									Request: "100m",
+									Limit:   "200m",
+								},
+								Memory: &krt.ResourceLimit{
+									Request: "100M",
+									Limit:   "200M",
+								},
+							},
 							Subscriptions: []string{
 								"test-exit",
 							},
@@ -30,6 +40,16 @@ func NewKrtBuilder() *KrtBuilder {
 							Name:  "test-exit",
 							Type:  krt.ProcessTypeExit,
 							Image: "test-exit-image",
+							ResourceLimits: &krt.ProcessResourceLimits{
+								CPU: &krt.ResourceLimit{
+									Request: "100m",
+									Limit:   "200m",
+								},
+								Memory: &krt.ResourceLimit{
+									Request: "100M",
+									Limit:   "200M",
+								},
+							},
 							Subscriptions: []string{
 								"test-trigger",
 							},
@@ -123,6 +143,11 @@ func (k *KrtBuilder) WithProcessSubscriptions(subscriptions []string, processIdx
 
 func (k *KrtBuilder) WithProcessNetworking(networking *krt.ProcessNetworking, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Networking = networking
+	return k
+}
+
+func (k *KrtBuilder) WithProcessResourceLimits(resourceLimits *krt.ProcessResourceLimits, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].ResourceLimits = resourceLimits
 	return k
 }
 

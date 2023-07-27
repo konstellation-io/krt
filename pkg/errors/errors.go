@@ -26,6 +26,10 @@ var ErrInvalidWorkflowType = errors.New("invalid workflow type, must be either '
 var ErrInvalidProcessType = errors.New("invalid process type, must be either 'trigger', 'task' or 'exit'")
 var ErrInvalidProcessObjectStoreScope = errors.New("invalid process object store scope, must be either 'product' or 'workflow'")
 var ErrInvalidNetworkingProtocol = errors.New("invalid networking protocol, must be either 'UDP' or 'TCP'")
+var ErrInvalidProcessCPUResourceLimit = errors.New("invalid process CPU resource limit, must be of form '1', '0.5' or '100m'")
+var ErrInvalidProcessCPURelation = errors.New("invalid process CPU, 'limit' cannot be lower than 'request'")
+var ErrInvalidProcessMemoryResourceLimit = errors.New("invalid process memory resource limit, must be of form '350M' or '1Gi'")
+var ErrInvalidProcessMemoryRelation = errors.New("invalid process memory, 'limit' cannot be lower than 'request'")
 
 var ErrNotEnoughProcesses = errors.New("not enough processes declared for this workflow, needed at least 1 trigger and 1 exit process")
 var ErrDuplicatedProcessName = errors.New("process names must be unique")
@@ -34,16 +38,20 @@ var ErrInvalidProcessSubscription = errors.New("invalid subscription")
 var ErrCannotSubscribeToItself = errors.New("cannot subscribe to itself")
 var ErrCannotSubscribeToNonExistentProcess = errors.New("cannot subscribe to non existent process")
 
+func errorWithMessage(err error, message string) error {
+	return fmt.Errorf("%w: %s", err, message)
+}
+
 func MissingRequiredFieldError(field string) error {
-	return fmt.Errorf("%w: %s", ErrMissingRequiredField, field)
+	return errorWithMessage(ErrMissingRequiredField, field)
 }
 
 func InvalidVersionTagError(field string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidVersionTag, field)
+	return errorWithMessage(ErrInvalidVersionTag, field)
 }
 
 func InvalidFieldNameError(field string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidFieldName, field)
+	return errorWithMessage(ErrInvalidFieldName, field)
 }
 
 func InvalidLengthFieldError(field string, maxLength int) error {
@@ -51,35 +59,51 @@ func InvalidLengthFieldError(field string, maxLength int) error {
 }
 
 func DuplicatedWorkflowNameError(field string) error {
-	return fmt.Errorf("%w: %s", ErrDuplicatedWorkflowName, field)
+	return errorWithMessage(ErrDuplicatedWorkflowName, field)
 }
 
 func InvalidWorkflowTypeError(field string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidWorkflowType, field)
+	return errorWithMessage(ErrInvalidWorkflowType, field)
 }
 
 func InvalidProcessTypeError(field string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidProcessType, field)
+	return errorWithMessage(ErrInvalidProcessType, field)
 }
 
 func InvalidProcessObjectStoreScopeError(field string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidProcessObjectStoreScope, field)
+	return errorWithMessage(ErrInvalidProcessObjectStoreScope, field)
 }
 
 func InvalidNetworkingProtocolError(field string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidNetworkingProtocol, field)
+	return errorWithMessage(ErrInvalidNetworkingProtocol, field)
+}
+
+func InvalidProcessCPUError(field string) error {
+	return errorWithMessage(ErrInvalidProcessCPUResourceLimit, field)
+}
+
+func InvalidProcessCPURelationError(field string) error {
+	return errorWithMessage(ErrInvalidProcessCPURelation, field)
+}
+
+func InvalidProcessMemoryError(field string) error {
+	return errorWithMessage(ErrInvalidProcessMemoryResourceLimit, field)
+}
+
+func InvalidProcessMemoryRelationError(field string) error {
+	return errorWithMessage(ErrInvalidProcessMemoryRelation, field)
 }
 
 func NotEnoughProcessesError(field string) error {
-	return fmt.Errorf("%w: %s", ErrNotEnoughProcesses, field)
+	return errorWithMessage(ErrNotEnoughProcesses, field)
 }
 
 func DuplicatedProcessNameError(field string) error {
-	return fmt.Errorf("%w: %s", ErrDuplicatedProcessName, field)
+	return errorWithMessage(ErrDuplicatedProcessName, field)
 }
 
 func DuplicatedProcessSubscriptionError(field string) error {
-	return fmt.Errorf("%w: %s", ErrDuplicatedProcessSubscription, field)
+	return errorWithMessage(ErrDuplicatedProcessSubscription, field)
 }
 
 func InvalidProcessSubscriptionError(processType, subscritpionProcessType, field string) error {
