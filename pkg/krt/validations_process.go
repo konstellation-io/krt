@@ -273,7 +273,9 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 
 func (process *Process) validateResourceLimits(workflowIdx, processIdx int) error {
 	if process.ResourceLimits == nil {
-		return nil
+		return errors.MissingRequiredFieldError(
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits", workflowIdx, processIdx),
+		)
 	}
 
 	return errors.Join(

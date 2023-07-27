@@ -76,7 +76,7 @@ func TestNotValidKrt(t *testing.T) {
 	require.Error(t, err)
 
 	errList := strings.Split(err.Error(), "\n")
-	require.Len(t, errList, 14)
+	require.Len(t, errList, 12)
 
 	assert.ErrorIs(t, err, errors.ErrInvalidVersionTag)
 	assert.Contains(t, err.Error(), "krt.version")
@@ -112,10 +112,7 @@ func TestNotValidKrt(t *testing.T) {
 	assert.Contains(t, err.Error(), "krt.workflows[0].processes")
 
 	assert.ErrorIs(t, err, errors.ErrMissingRequiredField)
-	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].resourceLimits.CPU")
-	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].resourceLimits.memory")
-	assert.Contains(t, err.Error(), "krt.workflows[0].processes[1].resourceLimits.CPU")
-	assert.Contains(t, err.Error(), "krt.workflows[0].processes[1].resourceLimits.memory")
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].resourceLimits")
 }
 
 func TestNotValidTypesKrt(t *testing.T) {

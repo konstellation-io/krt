@@ -129,6 +129,16 @@ func TestKrtValidator(t *testing.T) {
 			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].networking.destinationPort").Error(),
 		},
 		{
+			name: "fails if krt hasn't required process limit resources",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				nil,
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits").Error(),
+		},
+		{
 			name: "fails if krt hasn't required process cpu",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
