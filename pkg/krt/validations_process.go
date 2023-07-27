@@ -285,13 +285,13 @@ func (process *Process) validateResourceLimits(workflowIdx, processIdx int) erro
 func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 	if process.ResourceLimits.CPU == nil {
 		return errors.MissingRequiredFieldError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].CPU", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU", workflowIdx, processIdx),
 		)
 	}
 
 	if process.ResourceLimits.CPU.Request == "" {
 		return errors.MissingRequiredFieldError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].CPU.request", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU.request", workflowIdx, processIdx),
 		)
 	}
 
@@ -306,7 +306,7 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 		totalError = errors.Join(
 			totalError,
 			errors.InvalidProcessCPUError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].CPU.request", workflowIdx, processIdx),
+				fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU.request", workflowIdx, processIdx),
 			),
 		)
 	}
@@ -319,7 +319,7 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 			totalError = errors.Join(
 				totalError,
 				errors.InvalidProcessCPUError(
-					fmt.Sprintf("krt.workflows[%d].processes[%d].CPU.limit", workflowIdx, processIdx),
+					fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU.limit", workflowIdx, processIdx),
 				),
 			)
 		}
@@ -340,13 +340,13 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 	if process.ResourceLimits.Memory == nil {
 		return errors.MissingRequiredFieldError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].memory", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory", workflowIdx, processIdx),
 		)
 	}
 
 	if process.ResourceLimits.Memory.Request == "" {
 		return errors.MissingRequiredFieldError(
-			fmt.Sprintf("krt.workflows[%d].processes[%d].memory.request", workflowIdx, processIdx),
+			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory.request", workflowIdx, processIdx),
 		)
 	}
 
@@ -357,7 +357,7 @@ func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 		totalError = errors.Join(
 			totalError,
 			errors.InvalidProcessMemoryError(
-				fmt.Sprintf("krt.workflows[%d].processes[%d].memory.request", workflowIdx, processIdx),
+				fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory.request", workflowIdx, processIdx),
 			),
 		)
 	}
@@ -368,7 +368,7 @@ func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 			totalError = errors.Join(
 				totalError,
 				errors.InvalidProcessMemoryError(
-					fmt.Sprintf("krt.workflows[%d].processes[%d].memory.limit", workflowIdx, processIdx),
+					fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory.limit", workflowIdx, processIdx),
 				),
 			)
 		}

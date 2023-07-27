@@ -112,10 +112,10 @@ func TestNotValidKrt(t *testing.T) {
 	assert.Contains(t, err.Error(), "krt.workflows[0].processes")
 
 	assert.ErrorIs(t, err, errors.ErrMissingRequiredField)
-	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].CPU")
-	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].memory")
-	assert.Contains(t, err.Error(), "krt.workflows[0].processes[1].CPU")
-	assert.Contains(t, err.Error(), "krt.workflows[0].processes[1].memory")
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].resourceLimits.CPU")
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[0].resourceLimits.memory")
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[1].resourceLimits.CPU")
+	assert.Contains(t, err.Error(), "krt.workflows[0].processes[1].resourceLimits.memory")
 }
 
 func TestNotValidTypesKrt(t *testing.T) {

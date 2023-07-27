@@ -142,7 +142,7 @@ func TestKrtValidator(t *testing.T) {
 			).Build(),
 			wantError:   true,
 			errorType:   errors.ErrMissingRequiredField,
-			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].CPU").Error(),
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits.CPU").Error(),
 		},
 		{
 			name: "fails if krt hasn't required process cpu request",
@@ -160,7 +160,7 @@ func TestKrtValidator(t *testing.T) {
 			).Build(),
 			wantError:   true,
 			errorType:   errors.ErrMissingRequiredField,
-			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].CPU.request").Error(),
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits.CPU.request").Error(),
 		},
 		{
 			name: "fails if krt hasn't required process memory",
@@ -176,7 +176,7 @@ func TestKrtValidator(t *testing.T) {
 			).Build(),
 			wantError:   true,
 			errorType:   errors.ErrMissingRequiredField,
-			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].memory").Error(),
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits.memory").Error(),
 		},
 		{
 			name: "fails if krt hasn't required process memory request",
@@ -194,7 +194,7 @@ func TestKrtValidator(t *testing.T) {
 			).Build(),
 			wantError:   true,
 			errorType:   errors.ErrMissingRequiredField,
-			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].memory.request").Error(),
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits.memory.request").Error(),
 		},
 	}
 
@@ -311,7 +311,7 @@ func TestKrtValidator(t *testing.T) {
 				}, 0).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidProcessCPU,
-			errorString: errors.InvalidProcessCPUError("krt.workflows[0].processes[0].CPU.request").Error(),
+			errorString: errors.InvalidProcessCPUError("krt.workflows[0].processes[0].resourceLimits.CPU.request").Error(),
 		},
 		{
 			name: "fails if krt cpu limit has an invalid format",
@@ -328,7 +328,7 @@ func TestKrtValidator(t *testing.T) {
 				}, 0).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidProcessCPU,
-			errorString: errors.InvalidProcessCPUError("krt.workflows[0].processes[0].CPU.limit").Error(),
+			errorString: errors.InvalidProcessCPUError("krt.workflows[0].processes[0].resourceLimits.CPU.limit").Error(),
 		},
 		{
 			name: "fails if krt memory request has an invalid format",
@@ -345,7 +345,7 @@ func TestKrtValidator(t *testing.T) {
 				}, 0).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidProcessMemory,
-			errorString: errors.InvalidProcessMemoryError("krt.workflows[0].processes[0].memory.request").Error(),
+			errorString: errors.InvalidProcessMemoryError("krt.workflows[0].processes[0].resourceLimits.memory.request").Error(),
 		},
 		{
 			name: "fails if krt memory limit has an invalid format",
@@ -362,7 +362,7 @@ func TestKrtValidator(t *testing.T) {
 				}, 0).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidProcessMemory,
-			errorString: errors.InvalidProcessMemoryError("krt.workflows[0].processes[0].memory.limit").Error(),
+			errorString: errors.InvalidProcessMemoryError("krt.workflows[0].processes[0].resourceLimits.memory.limit").Error(),
 		},
 	}
 
@@ -426,7 +426,7 @@ func TestKrtValidator(t *testing.T) {
 				}, 0).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidProcessCPURelation,
-			errorString: errors.InvalidProcessCPURelationError("krt.workflows[0].processes[0].CPU").Error(),
+			errorString: errors.InvalidProcessCPURelationError("krt.workflows[0].processes[0].resourceLimits.CPU").Error(),
 		},
 		{
 			name: "fails if krt memory limit is lower than request",
@@ -442,7 +442,7 @@ func TestKrtValidator(t *testing.T) {
 					}}, 0).Build(),
 			wantError:   true,
 			errorType:   errors.ErrInvalidProcessMemoryRelation,
-			errorString: errors.InvalidProcessMemoryRelationError("krt.workflows[0].processes[0].memory").Error(),
+			errorString: errors.InvalidProcessMemoryRelationError("krt.workflows[0].processes[0].resourceLimits.memory").Error(),
 		},
 	}
 
