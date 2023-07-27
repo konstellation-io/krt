@@ -38,7 +38,7 @@ func getCPUValue(cpu string, form cpuForm) float64 {
 
 		return cpuValue * 1000
 	} else {
-		cpuValue, _ := strconv.ParseFloat(strings.ReplaceAll(cpu, "m", ""), 32)
+		cpuValue, _ := strconv.ParseFloat(strings.ReplaceAll(cpu, "m", ""), 32) // will not return error as cpu previously follows the regexp
 
 		return cpuValue
 	}
@@ -64,7 +64,8 @@ func isValidMemory(memory string) bool {
 }
 
 func getMemoryValue(memory string) int64 {
-	strictBytes, _ := units.ParseStrictBytes(memory + "B") // Added B to match expected format
+	memory = memory + "B"                            // Added B to match expected format
+	strictBytes, _ := units.ParseStrictBytes(memory) // will not return error as memory previously follows the regexp
 	return strictBytes
 }
 
