@@ -42,18 +42,17 @@ const (
 )
 
 type Process struct {
-	Name          string              `yaml:"name"`
-	Type          ProcessType         `yaml:"type"`
-	Image         string              `yaml:"image"`
-	Replicas      *int                `yaml:"replicas" default:"1"`
-	GPU           *bool               `yaml:"gpu" default:"false" `
-	Config        map[string]string   `yaml:"config"`
-	ObjectStore   *ProcessObjectStore `yaml:"objectStore"`
-	Secrets       map[string]string   `yaml:"secrets"`
-	Subscriptions []string            `yaml:"subscriptions"`
-	Networking    *ProcessNetworking  `yaml:"networking"`
-	CPU           *ProcessCPU         `yaml:"CPU"`
-	Memory        *ProcessMemory      `yaml:"memory"`
+	Name           string                 `yaml:"name"`
+	Type           ProcessType            `yaml:"type"`
+	Image          string                 `yaml:"image"`
+	Replicas       *int                   `yaml:"replicas" default:"1"`
+	GPU            *bool                  `yaml:"gpu" default:"false" `
+	Config         map[string]string      `yaml:"config"`
+	ObjectStore    *ProcessObjectStore    `yaml:"objectStore"`
+	Secrets        map[string]string      `yaml:"secrets"`
+	Subscriptions  []string               `yaml:"subscriptions"`
+	Networking     *ProcessNetworking     `yaml:"networking"`
+	ResourceLimits *ProcessResourceLimits `yaml:"resourceLimits"`
 }
 
 type ProcessType string
@@ -135,4 +134,9 @@ type ProcessCPU struct {
 type ProcessMemory struct {
 	Request string `yaml:"request"`
 	Limit   string `yaml:"limit"`
+}
+
+type ProcessResourceLimits struct {
+	CPU    *ProcessCPU    `yaml:"CPU"`
+	Memory *ProcessMemory `yaml:"memory"`
 }

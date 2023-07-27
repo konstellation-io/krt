@@ -273,13 +273,13 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 }
 
 func (process *Process) validateCPU(workflowIdx, processIdx int) error {
-	if process.CPU == nil {
+	if process.ResourceLimits.CPU == nil {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].CPU", workflowIdx, processIdx),
 		)
 	}
 
-	if process.CPU.Request == "" {
+	if process.ResourceLimits.CPU.Request == "" {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].CPU.request", workflowIdx, processIdx),
 		)
@@ -291,7 +291,7 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 		limitForm   cpuForm
 	)
 
-	requestOk, requestForm := isValidCPU(process.CPU.Request)
+	requestOk, requestForm := isValidCPU(process.ResourceLimits.CPU.Request)
 	if !requestOk {
 		totalError = errors.Join(
 			totalError,
@@ -301,9 +301,9 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 		)
 	}
 
-	if process.CPU.Limit != "" {
+	if process.ResourceLimits.CPU.Limit != "" {
 		var limitOk bool
-		limitOk, limitForm = isValidCPU(process.CPU.Limit)
+		limitOk, limitForm = isValidCPU(process.ResourceLimits.CPU.Limit)
 
 		if !limitOk {
 			totalError = errors.Join(
@@ -314,13 +314,13 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 			)
 		}
 	} else {
-		process.CPU.Limit = process.CPU.Request
+		process.ResourceLimits.CPU.Limit = process.ResourceLimits.CPU.Request
 		limitForm = requestForm
 	}
 
 	if totalError == nil {
 		totalError = compareRequestLimitCPU(
-			process.CPU.Request, process.CPU.Limit, requestForm, limitForm, workflowIdx, processIdx,
+			process.ResourceLimits.CPU.Request, process.ResourceLimits.CPU.Limit, requestForm, limitForm, workflowIdx, processIdx,
 		)
 	}
 
@@ -328,13 +328,13 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 }
 
 func (process *Process) validateMemory(workflowIdx, processIdx int) error {
-	if process.Memory == nil {
+	if process.ResourceLimits.Memory == nil {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].memory", workflowIdx, processIdx),
 		)
 	}
 
-	if process.Memory.Request == "" {
+	if process.ResourceLimits.Memory.Request == "" {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].memory.request", workflowIdx, processIdx),
 		)
@@ -342,7 +342,7 @@ func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 
 	var totalError error
 
-	requestOk := isValidMemory(process.Memory.Request)
+	requestOk := isValidMemory(process.ResourceLimits.Memory.Request)
 	if !requestOk {
 		totalError = errors.Join(
 			totalError,
@@ -352,8 +352,8 @@ func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 		)
 	}
 
-	if process.Memory.Limit != "" {
-		limitOk := isValidMemory(process.Memory.Limit)
+	if process.ResourceLimits.Memory.Limit != "" {
+		limitOk := isValidMemory(process.ResourceLimits.Memory.Limit)
 		if !limitOk {
 			totalError = errors.Join(
 				totalError,
@@ -363,12 +363,12 @@ func (process *Process) validateMemory(workflowIdx, processIdx int) error {
 			)
 		}
 	} else {
-		process.Memory.Limit = process.Memory.Request
+		process.ResourceLimits.Memory.Limit = process.ResourceLimits.Memory.Request
 	}
 
 	if totalError == nil {
 		totalError = compareRequestLimitMemory(
-			process.Memory.Request, process.Memory.Limit, workflowIdx, processIdx,
+			process.ResourceLimits.Memory.Request, process.ResourceLimits.Memory.Limit, workflowIdx, processIdx,
 		)
 	}
 
