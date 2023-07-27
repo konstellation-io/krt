@@ -21,8 +21,7 @@ func (process *Process) Validate(workflowIdx, processIdx int) error {
 		process.validateSecrets(workflowIdx, processIdx),
 		process.validateSubscriptions(workflowIdx, processIdx),
 		process.validateNetworking(workflowIdx, processIdx),
-		process.validateCPU(workflowIdx, processIdx),
-		process.validateMemory(workflowIdx, processIdx),
+		process.validateResourceLimits(workflowIdx, processIdx),
 	)
 }
 
@@ -270,6 +269,17 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 	}
 
 	return totalError
+}
+
+func (process *Process) validateResourceLimits(workflowIdx, processIdx int) error {
+	if process.ResourceLimits == nil {
+		return nil
+	}
+
+	return errors.Join(
+		process.validateCPU(workflowIdx, processIdx),
+		process.validateMemory(workflowIdx, processIdx),
+	)
 }
 
 func (process *Process) validateCPU(workflowIdx, processIdx int) error {
