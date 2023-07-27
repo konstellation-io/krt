@@ -27,7 +27,7 @@ var ErrInvalidProcessType = errors.New("invalid process type, must be either 'tr
 var ErrInvalidProcessObjectStoreScope = errors.New("invalid process object store scope, must be either 'product' or 'workflow'")
 var ErrInvalidNetworkingProtocol = errors.New("invalid networking protocol, must be either 'UDP' or 'TCP'")
 var ErrInvalidProcessCPU = errors.New("invalid process CPU, must be of form '1', '0.5' or '100m'")
-var ErrInvalidProcessCPURelation = errors.New("invalid process CPU relation, 'limit' cannot be lower than 'request'")
+var ErrInvalidProcessCPURelation = errors.New("invalid process CPU, 'limit' cannot be lower than 'request'")
 var ErrInvalidProcessMemory = errors.New("invalid process memory, must be of form '350M' or '1Gi'")
 var ErrInvalidProcessMemoryRelation = errors.New("invalid process memory relation, 'limit' cannot be lower than 'request'")
 
