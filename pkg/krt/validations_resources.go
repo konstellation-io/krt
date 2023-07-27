@@ -32,34 +32,22 @@ func isValidCPU(cpu string) (bool, cpuForm) {
 	return false, 0
 }
 
-func getCPUValue(cpu string, form cpuForm) (float64, error) {
+func getCPUValue(cpu string, form cpuForm) float64 {
 	if form == cpuFormFractional {
-		cpuValue, err := strconv.ParseFloat(cpu, 32)
-		if err != nil {
-			return 0, err
-		}
+		cpuValue, _ := strconv.ParseFloat(cpu, 32)
 
-		return cpuValue * 1000, nil
+		return cpuValue * 1000
 	} else {
-		cpuValue, err := strconv.ParseFloat(strings.ReplaceAll(cpu, "m", ""), 32)
-		if err != nil {
-			return 0, err
-		}
+		cpuValue, _ := strconv.ParseFloat(strings.ReplaceAll(cpu, "m", ""), 32)
 
-		return cpuValue, nil
+		return cpuValue
 	}
 }
 
 func compareRequestLimitCPU(request, limit string, requestForm, limitForm cpuForm, workflowIdx, processIdx int) error {
-	requestValue, err := getCPUValue(request, requestForm)
-	if err != nil {
-		return err
-	}
+	requestValue := getCPUValue(request, requestForm)
 
-	limitValue, err := getCPUValue(limit, limitForm)
-	if err != nil {
-		return err
-	}
+	limitValue := getCPUValue(limit, limitForm)
 
 	if limitValue < requestValue {
 		return errors.InvalidProcessCPURelationError(
@@ -75,20 +63,15 @@ func isValidMemory(memory string) bool {
 	return megaBMemory.MatchString(memory)
 }
 
-func getMemoryValue(memory string) (int64, error) {
-	return units.ParseStrictBytes(memory + "B") // Added B to match expected format
+func getMemoryValue(memory string) int64 {
+	strictBytes, _ := units.ParseStrictBytes(memory + "B") // Added B to match expected format
+	return strictBytes
 }
 
 func compareRequestLimitMemory(request, limit string, workflowIdx, processIdx int) error {
-	requestValue, err := getMemoryValue(request)
-	if err != nil {
-		return err
-	}
+	requestValue := getMemoryValue(request)
 
-	limitValue, err := getMemoryValue(limit)
-	if err != nil {
-		return err
-	}
+	limitValue := getMemoryValue(limit)
 
 	if limitValue < requestValue {
 		return errors.InvalidProcessMemoryRelationError(
