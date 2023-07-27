@@ -26,9 +26,9 @@ var ErrInvalidWorkflowType = errors.New("invalid workflow type, must be either '
 var ErrInvalidProcessType = errors.New("invalid process type, must be either 'trigger', 'task' or 'exit'")
 var ErrInvalidProcessObjectStoreScope = errors.New("invalid process object store scope, must be either 'product' or 'workflow'")
 var ErrInvalidNetworkingProtocol = errors.New("invalid networking protocol, must be either 'UDP' or 'TCP'")
-var ErrInvalidProcessCPU = errors.New("invalid process CPU, must be of form '1', '0.5' or '100m'")
+var ErrInvalidProcessCPUResourceLimit = errors.New("invalid process CPU resource limit, must be of form '1', '0.5' or '100m'")
 var ErrInvalidProcessCPURelation = errors.New("invalid process CPU, 'limit' cannot be lower than 'request'")
-var ErrInvalidProcessMemory = errors.New("invalid process memory, must be of form '350M' or '1Gi'")
+var ErrInvalidProcessMemoryResourceLimit = errors.New("invalid process memory resource limit, must be of form '350M' or '1Gi'")
 var ErrInvalidProcessMemoryRelation = errors.New("invalid process memory, 'limit' cannot be lower than 'request'")
 
 var ErrNotEnoughProcesses = errors.New("not enough processes declared for this workflow, needed at least 1 trigger and 1 exit process")
