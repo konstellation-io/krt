@@ -126,17 +126,12 @@ func (np NetworkingProtocol) IsValid() bool {
 	return ok
 }
 
-type ProcessCPU struct {
-	Request string `yaml:"request"`
-	Limit   string `yaml:"limit"`
-}
-
-type ProcessMemory struct {
+type ResourceLimit struct {
 	Request string `yaml:"request"`
 	Limit   string `yaml:"limit"`
 }
 
 type ProcessResourceLimits struct {
-	CPU    *ProcessCPU    `yaml:"CPU"`
-	Memory *ProcessMemory `yaml:"memory"`
+	CPU    *ResourceLimit    `yaml:"CPU"`
+	Memory *ResourceLimit `yaml:"memory"`
 }
