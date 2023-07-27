@@ -143,7 +143,7 @@ func TestKrtValidator(t *testing.T) {
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
 					nil,
-					&krt.ProcessMemory{
+					&krt.ResourceLimit{
 						Request: "100M",
 						Limit:   "200M",
 					},
@@ -158,10 +158,10 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt hasn't required process cpu request",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
-					&krt.ProcessCPU{
+					&krt.ResourceLimit{
 						Limit: "1",
 					},
-					&krt.ProcessMemory{
+					&krt.ResourceLimit{
 						Request: "100M",
 						Limit:   "200M",
 					},
@@ -176,7 +176,7 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt hasn't required process memory",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
-					&krt.ProcessCPU{
+					&krt.ResourceLimit{
 						Request: "100m",
 						Limit:   "200m",
 					},
@@ -192,11 +192,11 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt hasn't required process memory request",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
-					&krt.ProcessCPU{
+					&krt.ResourceLimit{
 						Request: "100m",
 						Limit:   "200m",
 					},
-					&krt.ProcessMemory{
+					&krt.ResourceLimit{
 						Limit: "100M",
 					},
 				},
@@ -310,11 +310,11 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt cpu request has an invalid format",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
-					&krt.ProcessCPU{
+					&krt.ResourceLimit{
 						Request: "invalid",
 						Limit:   "200m",
 					},
-					&krt.ProcessMemory{
+					&krt.ResourceLimit{
 						Request: "100M",
 						Limit:   "200M",
 					},
@@ -327,11 +327,11 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt cpu limit has an invalid format",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
-					&krt.ProcessCPU{
+					&krt.ResourceLimit{
 						Request: "200m",
 						Limit:   "invalid",
 					},
-					&krt.ProcessMemory{
+					&krt.ResourceLimit{
 						Request: "100M",
 						Limit:   "200M",
 					},
@@ -344,11 +344,11 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt memory request has an invalid format",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
-					&krt.ProcessCPU{
+					&krt.ResourceLimit{
 						Request: "200m",
 						Limit:   "200m",
 					},
-					&krt.ProcessMemory{
+					&krt.ResourceLimit{
 						Request: "invalid",
 						Limit:   "200m",
 					},
@@ -361,11 +361,11 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt memory limit has an invalid format",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
-					&krt.ProcessCPU{
+					&krt.ResourceLimit{
 						Request: "200m",
 						Limit:   "200m",
 					},
-					&krt.ProcessMemory{
+					&krt.ResourceLimit{
 						Request: "200m",
 						Limit:   "invalid",
 					},
@@ -425,11 +425,11 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt cpu limit is lower than request",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
-					&krt.ProcessCPU{
+					&krt.ResourceLimit{
 						Request: "200m",
 						Limit:   "0.1",
 					},
-					&krt.ProcessMemory{
+					&krt.ResourceLimit{
 						Request: "100M",
 						Limit:   "200M",
 					},
@@ -442,11 +442,11 @@ func TestKrtValidator(t *testing.T) {
 			name: "fails if krt memory limit is lower than request",
 			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
 				&krt.ProcessResourceLimits{
-					&krt.ProcessCPU{
+					&krt.ResourceLimit{
 						Request: "200m",
 						Limit:   "200m",
 					},
-					&krt.ProcessMemory{
+					&krt.ResourceLimit{
 						Request: "2Mi",
 						Limit:   "2000k",
 					}}, 0).Build(),

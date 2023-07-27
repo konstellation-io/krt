@@ -132,6 +132,6 @@ type ResourceLimit struct {
 }
 
 type ProcessResourceLimits struct {
-	CPU    *ResourceLimit    `yaml:"CPU"`
+	CPU    *ResourceLimit `yaml:"CPU"`
 	Memory *ResourceLimit `yaml:"memory"`
 }

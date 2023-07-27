@@ -23,11 +23,11 @@ func NewKrtBuilder() *KrtBuilder {
 							Type:  krt.ProcessTypeTrigger,
 							Image: "test-trigger-image",
 							ResourceLimits: &krt.ProcessResourceLimits{
-								CPU: &krt.ProcessCPU{
+								CPU: &krt.ResourceLimit{
 									Request: "100m",
 									Limit:   "200m",
 								},
-								Memory: &krt.ProcessMemory{
+								Memory: &krt.ResourceLimit{
 									Request: "100M",
 									Limit:   "200M",
 								},
@@ -41,11 +41,11 @@ func NewKrtBuilder() *KrtBuilder {
 							Type:  krt.ProcessTypeExit,
 							Image: "test-exit-image",
 							ResourceLimits: &krt.ProcessResourceLimits{
-								CPU: &krt.ProcessCPU{
+								CPU: &krt.ResourceLimit{
 									Request: "100m",
 									Limit:   "200m",
 								},
-								Memory: &krt.ProcessMemory{
+								Memory: &krt.ResourceLimit{
 									Request: "100M",
 									Limit:   "200M",
 								},
