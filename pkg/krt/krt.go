@@ -42,16 +42,17 @@ const (
 )
 
 type Process struct {
-	Name          string              `yaml:"name"`
-	Type          ProcessType         `yaml:"type"`
-	Image         string              `yaml:"image"`
-	Replicas      *int                `yaml:"replicas" default:"1"`
-	GPU           *bool               `yaml:"gpu" default:"false" `
-	Config        map[string]string   `yaml:"config"`
-	ObjectStore   *ProcessObjectStore `yaml:"objectStore"`
-	Secrets       map[string]string   `yaml:"secrets"`
-	Subscriptions []string            `yaml:"subscriptions"`
-	Networking    *ProcessNetworking  `yaml:"networking"`
+	Name           string                 `yaml:"name"`
+	Type           ProcessType            `yaml:"type"`
+	Image          string                 `yaml:"image"`
+	Replicas       *int                   `yaml:"replicas" default:"1"`
+	GPU            *bool                  `yaml:"gpu" default:"false" `
+	Config         map[string]string      `yaml:"config"`
+	ObjectStore    *ProcessObjectStore    `yaml:"objectStore"`
+	Secrets        map[string]string      `yaml:"secrets"`
+	Subscriptions  []string               `yaml:"subscriptions"`
+	Networking     *ProcessNetworking     `yaml:"networking"`
+	ResourceLimits *ProcessResourceLimits `yaml:"resourceLimits"`
 }
 
 type ProcessType string
@@ -123,4 +124,14 @@ func (np NetworkingProtocol) IsValid() bool {
 	_, ok := networkingProtocolMap[string(np)]
 
 	return ok
+}
+
+type ResourceLimit struct {
+	Request string `yaml:"request"`
+	Limit   string `yaml:"limit"`
+}
+
+type ProcessResourceLimits struct {
+	CPU    *ResourceLimit `yaml:"CPU"`
+	Memory *ResourceLimit `yaml:"memory"`
 }

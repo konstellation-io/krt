@@ -128,6 +128,84 @@ func TestKrtValidator(t *testing.T) {
 			errorType:   errors.ErrMissingRequiredField,
 			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].networking.destinationPort").Error(),
 		},
+		{
+			name: "fails if krt hasn't required process limit resources",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				nil,
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits").Error(),
+		},
+		{
+			name: "fails if krt hasn't required process cpu",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					nil,
+					&krt.ResourceLimit{
+						Request: "100M",
+						Limit:   "200M",
+					},
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits.CPU").Error(),
+		},
+		{
+			name: "fails if krt hasn't required process cpu request",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					&krt.ResourceLimit{
+						Limit: "1",
+					},
+					&krt.ResourceLimit{
+						Request: "100M",
+						Limit:   "200M",
+					},
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits.CPU.request").Error(),
+		},
+		{
+			name: "fails if krt hasn't required process memory",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					&krt.ResourceLimit{
+						Request: "100m",
+						Limit:   "200m",
+					},
+					nil,
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits.memory").Error(),
+		},
+		{
+			name: "fails if krt hasn't required process memory request",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					&krt.ResourceLimit{
+						Request: "100m",
+						Limit:   "200m",
+					},
+					&krt.ResourceLimit{
+						Limit: "100M",
+					},
+				},
+				0,
+			).Build(),
+			wantError:   true,
+			errorType:   errors.ErrMissingRequiredField,
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].resourceLimits.memory.request").Error(),
+		},
 	}
 
 	invalidNameTests := []test{
@@ -228,6 +306,74 @@ func TestKrtValidator(t *testing.T) {
 			errorType:   errors.ErrDuplicatedProcessName,
 			errorString: errors.DuplicatedProcessNameError("krt.workflows[0].processes[1].name").Error(),
 		},
+		{
+			name: "fails if krt cpu request has an invalid format",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					&krt.ResourceLimit{
+						Request: "invalid",
+						Limit:   "200m",
+					},
+					&krt.ResourceLimit{
+						Request: "100M",
+						Limit:   "200M",
+					},
+				}, 0).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidProcessCPUResourceLimit,
+			errorString: errors.InvalidProcessCPUError("krt.workflows[0].processes[0].resourceLimits.CPU.request").Error(),
+		},
+		{
+			name: "fails if krt cpu limit has an invalid format",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					&krt.ResourceLimit{
+						Request: "200m",
+						Limit:   "invalid",
+					},
+					&krt.ResourceLimit{
+						Request: "100M",
+						Limit:   "200M",
+					},
+				}, 0).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidProcessCPUResourceLimit,
+			errorString: errors.InvalidProcessCPUError("krt.workflows[0].processes[0].resourceLimits.CPU.limit").Error(),
+		},
+		{
+			name: "fails if krt memory request has an invalid format",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					&krt.ResourceLimit{
+						Request: "200m",
+						Limit:   "200m",
+					},
+					&krt.ResourceLimit{
+						Request: "invalid",
+						Limit:   "200m",
+					},
+				}, 0).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidProcessMemoryResourceLimit,
+			errorString: errors.InvalidProcessMemoryError("krt.workflows[0].processes[0].resourceLimits.memory.request").Error(),
+		},
+		{
+			name: "fails if krt memory limit has an invalid format",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					&krt.ResourceLimit{
+						Request: "200m",
+						Limit:   "200m",
+					},
+					&krt.ResourceLimit{
+						Request: "200m",
+						Limit:   "invalid",
+					},
+				}, 0).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidProcessMemoryResourceLimit,
+			errorString: errors.InvalidProcessMemoryError("krt.workflows[0].processes[0].resourceLimits.memory.limit").Error(),
+		},
 	}
 
 	invalidTypeTests := []test{
@@ -271,6 +417,42 @@ func TestKrtValidator(t *testing.T) {
 			wantError:   true,
 			errorType:   errors.ErrInvalidNetworkingProtocol,
 			errorString: errors.InvalidNetworkingProtocolError("krt.workflows[0].processes[0].networking.protocol").Error(),
+		},
+	}
+
+	invalidResourceRelationTests := []test{
+		{
+			name: "fails if krt cpu limit is lower than request",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					&krt.ResourceLimit{
+						Request: "200m",
+						Limit:   "0.1",
+					},
+					&krt.ResourceLimit{
+						Request: "100M",
+						Limit:   "200M",
+					},
+				}, 0).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidProcessCPURelation,
+			errorString: errors.InvalidProcessCPURelationError("krt.workflows[0].processes[0].resourceLimits.CPU").Error(),
+		},
+		{
+			name: "fails if krt memory limit is lower than request",
+			krtYaml: NewKrtBuilder().WithProcessResourceLimits(
+				&krt.ProcessResourceLimits{
+					&krt.ResourceLimit{
+						Request: "200m",
+						Limit:   "200m",
+					},
+					&krt.ResourceLimit{
+						Request: "2Mi",
+						Limit:   "2000k",
+					}}, 0).Build(),
+			wantError:   true,
+			errorType:   errors.ErrInvalidProcessMemoryRelation,
+			errorString: errors.InvalidProcessMemoryRelationError("krt.workflows[0].processes[0].resourceLimits.memory").Error(),
 		},
 	}
 
@@ -386,6 +568,7 @@ func TestKrtValidator(t *testing.T) {
 	allTests = append(allTests, requiredFieldsTests...)
 	allTests = append(allTests, invalidNameTests...)
 	allTests = append(allTests, invalidTypeTests...)
+	allTests = append(allTests, invalidResourceRelationTests...)
 	allTests = append(allTests, invalidSubscriptionTests...)
 
 	for _, tc := range allTests {
