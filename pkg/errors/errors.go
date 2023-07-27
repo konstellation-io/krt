@@ -79,7 +79,7 @@ func InvalidNetworkingProtocolError(field string) error {
 }
 
 func InvalidProcessCPUError(field string) error {
-	return errorWithMessage(ErrInvalidProcessCPU, field)
+	return errorWithMessage(ErrInvalidProcessCPUResourceLimit, field)
 }
 
 func InvalidProcessCPURelationError(field string) error {
@@ -87,7 +87,7 @@ func InvalidProcessCPURelationError(field string) error {
 }
 
 func InvalidProcessMemoryError(field string) error {
-	return errorWithMessage(ErrInvalidProcessMemory, field)
+	return errorWithMessage(ErrInvalidProcessMemoryResourceLimit, field)
 }
 
 func InvalidProcessMemoryRelationError(field string) error {

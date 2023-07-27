@@ -320,7 +320,7 @@ func TestKrtValidator(t *testing.T) {
 					},
 				}, 0).Build(),
 			wantError:   true,
-			errorType:   errors.ErrInvalidProcessCPU,
+			errorType:   errors.ErrInvalidProcessCPUResourceLimit,
 			errorString: errors.InvalidProcessCPUError("krt.workflows[0].processes[0].resourceLimits.CPU.request").Error(),
 		},
 		{
@@ -337,7 +337,7 @@ func TestKrtValidator(t *testing.T) {
 					},
 				}, 0).Build(),
 			wantError:   true,
-			errorType:   errors.ErrInvalidProcessCPU,
+			errorType:   errors.ErrInvalidProcessCPUResourceLimit,
 			errorString: errors.InvalidProcessCPUError("krt.workflows[0].processes[0].resourceLimits.CPU.limit").Error(),
 		},
 		{
@@ -354,7 +354,7 @@ func TestKrtValidator(t *testing.T) {
 					},
 				}, 0).Build(),
 			wantError:   true,
-			errorType:   errors.ErrInvalidProcessMemory,
+			errorType:   errors.ErrInvalidProcessMemoryResourceLimit,
 			errorString: errors.InvalidProcessMemoryError("krt.workflows[0].processes[0].resourceLimits.memory.request").Error(),
 		},
 		{
@@ -371,7 +371,7 @@ func TestKrtValidator(t *testing.T) {
 					},
 				}, 0).Build(),
 			wantError:   true,
-			errorType:   errors.ErrInvalidProcessMemory,
+			errorType:   errors.ErrInvalidProcessMemoryResourceLimit,
 			errorString: errors.InvalidProcessMemoryError("krt.workflows[0].processes[0].resourceLimits.memory.limit").Error(),
 		},
 	}
