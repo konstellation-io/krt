@@ -7,7 +7,7 @@ import (
 	"github.com/konstellation-io/krt/pkg/errors"
 )
 
-const subscritpionLocation = "krt.workflows[%d].processes[%d].subscriptions.%s"
+const subscriptionLocation = "krt.workflows[%d].processes[%d].subscriptions.%s"
 
 func (process *Process) Validate(workflowIdx, processIdx int) error {
 	return errors.Join(
@@ -148,7 +148,7 @@ func countProcessesSubscriptions(processes []Process, workflowIdx int) (map[stri
 				totalError = errors.Join(
 					totalError,
 					errors.DuplicatedProcessSubscriptionError(
-						fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
+						fmt.Sprintf(subscriptionLocation, workflowIdx, processIdx, subscription),
 					),
 				)
 			} else {
@@ -196,7 +196,7 @@ func checkSubscriptions(processes []Process, workflowIdx int, processTypesByName
 
 			if process.Name == cleanSubscription {
 				totalError = errors.Join(totalError, errors.CannotSubscribeToItselfError(
-					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
+					fmt.Sprintf(subscriptionLocation, workflowIdx, processIdx, subscription),
 				))
 
 				continue
@@ -216,7 +216,7 @@ func checkSubscriptions(processes []Process, workflowIdx int, processTypesByName
 				totalError = errors.Join(totalError, errors.InvalidProcessSubscriptionError(
 					string(process.Type),
 					string(subscribedProcessType),
-					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
+					fmt.Sprintf(subscriptionLocation, workflowIdx, processIdx, subscription),
 				))
 			}
 		}
@@ -279,12 +279,12 @@ func (process *Process) ValidateResourceLimits(workflowIdx, processIdx int) erro
 	}
 
 	return errors.Join(
-		process.validateCPU(workflowIdx, processIdx),
-		process.validateMemory(workflowIdx, processIdx),
+		process.ValidateCPU(workflowIdx, processIdx),
+		process.ValidateMemory(workflowIdx, processIdx),
 	)
 }
 
-func (process *Process) validateCPU(workflowIdx, processIdx int) error {
+func (process *Process) ValidateCPU(workflowIdx, processIdx int) error {
 	if process.ResourceLimits.CPU == nil {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU", workflowIdx, processIdx),
