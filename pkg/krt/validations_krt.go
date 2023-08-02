@@ -4,14 +4,14 @@ import "github.com/konstellation-io/krt/pkg/errors"
 
 func (krt *Krt) Validate() error {
 	return errors.Join(
-		krt.validateDescription(),
-		krt.validateKRTVersion(),
-		krt.validateVersionConfig(),
-		krt.validateWorkflows(),
+		krt.ValidateDescription(),
+		krt.ValidateKRTVersion(),
+		krt.ValidateVersionConfig(),
+		krt.ValidateWorkflows(),
 	)
 }
 
-func (krt *Krt) validateDescription() error {
+func (krt *Krt) ValidateDescription() error {
 	if krt.Description == "" {
 		return errors.MissingRequiredFieldError("krt.description")
 	}
@@ -19,15 +19,15 @@ func (krt *Krt) validateDescription() error {
 	return nil
 }
 
-func (krt *Krt) validateKRTVersion() error {
+func (krt *Krt) ValidateKRTVersion() error {
 	return validateVersion(krt.Version, "krt.version")
 }
 
-func (krt *Krt) validateVersionConfig() error {
+func (krt *Krt) ValidateVersionConfig() error {
 	return nil
 }
 
-func (krt *Krt) validateWorkflows() error {
+func (krt *Krt) ValidateWorkflows() error {
 	var totalError error
 
 	if len(krt.Workflows) == 0 {

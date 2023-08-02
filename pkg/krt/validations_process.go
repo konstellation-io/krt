@@ -7,32 +7,32 @@ import (
 	"github.com/konstellation-io/krt/pkg/errors"
 )
 
-const subscritpionLocation = "krt.workflows[%d].processes[%d].subscriptions.%s"
+const subscriptionLocation = "krt.workflows[%d].processes[%d].subscriptions.%s"
 
 func (process *Process) Validate(workflowIdx, processIdx int) error {
 	return errors.Join(
-		process.validateName(workflowIdx, processIdx),
-		process.validateType(workflowIdx, processIdx),
-		process.validateImage(workflowIdx, processIdx),
-		process.validateReplicas(workflowIdx, processIdx),
-		process.validateGPU(workflowIdx, processIdx),
-		process.validateConfig(workflowIdx, processIdx),
-		process.validateObjectStore(workflowIdx, processIdx),
-		process.validateSecrets(workflowIdx, processIdx),
-		process.validateSubscriptions(workflowIdx, processIdx),
-		process.validateNetworking(workflowIdx, processIdx),
-		process.validateResourceLimits(workflowIdx, processIdx),
+		process.ValidateName(workflowIdx, processIdx),
+		process.ValidateType(workflowIdx, processIdx),
+		process.ValidateImage(workflowIdx, processIdx),
+		process.ValidateReplicas(workflowIdx, processIdx),
+		process.ValidateGPU(workflowIdx, processIdx),
+		process.ValidateConfig(workflowIdx, processIdx),
+		process.ValidateObjectStore(workflowIdx, processIdx),
+		process.ValidateSecrets(workflowIdx, processIdx),
+		process.ValidateSubscriptions(workflowIdx, processIdx),
+		process.ValidateNetworking(workflowIdx, processIdx),
+		process.ValidateResourceLimits(workflowIdx, processIdx),
 	)
 }
 
-func (process *Process) validateName(workflowIdx, processIdx int) error {
+func (process *Process) ValidateName(workflowIdx, processIdx int) error {
 	return validateName(
 		process.Name,
 		fmt.Sprintf("krt.workflows[%d].processes[%d].name", workflowIdx, processIdx),
 	)
 }
 
-func (process *Process) validateType(workflowIdx, processIdx int) error {
+func (process *Process) ValidateType(workflowIdx, processIdx int) error {
 	if !process.Type.IsValid() {
 		return errors.InvalidProcessTypeError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].type", workflowIdx, processIdx),
@@ -42,7 +42,7 @@ func (process *Process) validateType(workflowIdx, processIdx int) error {
 	return nil
 }
 
-func (process *Process) validateImage(workflowIdx, processIdx int) error {
+func (process *Process) ValidateImage(workflowIdx, processIdx int) error {
 	if process.Image == "" {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].image", workflowIdx, processIdx),
@@ -52,19 +52,19 @@ func (process *Process) validateImage(workflowIdx, processIdx int) error {
 	return nil
 }
 
-func (process *Process) validateReplicas(workflowIdx, processIdx int) error {
+func (process *Process) ValidateReplicas(workflowIdx, processIdx int) error {
 	return nil
 }
 
-func (process *Process) validateGPU(workflowIdx, processIdx int) error {
+func (process *Process) ValidateGPU(workflowIdx, processIdx int) error {
 	return nil
 }
 
-func (process *Process) validateConfig(workflowIdx, processIdx int) error {
+func (process *Process) ValidateConfig(workflowIdx, processIdx int) error {
 	return nil
 }
 
-func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
+func (process *Process) ValidateObjectStore(workflowIdx, processIdx int) error {
 	if process.ObjectStore == nil {
 		return nil
 	}
@@ -97,11 +97,11 @@ func (process *Process) validateObjectStore(workflowIdx, processIdx int) error {
 	return totalError
 }
 
-func (process *Process) validateSecrets(workflowIdx, processIdx int) error {
+func (process *Process) ValidateSecrets(workflowIdx, processIdx int) error {
 	return nil
 }
 
-func (process *Process) validateSubscriptions(workflowIdx, processIdx int) error {
+func (process *Process) ValidateSubscriptions(workflowIdx, processIdx int) error {
 	if process.Subscriptions == nil {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions",
@@ -148,7 +148,7 @@ func countProcessesSubscriptions(processes []Process, workflowIdx int) (map[stri
 				totalError = errors.Join(
 					totalError,
 					errors.DuplicatedProcessSubscriptionError(
-						fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
+						fmt.Sprintf(subscriptionLocation, workflowIdx, processIdx, subscription),
 					),
 				)
 			} else {
@@ -196,7 +196,7 @@ func checkSubscriptions(processes []Process, workflowIdx int, processTypesByName
 
 			if process.Name == cleanSubscription {
 				totalError = errors.Join(totalError, errors.CannotSubscribeToItselfError(
-					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
+					fmt.Sprintf(subscriptionLocation, workflowIdx, processIdx, subscription),
 				))
 
 				continue
@@ -216,7 +216,7 @@ func checkSubscriptions(processes []Process, workflowIdx int, processTypesByName
 				totalError = errors.Join(totalError, errors.InvalidProcessSubscriptionError(
 					string(process.Type),
 					string(subscribedProcessType),
-					fmt.Sprintf(subscritpionLocation, workflowIdx, processIdx, subscription),
+					fmt.Sprintf(subscriptionLocation, workflowIdx, processIdx, subscription),
 				))
 			}
 		}
@@ -236,7 +236,7 @@ func isValidSubscription(processType, subscriptionProcessType ProcessType) bool 
 	}
 }
 
-func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
+func (process *Process) ValidateNetworking(workflowIdx, processIdx int) error {
 	if process.Networking == nil {
 		return nil
 	}
@@ -271,7 +271,7 @@ func (process *Process) validateNetworking(workflowIdx, processIdx int) error {
 	return totalError
 }
 
-func (process *Process) validateResourceLimits(workflowIdx, processIdx int) error {
+func (process *Process) ValidateResourceLimits(workflowIdx, processIdx int) error {
 	if process.ResourceLimits == nil {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits", workflowIdx, processIdx),
@@ -279,12 +279,12 @@ func (process *Process) validateResourceLimits(workflowIdx, processIdx int) erro
 	}
 
 	return errors.Join(
-		process.validateCPU(workflowIdx, processIdx),
-		process.validateMemory(workflowIdx, processIdx),
+		process.ValidateCPU(workflowIdx, processIdx),
+		process.ValidateMemory(workflowIdx, processIdx),
 	)
 }
 
-func (process *Process) validateCPU(workflowIdx, processIdx int) error {
+func (process *Process) ValidateCPU(workflowIdx, processIdx int) error {
 	if process.ResourceLimits.CPU == nil {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.CPU", workflowIdx, processIdx),
@@ -339,7 +339,7 @@ func (process *Process) validateCPU(workflowIdx, processIdx int) error {
 	return totalError
 }
 
-func (process *Process) validateMemory(workflowIdx, processIdx int) error {
+func (process *Process) ValidateMemory(workflowIdx, processIdx int) error {
 	if process.ResourceLimits.Memory == nil {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].resourceLimits.memory", workflowIdx, processIdx),
