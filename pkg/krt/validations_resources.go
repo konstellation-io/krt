@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/alecthomas/units"
+
 	"github.com/konstellation-io/krt/pkg/errors"
 )
 
@@ -18,7 +19,7 @@ const (
 )
 
 func isValidCPU(cpu string) (bool, cpuForm) {
-	fractionalCPU := regexp.MustCompile(`^\d\.\d$`)
+	fractionalCPU := regexp.MustCompile(`^\d+(\.\d+)?$`)
 	milliCPU := regexp.MustCompile(`^\d{3}m$`)
 
 	if fractionalCPU.MatchString(cpu) {
