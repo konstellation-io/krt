@@ -119,7 +119,7 @@ func (process *Process) ValidateSubscriptions(workflowIdx, processIdx int) error
 }
 
 // validateSubscritpionRelationships checks if subscriptions for all processes are valid
-// inisde a workflow context.
+// inside a workflow context.
 //
 // All requirements for subscritpions to be valid can be found in the readme.
 func validateSubscritpionRelationships(processes []Process, workflowIdx int) error {
