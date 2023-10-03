@@ -97,10 +97,15 @@ func TestKrtValidator(t *testing.T) {
 		},
 		{
 			name:        "fails if krt hasn't required process subscriptions",
-			krtYaml:     NewKrtBuilder().WithProcessSubscriptions(nil, 0).Build(),
+			krtYaml:     NewKrtBuilder().WithProcessSubscriptions(nil, 1).Build(),
 			wantError:   true,
 			errorType:   errors.ErrMissingRequiredField,
-			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[0].subscriptions").Error(),
+			errorString: errors.MissingRequiredFieldError("krt.workflows[0].processes[1].subscriptions").Error(),
+		},
+		{
+			name:      "does not fail if krt hasn't required process subscriptions for a trigger",
+			krtYaml:   NewKrtBuilder().WithProcessSubscriptions(nil, 0).Build(),
+			wantError: false,
 		},
 		{
 			name: "fails if krt hasn't required networking target port if declared",
