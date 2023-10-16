@@ -44,7 +44,7 @@ func (workflow *Workflow) ValidateProcesses(workflowIdx int) error {
 			totalError = errors.Join(totalError, process.Validate(workflowIdx, idx))
 		}
 
-		totalError = errors.Join(totalError, validateSubscritpions(workflow.Processes, workflowIdx))
+		totalError = errors.Join(totalError, validateSubscritpionRelationships(workflow.Processes, workflowIdx))
 	}
 
 	return totalError

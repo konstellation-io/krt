@@ -99,26 +99,26 @@ func (s ObjectStoreScope) IsValid() bool {
 }
 
 const (
-	DefaultProtocol = NetworkingProtocolTCP
+	DefaultProtocol = NetworkingProtocolHTTP
 )
 
 type ProcessNetworking struct {
 	TargetPort      int                `yaml:"targetPort"`
 	DestinationPort int                `yaml:"destinationPort"`
-	Protocol        NetworkingProtocol `yaml:"protocol" default:"TCP" `
+	Protocol        NetworkingProtocol `yaml:"protocol" default:"HTTP" `
 }
 
 type NetworkingProtocol string
 
 const (
-	NetworkingProtocolTCP NetworkingProtocol = "TCP"
-	NetworkingProtocolUDP NetworkingProtocol = "UDP"
+	NetworkingProtocolHTTP NetworkingProtocol = "HTTP"
+	NetworkingProtocolGRPC NetworkingProtocol = "GRPC"
 )
 
 func (np NetworkingProtocol) IsValid() bool {
 	var networkingProtocolMap = map[string]NetworkingProtocol{
-		string(NetworkingProtocolTCP): NetworkingProtocolTCP,
-		string(NetworkingProtocolUDP): NetworkingProtocolUDP,
+		string(NetworkingProtocolHTTP): NetworkingProtocolHTTP,
+		string(NetworkingProtocolGRPC): NetworkingProtocolGRPC,
 	}
 
 	_, ok := networkingProtocolMap[string(np)]
