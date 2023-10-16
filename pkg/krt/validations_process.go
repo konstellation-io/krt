@@ -102,7 +102,11 @@ func (process *Process) ValidateSecrets(workflowIdx, processIdx int) error {
 }
 
 func (process *Process) ValidateSubscriptions(workflowIdx, processIdx int) error {
-	if process.Subscriptions == nil {
+	if process.Type == ProcessTypeTrigger {
+		return nil
+	}
+
+	if process.Subscriptions == nil || len(process.Subscriptions) == 0 {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions",
 				workflowIdx,
@@ -114,9 +118,11 @@ func (process *Process) ValidateSubscriptions(workflowIdx, processIdx int) error
 	return nil
 }
 
-// validateSubscritpions checks if subscriptions for all process are valid.
+// validateSubscritpionRelationships checks if subscriptions for all processes are valid
+// inside a workflow context.
+//
 // All requirements for subscritpions to be valid can be found in the readme.
-func validateSubscritpions(processes []Process, workflowIdx int) error {
+func validateSubscritpionRelationships(processes []Process, workflowIdx int) error {
 	var totalError error
 
 	processTypesByNames, err := countProcessesSubscriptions(processes, workflowIdx)
