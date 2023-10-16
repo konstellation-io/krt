@@ -107,7 +107,7 @@ func TestKrtValidator(t *testing.T) {
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
 				&krt.ProcessNetworking{
 					DestinationPort: 9000,
-					Protocol:        "UDP",
+					Protocol:        "HTTP",
 				},
 				0,
 			).Build(),
@@ -120,7 +120,7 @@ func TestKrtValidator(t *testing.T) {
 			krtYaml: NewKrtBuilder().WithProcessNetworking(
 				&krt.ProcessNetworking{
 					TargetPort: 9000,
-					Protocol:   "UDP",
+					Protocol:   "GRPC",
 				},
 				0,
 			).Build(),
