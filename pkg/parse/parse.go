@@ -38,6 +38,6 @@ func ParseFileToKrt(yamlFile string) (*krt.Krt, error) {
 }
 
 // ParseKrtToYaml parses a Krt struct to yaml bytes.
-func ParseKrtToYaml(krt *krt.Krt) ([]byte, error) {
-	return yaml.Marshal(krt)
+func ParseKrtToYaml(krtStruct *krt.Krt) ([]byte, error) {
+	return yaml.Marshal(krtStruct)
 }
