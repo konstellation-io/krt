@@ -3,6 +3,7 @@
 package parse_test
 
 import (
+	"os"
 	"strings"
 	"testing"
 
@@ -15,7 +16,7 @@ import (
 )
 
 func TestCorrectKrtFile(t *testing.T) {
-	krt, err := parse.ParseFile("./testdata/correct_krt.yaml")
+	krt, err := parse.ParseFileToKrt("./testdata/correct_krt.yaml")
 	require.NoError(t, err)
 
 	err = krt.Validate()
@@ -23,21 +24,21 @@ func TestCorrectKrtFile(t *testing.T) {
 }
 
 func TestNonExistentFile(t *testing.T) {
-	krt, err := parse.ParseFile("./testdata/non_existent_krt.yaml")
+	krt, err := parse.ParseFileToKrt("./testdata/non_existent_krt.yaml")
 	require.Error(t, err)
 	assert.ErrorIs(t, err, errors.ErrReadingFile)
 	assert.Nil(t, krt)
 }
 
 func TestInvalidFile(t *testing.T) {
-	krt, err := parse.ParseFile("./testdata/invalid_file.yaml")
+	krt, err := parse.ParseFileToKrt("./testdata/invalid_file.yaml")
 	require.Error(t, err)
 	assert.ErrorIs(t, err, errors.ErrInvalidYaml)
 	assert.Nil(t, krt)
 }
 
 func TestCorrectKrtFileSettingDefaults(t *testing.T) {
-	parsedKrt, err := parse.ParseFile("./testdata/missing_defaults_krt.yaml")
+	parsedKrt, err := parse.ParseFileToKrt("./testdata/missing_defaults_krt.yaml")
 	require.NoError(t, err)
 
 	err = parsedKrt.Validate()
@@ -69,7 +70,7 @@ func TestCorrectKrtFileSettingDefaults(t *testing.T) {
 }
 
 func TestNotValidKrt(t *testing.T) {
-	parsedKrt, err := parse.ParseFile("./testdata/not_valid_krt.yaml")
+	parsedKrt, err := parse.ParseFileToKrt("./testdata/not_valid_krt.yaml")
 	require.NoError(t, err)
 
 	err = parsedKrt.Validate()
@@ -116,7 +117,7 @@ func TestNotValidKrt(t *testing.T) {
 }
 
 func TestNotValidTypesKrt(t *testing.T) {
-	parsedKrt, err := parse.ParseFile("./testdata/not_valid_types_krt.yaml")
+	parsedKrt, err := parse.ParseFileToKrt("./testdata/not_valid_types_krt.yaml")
 	assert.NoError(t, err)
 
 	err = parsedKrt.Validate()
@@ -125,4 +126,25 @@ func TestNotValidTypesKrt(t *testing.T) {
 	assert.ErrorIs(t, err, errors.ErrInvalidWorkflowType)
 	assert.ErrorIs(t, err, errors.ErrInvalidProcessObjectStoreScope)
 	assert.ErrorIs(t, err, errors.ErrInvalidNetworkingProtocol)
+}
+
+func TestValidKrtToYaml(t *testing.T) {
+	krtYml, err := os.ReadFile("./testdata/correct_krt.yaml")
+	require.NoError(t, err)
+
+	krt, err := parse.ParseYamlToKrt(krtYml)
+	require.NoError(t, err)
+
+	yaml, err := parse.ParseKrtToYaml(krt)
+	require.NoError(t, err)
+
+	expectedYamlString := string(krtYml)
+	expectedYamlString = strings.ReplaceAll(expectedYamlString, "\n", "")
+	expectedYamlString = strings.ReplaceAll(expectedYamlString, " ", "")
+
+	actualYamlString := string(yaml)
+	actualYamlString = strings.ReplaceAll(actualYamlString, "\n", "")
+	actualYamlString = strings.ReplaceAll(actualYamlString, " ", "")
+
+	assert.Equal(t, expectedYamlString, actualYamlString)
 }
