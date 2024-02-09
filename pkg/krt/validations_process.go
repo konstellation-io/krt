@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/konstellation-io/krt/internal/kubeutil"
 	"github.com/konstellation-io/krt/pkg/errors"
 )
 
@@ -22,6 +23,7 @@ func (process *Process) Validate(workflowIdx, processIdx int) error {
 		process.ValidateSubscriptions(workflowIdx, processIdx),
 		process.ValidateNetworking(workflowIdx, processIdx),
 		process.ValidateResourceLimits(workflowIdx, processIdx),
+		process.ValidateNodeSelectors(workflowIdx, processIdx),
 	)
 }
 
@@ -116,6 +118,26 @@ func (process *Process) ValidateSubscriptions(workflowIdx, processIdx int) error
 	}
 
 	return nil
+}
+
+func (process *Process) ValidateNodeSelectors(workflowIdx, processIdx int) error {
+	var errs error
+
+	for key, value := range process.NodeSelectors {
+		if err := kubeutil.ValidateNodeSelectorKey(key); err != nil {
+			errs = errors.Join(
+				errs,
+				fmt.Errorf("krt.workflows[%d].processes[%d].nodeSelectors: invalid key %q: %w", workflowIdx, processIdx, key, err),
+			)
+		}
+		if err := kubeutil.ValidateNodeSelectorValue(value); err != nil {
+			errs = errors.Join(errs,
+				fmt.Errorf("krt.workflows[%d].processes[%d].nodeSelectors: invalid value %q: %w", workflowIdx, processIdx, value, err),
+			)
+		}
+	}
+
+	return errs
 }
 
 // validateSubscritpionRelationships checks if subscriptions for all processes are valid

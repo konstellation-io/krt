@@ -3,6 +3,7 @@
 package krt_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -587,4 +588,14 @@ func TestKrtValidator(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDeleteThis(t *testing.T) {
+	krtWithSelector := NewKrtBuilder().
+		WithNodeSelectors(map[string]string{"invalid key": "invalid value"}, 0).
+		WithProcessType("invalid process type", 0).
+		Build()
+
+	err := krtWithSelector.Validate()
+	fmt.Println(err)
 }

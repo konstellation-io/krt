@@ -151,6 +151,11 @@ func (k *KrtBuilder) WithProcessResourceLimits(resourceLimits *krt.ProcessResour
 	return k
 }
 
+func (k *KrtBuilder) WithNodeSelectors(nodeSelectors map[string]string, processIdx int) *KrtBuilder {
+	k.krtYaml.Workflows[0].Processes[processIdx].NodeSelectors = nodeSelectors
+	return k
+}
+
 func (k *KrtBuilder) Build() *krt.Krt {
 	return k.krtYaml
 }
