@@ -15,6 +15,7 @@ func TestValidateNodeSelectorKey(t *testing.T) {
 	}{
 		{"Valid key without prefix", "valid-key", false},
 		{"Valid key with prefix", "konstellation.io/valid-key", false},
+		{"Invalid key with empty prefix", "/valid-key", true},
 		{"Invalid key without prefix", "invalid key", true},
 		{"Invalid key with prefix", "invalid prefix/invalid key", true},
 	}

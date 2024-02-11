@@ -130,6 +130,7 @@ func (process *Process) ValidateNodeSelectors(workflowIdx, processIdx int) error
 				fmt.Errorf("krt.workflows[%d].processes[%d].nodeSelectors: invalid key %q: %w", workflowIdx, processIdx, key, err),
 			)
 		}
+
 		if err := kubeutil.ValidateNodeSelectorValue(value); err != nil {
 			errs = errors.Join(errs,
 				fmt.Errorf("krt.workflows[%d].processes[%d].nodeSelectors: invalid value %q: %w", workflowIdx, processIdx, value, err),
