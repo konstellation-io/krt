@@ -53,6 +53,7 @@ type Process struct {
 	Subscriptions  []string               `yaml:"subscriptions"`
 	Networking     *ProcessNetworking     `yaml:"networking"`
 	ResourceLimits *ProcessResourceLimits `yaml:"resourceLimits"`
+	NodeSelectors  map[string]string      `yaml:"nodeSelectors,omitempty"`
 }
 
 type ProcessType string
