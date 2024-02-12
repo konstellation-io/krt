@@ -20,12 +20,10 @@ const (
 )
 
 var (
-	ErrInvalidKeyFormat     = errors.New("invalid key format: key must be a valid name with an optional DNS subdomain prefix joined by '/'")
-	ErrMissingMandatoryName = errors.New("missing mandatory name")
-	ErrInvalidKeyNameLength = errors.New("key name too long")
-	ErrInvalidKeyName       = errors.New("invalid key name")
-	ErrValueTooLong         = errors.New("value too long")
-	ErrInvalidValue         = errors.New("invalid value")
+	ErrInvalidKeyPrefix = errors.New("invalid key prefix")
+	ErrInvalidKeyFormat = errors.New("invalid key format: key must be a valid name with an optional DNS subdomain prefix joined by '/'")
+	ErrInvalidKeyName   = errors.New("invalid key name")
+	ErrInvalidValue     = errors.New("invalid value")
 
 	_validQualifiedNameRegexp = regexp.MustCompile("^" + _qualifiedNameFmt + "$")
 	_validDNSSubdomainRegexp  = regexp.MustCompile("^" + _validDNSFmt + "(\\." + _validDNSFmt + ")*$")
@@ -57,16 +55,16 @@ func ValidateNodeSelectorKey(value string) error {
 
 func validateKeyPrefix(prefix string) error {
 	if prefix == "" {
-		return errors.New("prefix cannot be empty")
+		return fmt.Errorf("%w: prefix cannot be empty", ErrInvalidKeyPrefix)
 	}
 
 	if len(prefix) > _maxDNSSubdomainLength {
-		return errors.New("prefix too long")
+		return fmt.Errorf("%w: prefix too long", ErrInvalidKeyPrefix)
 	}
 
 	if !_validDNSSubdomainRegexp.MatchString(prefix) {
 		return fmt.Errorf("%w: key prefix must match the regexp %q",
-			errors.New("invalid key prefix"),
+			ErrInvalidKeyPrefix,
 			_validDNSFmt,
 		)
 	}
@@ -76,13 +74,13 @@ func validateKeyPrefix(prefix string) error {
 
 func validateKeyName(name string) error {
 	if name == "" {
-		return ErrMissingMandatoryName
+		return fmt.Errorf("%w: missing mandatory key name", ErrInvalidKeyName)
 	}
 
 	if len(name) > _maxNameLength {
 		return fmt.Errorf(
 			"%w: name length must be less than %d characters",
-			ErrInvalidKeyNameLength,
+			ErrInvalidKeyName,
 			_maxNameLength,
 		)
 	}
@@ -101,7 +99,7 @@ func ValidateNodeSelectorValue(value string) error {
 	if len(value) > _maxValueLength {
 		return fmt.Errorf(
 			"%w: value length must be less than %d characters",
-			ErrValueTooLong,
+			ErrInvalidValue,
 			_maxValueLength,
 		)
 	}

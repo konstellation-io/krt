@@ -9,45 +9,40 @@ import (
 
 func TestValidateNodeSelectorKey(t *testing.T) {
 	testCases := []struct {
-		name      string
-		key       string
-		wantError bool
+		name          string
+		key           string
+		expectedError error
 	}{
-		{"Valid key without prefix", "valid-key", false},
-		{"Valid key with prefix", "konstellation.io/valid-key", false},
-		{"Invalid key with empty prefix", "/valid-key", true},
-		{"Invalid key without prefix", "invalid key", true},
-		{"Invalid key with prefix", "invalid prefix/invalid key", true},
+		{"Valid key without prefix", "valid-key", nil},
+		{"Valid key with prefix", "konstellation.io/valid-key", nil},
+		{"Invalid key with empty prefix", "/valid-key", kubeutil.ErrInvalidKeyPrefix},
+		{"Invalid key without prefix", "invalid key", kubeutil.ErrInvalidKeyName},
+		{"Invalid key with prefix", "invalid prefix/invalid key", kubeutil.ErrInvalidKeyPrefix},
+		{"Invalid key format multiple '/'", "invalid/key/format", kubeutil.ErrInvalidKeyFormat},
+		{"Invalid empty key", "", kubeutil.ErrInvalidKeyName},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.wantError {
-				assert.Error(t, kubeutil.ValidateNodeSelectorKey(tc.key))
-			} else {
-				assert.NoError(t, kubeutil.ValidateNodeSelectorKey(tc.key))
-			}
+			assert.ErrorIs(t, kubeutil.ValidateNodeSelectorKey(tc.key), tc.expectedError)
 		})
 	}
 }
 
 func TestValidateNodeSelectorValue(t *testing.T) {
 	testCases := []struct {
-		name      string
-		value     string
-		wantError bool
+		name          string
+		value         string
+		expectedError error
 	}{
-		{"Valid value", "valid-value", false},
-		{"Invalid value", "invalid value", true},
+		{"Valid value", "valid-value", nil},
+		{"Invalid value", "invalid value", kubeutil.ErrInvalidValue},
+		{"Invalid empty value", "", kubeutil.ErrInvalidValue},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.wantError {
-				assert.Error(t, kubeutil.ValidateNodeSelectorValue(tc.value))
-			} else {
-				assert.NoError(t, kubeutil.ValidateNodeSelectorValue(tc.value))
-			}
+			assert.ErrorIs(t, kubeutil.ValidateNodeSelectorValue(tc.value), tc.expectedError)
 		})
 	}
 }
