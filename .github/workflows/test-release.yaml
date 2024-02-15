@@ -57,27 +57,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_KRT }}
 
-  goreleaser:
-    name: Release
+  release:
     runs-on: ubuntu-latest
+    if : github.ref_name == 'main'
     needs:
       - build
       - sonarcloud
-    if: github.ref_name == 'main'
     steps:
-      - name: Checkout
+      - name: Git checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up Go
-        uses: actions/setup-go@v4
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - name: Nyx publish
+        id: nyx-publish
+        uses: mooltiverse/nyx-github-action@main
         with:
-          go-version: '1.20.x'
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
-        with:
-          distribution: goreleaser
-          version: latest
-          args: release --clean
+          command: 'publish'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT }}

@@ -1,0 +1,71 @@
+---
+# starting from the "simple" preset gives us:
+# - the Conventional Commits convention
+# - the "mainline" and "internal" release types (that we override here)
+preset: "simple"
+releaseLenient: false
+releasePrefix: "v"
+git:
+  remotes:
+    origin:
+      authenticationMethod: "USER_PASSWORD"
+      user: "{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}"
+      password: "{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}"
+changelog:
+  path: "CHANGELOG.md"
+  template: "CHANGELOG.tpl"
+  sections:
+    "Added": "^feat$"
+    "Fixed": "^fix$"
+    "Changed": "^(chore|perf|style|docs)$"
+  substitutions:
+    "(?m)#([0-9]+)(?s)": "[#%s](https://github.com/konstellation-io/krt/issues/%s)"
+releaseTypes:
+  enabled:
+    - mainline
+    - internal
+  publicationServices:
+    - github
+  items:
+    # "mainline" overrides the release type with the same name from the preset
+    mainline:
+      description: "{{#fileContent}}CHANGELOG.md{{/fileContent}}"
+      filterTags: "^({{configuration.releasePrefix}})?([0-9]\\d*)\\.([0-9]\\d*)\\.([0-9]\\d*)$"
+      gitCommit: false
+      gitPush: true
+      gitTag: true
+      matchBranches: "^main$"
+      matchEnvironmentVariables:
+        CI: "^true$"                 # only match this release type when running on CI servers
+      matchWorkspaceStatus: "CLEAN"  # only match this release type when the repository is clean
+      publish: true
+    # "internal" overrides the release type with the same name from the preset adding some qualifiers and is the global fallback for all release types
+    internal:
+      collapseVersions: true
+      collapsedVersionQualifier: "internal"
+      gitPush: false
+      gitTag: false
+      identifiers:
+        -
+          qualifier: "{{#sanitizeLower}}{{branch}}{{/sanitizeLower}}"
+          position: "BUILD"
+        -
+          qualifier: "{{#short5}}{{releaseScope.finalCommit}}{{/short5}}"
+          position: "BUILD"
+        -
+          qualifier: "{{#timestampYYYYMMDDHHMMSS}}{{timestamp}}{{/timestampYYYYMMDDHHMMSS}}"
+          position: "BUILD"
+      publish: "false"
+services:
+  github:
+    type: "GITHUB"
+    options:
+      # The GH_TOKEN variable is fetched from the "secrets" context and passed as an environment variable.
+      # See:
+      # - https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+      # - https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+      AUTHENTICATION_TOKEN: "{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}"
+      REPOSITORY_NAME: "krt"
+      REPOSITORY_OWNER: "konstellation-io"
+resume: true
+summary: true

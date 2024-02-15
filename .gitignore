@@ -21,3 +21,9 @@
 
 # Go workspace file
 go.work
+
+# Nyx generated files
+CHANGELOG.md
+changelog.old
+.nyx-state.json
+.nyx-summary.txt
