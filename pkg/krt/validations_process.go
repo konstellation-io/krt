@@ -108,7 +108,7 @@ func (process *Process) ValidateSubscriptions(workflowIdx, processIdx int) error
 		return nil
 	}
 
-	if process.Subscriptions == nil || len(process.Subscriptions) == 0 {
+	if process.Subscriptions == nil {
 		return errors.MissingRequiredFieldError(
 			fmt.Sprintf("krt.workflows[%d].processes[%d].subscriptions",
 				workflowIdx,

@@ -49,7 +49,7 @@ type Process struct {
 	GPU            *bool                  `yaml:"gpu" default:"false" `
 	Config         map[string]string      `yaml:"config"`
 	ObjectStore    *ProcessObjectStore    `yaml:"objectStore"`
-	Secrets        map[string]string      `yaml:"secrets"`
+	Secrets        []string               `yaml:"secrets"`
 	Subscriptions  []string               `yaml:"subscriptions"`
 	Networking     *ProcessNetworking     `yaml:"networking"`
 	ResourceLimits *ProcessResourceLimits `yaml:"resourceLimits"`
