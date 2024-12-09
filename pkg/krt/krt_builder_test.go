@@ -131,7 +131,7 @@ func (k *KrtBuilder) WithProcessObjectStore(objectStore *krt.ProcessObjectStore,
 	return k
 }
 
-func (k *KrtBuilder) WithProcessSecrets(secrets map[string]string, processIdx int) *KrtBuilder {
+func (k *KrtBuilder) WithProcessSecrets(secrets []string, processIdx int) *KrtBuilder {
 	k.krtYaml.Workflows[0].Processes[processIdx].Secrets = secrets
 	return k
 }
